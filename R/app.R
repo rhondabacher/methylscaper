@@ -13,9 +13,7 @@ ui <- fluidPage(
             selectInput("refineMethod", label = "Refinement Method:", 
                         choices = c("PCA", "HC_average")),
             radioButtons("brush.choice", label = "Brushing for:",
-                               choices = c("Refinement", "Weighting"), selected = "Refinement"),
-            #radioButtons("weight.color", label = "Color to weight:", # we should be able to deduce this from where the brush is
-            #             choices = c("Red", "Yellow"), selected = "Red"),
+                               choices = c("Refinement", "Weighting"), selected = "Weighting"),
              verbatimTextOutput("info")
         ),
 
@@ -47,12 +45,15 @@ server <- function(input, output) {
         {
             n <- nrow(input.GCH)
             m <- ncol(input.GCH)
-            processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
+            processed.brush <- handleBrushCoordinates(input$plot_brush,input$brush.choice, n, m)
         }
-        makePlot(input.GCH, input.HCG, method = input$method, 
-                 refine.start = processed.brush$first.row, refine.stop = processed.brush$last.row,
-                 refine.method = input$refineMethod, weight.start = processed.brush$first.col, 
-                 weight.stop = processed.brush$last.col, weight.color = processed.brush$weight.color)
+        orderObj <- buildOrderObjectShiny(input.GCH, input.HCG, method = input$method,
+                                          weight.start = processed.brush$first.col, 
+                                          weight.stop = processed.brush$last.col, 
+                                          weight.color = processed.brush$weight.color)
+        refineOrderShiny(orderObj,
+                         refine.method = input$refineMethod)
+        makePlot(orderObj)
         })
     
     output$down <- downloadHandler(
@@ -78,14 +79,16 @@ server <- function(input, output) {
             {
                 n <- nrow(input.GCH)
                 m <- ncol(input.GCH)
-                processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
+                processed.brush <- handleBrushCoordinates(input$plot_brush, input$brush.choice, n, m)
             }
             
-            makePlot(input.GCH, input.HCG, method = input$method, 
-                     refine.start = processed.brush$first.row, refine.stop = processed.brush$last.row,
-                     refine.method = input$refineMethod, weight.start = processed.brush$first.col, 
-                     weight.stop = processed.brush$last.col, weight.color = processed.brush$weight.color,
-                     plotFAST = FALSE)
+            orderObj <- buildOrderObjectShiny(input.GCH, input.HCG, method = input$method,
+                                              weight.start = processed.brush$first.col, 
+                                              weight.stop = processed.brush$last.col, 
+                                              weight.color = processed.brush$weight.color)
+            refineOrderShiny(orderObj,
+                             refine.method = input$refineMethod)
+            makePlot(orderObj, plotFAST = FALSE)
             dev.off()
         }
     )
@@ -104,11 +107,11 @@ server <- function(input, output) {
         {
             n <- nrow(input.GCH)
             m <- ncol(input.GCH)
-            processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
+            processed.brush <- handleBrushCoordinates(input$plot_brush, input$brush.choice, n, m)
         }
         
-        paste0("Refinement selection: ", processed.brush$first.row, " ", processed.brush$last.row, "\n",
-               "Weighting selection: ", processed.brush$first.col, " ", processed.brush$last.col)
+        paste0("Refinement selection: ", refine.start.g, " ", refine.stop.g, "\n",
+               "Weighting selection: ", weight.start.g, " ", weight.stop.g)
     })
 }
 
