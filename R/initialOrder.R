@@ -55,7 +55,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
       FEATURE = -3
       varWeight <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
     }
-    toClust <- cbind(varWeight, input.GCH, input.HCG)
+    toClust <- cbind(varWeight, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
   }
   
   

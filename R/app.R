@@ -28,32 +28,71 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-    output$seqPlot <- renderPlot({
-        
-        input.GCH <- day7$gch
-        input.HCG <- day7$hcg
-        
+    
+    input.GCH <- reactive({
         if (!is.null(input$gch.file) & !is.null(input$hcg.file))
         {
-            input.GCH <- read.table(input$gch.file$datapath, header=T, row.names = 1, stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-            input.HCG <- read.table(input$hcg.file$datapath, header=T, row.names = 1, stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-            
+            input.GCH <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
+                                    stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
         }
-        
-        processed.brush <- list(first.row = 0, last.row = 0, first.col = 0, last.col = 0, weight.color = "red")
+        else day7$gch
+    })
+    input.HCG <- reactive({
+        if (!is.null(input$gch.file) & !is.null(input$hcg.file))
+        {
+            read.table(input$hcg.file$datapath, header=T, row.names = 1, 
+                                    stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+        }
+        else day7$hcg
+    })
+    
+    # this object keeps track of the coordinates for refinement and weighting
+    coordinatesObject <- reactiveValues(refine.start = 0, refine.stop = 0, 
+                                        weight.start = 0, weight.stop = 0, weight.color = "red")
+    
+    # this handles updates to coordinatesObject
+    observe({
         if (!is.null(input$plot_brush))
         {
-            n <- nrow(input.GCH)
-            m <- ncol(input.GCH)
-            processed.brush <- handleBrushCoordinates(input$plot_brush,input$brush.choice, n, m)
+            n <- nrow(input.GCH())
+            m <- ncol(input.GCH())
+            processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
+            
+            if (isolate(input$brush.choice) == "Weighting")
+            {
+                coordinatesObject$refine.start <- 0
+                coordinatesObject$refine.stop <- 0
+                coordinatesObject$weight.start <- processed.brush$first.col
+                coordinatesObject$weight.stop <- processed.brush$last.col
+                coordinatesObject$weight.color <- processed.brush$weight.color
+            }
+            if (isolate(input$brush.choice) == "Refinement")
+            {
+                coordinatesObject$refine.start <- processed.brush$first.row
+                coordinatesObject$refine.stop <- processed.brush$last.row
+            }
+            
+            
         }
-        orderObj <- buildOrderObjectShiny(input.GCH, input.HCG, method = input$method,
-                                          weight.start = processed.brush$first.col, 
-                                          weight.stop = processed.brush$last.col, 
-                                          weight.color = processed.brush$weight.color)
-        refineOrderShiny(orderObj,
-                         refine.method = input$refineMethod)
-        makePlot(orderObj)
+    })
+    
+    # now construct the orderObject
+    orderObject <- reactiveValues(toClust = 0, order1 = 0)
+    observe({
+        tempObj <- buildOrderObjectShiny(input.GCH(), input.HCG(), input$method, coordinatesObject)
+        orderObject$order1 <- tempObj$order1
+        orderObject$toClust <- tempObj$toClust
+        })
+    
+    # handle refinement updates
+    observe({
+        if (isolate(coordinatesObject$refine.start) != 0 & isolate(coordinatesObject$refine.stop) != 0)
+            orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
+                                                   refine.method = isolate(input$refineMethod), coordinatesObject)
+    })
+    
+    output$seqPlot <- renderPlot({ 
+        makePlot(orderObject, isolate(coordinatesObject) )
         })
     
     output$down <- downloadHandler(
@@ -63,55 +102,15 @@ server <- function(input, output) {
         content = function(file){
             if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svg(file)
-            
-            input.GCH <- day7$gch
-            input.HCG <- day7$hcg
-            
-            if (!is.null(input$gch.file) & !is.null(input$hcg.file))
-            {
-                input.GCH <- read.table(input$gch.file$datapath, header=T, row.names = 1, stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-                input.HCG <- read.table(input$hcg.file$datapath, header=T, row.names = 1, stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-                
-            } 
-        
-            processed.brush <- list(first.row = 0, last.row = 0, first.col = 0, last.col = 0, weight.color = "red")
-            if (!is.null(input$plot_brush))
-            {
-                n <- nrow(input.GCH)
-                m <- ncol(input.GCH)
-                processed.brush <- handleBrushCoordinates(input$plot_brush, input$brush.choice, n, m)
-            }
-            
-            orderObj <- buildOrderObjectShiny(input.GCH, input.HCG, method = input$method,
-                                              weight.start = processed.brush$first.col, 
-                                              weight.stop = processed.brush$last.col, 
-                                              weight.color = processed.brush$weight.color)
-            refineOrderShiny(orderObj,
-                             refine.method = input$refineMethod)
-            makePlot(orderObj, plotFAST = FALSE)
+            isolate(print("download handler"))
+            makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
             dev.off()
         }
     )
     
     output$info <- renderText({
-        input.GCH <- day7$gch
-        
-        if (!is.null(input$gch.file) & !is.null(input$hcg.file))
-        {
-            input.GCH <- read.table(input$gch.file$datapath, header=T, row.names = 1, stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-            
-        }
-        processed.brush <- list(first.row = 0, last.row = 0, first.col = 0, last.col = 0)
-        
-        if (!is.null(input$plot_brush))
-        {
-            n <- nrow(input.GCH)
-            m <- ncol(input.GCH)
-            processed.brush <- handleBrushCoordinates(input$plot_brush, input$brush.choice, n, m)
-        }
-        
-        paste0("Refinement selection: ", refine.start.g, " ", refine.stop.g, "\n",
-               "Weighting selection: ", weight.start.g, " ", weight.stop.g)
+        paste0("Refinement selection: ", coordinatesObject$refine.start, " ", coordinatesObject$refine.stop, "\n",
+               "Weighting selection: ", coordinatesObject$weight.start, " ", coordinatesObject$weight.stop)
     })
 }
 
