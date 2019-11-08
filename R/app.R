@@ -1,4 +1,4 @@
-
+options(shiny.maxRequestSize = 10000*1024^2) 
 ui <- fluidPage(
 
     # Application title
