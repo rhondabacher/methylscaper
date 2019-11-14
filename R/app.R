@@ -54,6 +54,7 @@ server <- function(input, output) {
     observe({
         if (!is.null(input$plot_brush))
         {
+            print("updating coordinatesObject")
             n <- nrow(input.GCH())
             m <- ncol(input.GCH())
             processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
@@ -79,6 +80,7 @@ server <- function(input, output) {
     # now construct the orderObject
     orderObject <- reactiveValues(toClust = 0, order1 = 0)
     observe({
+        print("construction orderObjct")
         tempObj <- buildOrderObjectShiny(input.GCH(), input.HCG(), input$method, coordinatesObject)
         orderObject$order1 <- tempObj$order1
         orderObject$toClust <- tempObj$toClust
@@ -86,13 +88,24 @@ server <- function(input, output) {
     
     # handle refinement updates
     observe({
-        if (isolate(coordinatesObject$refine.start) != 0 & isolate(coordinatesObject$refine.stop) != 0)
+        print("starting to handle refinement")
+        s <- coordinatesObject$refine.start
+        f <-coordinatesObject$refine.stop
+        if (s != 0 & f != 0)
+        {
             orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
-                                                   refine.method = isolate(input$refineMethod), coordinatesObject)
+                                                   refine.method = isolate(input$refineMethod), 
+                                                   coordinatesObject)
+            print("orderObject updated with refinement")
+        }
     })
     
     output$seqPlot <- renderPlot({ 
-        makePlot(orderObject, isolate(coordinatesObject) )
+        print("about to make plot")
+        obj <- orderObject
+        # print(str(as.list(isolate(coordinatesObject))))
+        makePlot(obj,reactiveValuesToList(isolate(coordinatesObject)))
+        print("done making plot")
         })
     
     output$down <- downloadHandler(
