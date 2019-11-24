@@ -21,7 +21,8 @@ ui <- fluidPage(
            plotOutput(outputId = "seqPlot",
                       brush = "plot_brush"),
            selectInput("filetype", label = "File type", choices = c("PNG", "SVG")),
-           downloadButton("down", label = "Download the plot")
+           downloadButton("down", label = "Download the plot"),
+           downloadButton("down_log", label = "Download changes log")
           
         )
     )
@@ -29,22 +30,20 @@ ui <- fluidPage(
 
 server <- function(input, output) {
     
-    input.GCH <- reactive({
-        if (!is.null(input$gch.file) & !is.null(input$hcg.file))
-        {
-            input.GCH <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
-                                    stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        }
-        else day7$gch
-    })
-    input.HCG <- reactive({
-        if (!is.null(input$gch.file) & !is.null(input$hcg.file))
-        {
-            read.table(input$hcg.file$datapath, header=T, row.names = 1, 
-                                    stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        }
-        else day7$hcg
-    })
+    actionsLog <- reactiveValues(log = c("Loading Day7 data"))
+    input.Data <- reactiveValues(gch = day7$gch, hcg = day7$hcg)
+    
+    observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
+    {
+        input.Data$gch <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
+                                 stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+        input.Data$hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1, 
+                                     stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+        isolate({
+            actionsLog$log <- c(actionsLog$log, paste("Loading GCH file:", input$gch.file$name))
+            actionsLog$log <- c(actionsLog$log, paste("Loading HCG file:", input$hcg.file$name))
+        })
+    }})
     
     # this object keeps track of the coordinates for refinement and weighting
     coordinatesObject <- reactiveValues(refine.start = 0, refine.stop = 0, 
@@ -53,16 +52,20 @@ server <- function(input, output) {
     orderObject <- reactiveValues(toClust = 0, order1 = 0)
     observe({
         print("construction orderObjct")
-        tempObj <- buildOrderObjectShiny(input.GCH(), input.HCG(), input$method, coordinatesObject)
+        tempObj <- buildOrderObjectShiny(input.Data$gch, input.Data$hcg, input$method, coordinatesObject)
         orderObject$order1 <- tempObj$order1
         orderObject$toClust <- tempObj$toClust
+        isolate({
+            actionsLog$log <- c(actionsLog$log, 
+                                paste("Ordering with", input$method))
+            })
         })
     
     # this handles updates to coordinatesObject
     observeEvent(input$plot_brush, {
             print("updating coordinatesObject")
-            n <- nrow(input.GCH())
-            m <- ncol(input.GCH())
+            n <- nrow(input.Data$gch)
+            m <- ncol(input.Data$hcg)
             processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
             
             if (isolate(input$brush.choice) == "Weighting")
@@ -72,11 +75,23 @@ server <- function(input, output) {
                 coordinatesObject$weight.start <- processed.brush$first.col
                 coordinatesObject$weight.stop <- processed.brush$last.col
                 coordinatesObject$weight.color <- processed.brush$weight.color
+                isolate({
+                    actionsLog$log <- c(actionsLog$log, 
+                                        paste("Weighting", processed.brush$weight.color, "columns", 
+                                               processed.brush$first.col, "to",
+                                              processed.brush$last.col))
+                })
             }
             if (isolate(input$brush.choice) == "Refinement")
             {
                 coordinatesObject$refine.start <- processed.brush$first.row
                 coordinatesObject$refine.stop <- processed.brush$last.row
+                isolate({
+                    actionsLog$log <- c(actionsLog$log, 
+                                        paste("Refining rows", 
+                                              processed.brush$first.row, "to",
+                                              processed.brush$last.row))
+                }) 
             }
             
             print("starting to handle refinement")
@@ -88,6 +103,10 @@ server <- function(input, output) {
                                                        refine.method = isolate(input$refineMethod), 
                                                        coordinatesObject)
                 print("orderObject updated with refinement")
+                isolate({
+                    actionsLog$log <- c(actionsLog$log, 
+                                        paste("Applying refinement with", input$refineMethod))
+                }) 
             }
     })
     
@@ -103,14 +122,25 @@ server <- function(input, output) {
     
     output$down <- downloadHandler(
         filename = function(){
-            "test.png"
+            "plot.png"
         },
         content = function(file){
             if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svg(file)
-            isolate(print("download handler"))
+            print("download handler")
             makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
             dev.off()
+        }
+    )
+    
+    output$down_log <- downloadHandler(
+        filename = function(){
+            "changes.log"
+        },
+        content = function(file){
+            fileConn <- file(file)
+            writeLines(actionsLog$log, fileConn)
+            close(fileConn)
         }
     )
     
