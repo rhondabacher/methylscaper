@@ -1,4 +1,4 @@
-options(shiny.maxRequestSize = 10000*1024^2) 
+
 ui <- fluidPage(
 
     # Application title
@@ -160,4 +160,7 @@ server <- function(input, output) {
 # Run the application 
 #' @import shiny
 #' @export
-methylScaper <- function() {shinyApp(ui = ui, server = server)}
+methylScaper <- function() {
+ options(shiny.maxRequestSize = 10000*1024^2)
+ shinyApp(ui = ui, server = server)
+}
