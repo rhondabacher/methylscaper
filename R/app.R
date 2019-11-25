@@ -18,14 +18,17 @@ ui <- fluidPage(
         ),
 
         mainPanel(
-           plotOutput(outputId = "seqPlot",
-                      brush = "plot_brush"),
-           selectInput("filetype", label = "File type", choices = c("PNG", "SVG")),
-           downloadButton("down", label = "Download the plot"),
-           downloadButton("down_log", label = "Download changes log")
+         fluidRow(column(width = 8,
+                plotOutput(outputId = "seqPlot",
+                           brush = "plot_brush",  width = "100%")),
+                 column(width = 2, align='left',       
+                selectInput("filetype", label = "File type", choices = c("PNG", "SVG")),
+                downloadButton("down", label = "Download the plot"),
+                downloadButton("down_log", label = "Download changes log"))
           
         )
-    )
+       )
+  )
 )
 
 server <- function(input, output) {
@@ -118,7 +121,7 @@ server <- function(input, output) {
         # print(str(as.list(isolate(coordinatesObject))))
         makePlot(obj,isolate(coordinatesObject))
         print("done making plot")
-        })
+        }, height=600, width=600)
     
     output$down <- downloadHandler(
         filename = function(){
