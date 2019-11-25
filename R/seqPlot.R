@@ -7,7 +7,7 @@
   
   plotSequence <- function(orderObject, plotFAST=TRUE,
                            blankWidth=150, Title="",
-                           drawLine=F, drawKey=T) {
+                           drawLine=T, drawKey=T) {
     # Start with yellow at top as the default:
     toClust <- orderObject$toClust
     order1 <- orderObject$order1
@@ -61,7 +61,7 @@
     # Just drawing a straight DNA line:
     if (drawLine==TRUE) {
       par(xpd=NA)
-      top1 <- 1.04
+      top1 <- 1.01
       segments(0,top1,plot1,top1, lwd=1)
       segments(plot2,top1, 1,top1, lwd=1)
     } 
