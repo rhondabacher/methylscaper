@@ -10,6 +10,7 @@
 
 # returns an initial (unrefined) ordering and to 'toClust' object
 #' @import seriation
+#' @importFrom aroma.light wpca
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL, 
                          weightFeature="red", reverse=F){
   
@@ -44,28 +45,43 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
   
   ## Clustering:  
   toClust <- cbind(input.GCH, input.HCG)
+  weighted = FALSE
   
   # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
   if (!is.null(weightStart) & !is.null(weightEnd)) {
+    weighted = TRUE
     if (weightFeature == "red") {
       FEATURE = 3
-      varWeight <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+      weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
     }
     if (weightFeature == "yellow") {
       FEATURE = -3
-      varWeight <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+      weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
     }
-    toClust <- cbind(varWeight, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
+    weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
+    weightVector <- abs(weightVector) # weights should only be positive
+    # weightMat <- diag(weightVector) # creates the diagonal matrix of weights
+    # toClust <- cbind(weightVector, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
+    # toClust <- weightMat %*% cbind(input.GCH, input.HCG)
   }
   
   
   ## PCA should be the default method:
   if (Method=="PCA") {
-    col.centered <- apply(toClust, 2, function(x) x - mean(x))
-    try1 <- svd(col.centered, nu = 1, nv = 0)
-    order1 <- order(try1$u[,1])
+    if (weighted)
+    {
+      try1 <- aroma.light::wpca(x = toClust, w = weightVector, center = TRUE)
+      order1 <- order(try1$pc[,1])
+    }
+    else
+    {
+      col.centered <- apply(toClust, 2, function(x) x - mean(x))
+      try1 <- svd(col.centered, nu = 1, nv = 0)
+      order1 <- order(try1$u[,1])
+    }
     
   } else{ 
+    # How do we incorprate the weights here (i.e., when non-PCA methods are used)?
     distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
     # Allow drop down methods to be: ARSA.
     order1 <- seriation::seriate(distMat, method=Method)
