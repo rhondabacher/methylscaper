@@ -27,7 +27,7 @@
     blankCOLS <- matrix(rep(0, nrow(input.HCG)*blankWidth), nrow=nrow(input.HCG), ncol=blankWidth)
     toPlot.fix.og <- cbind(input.HCG.fix, blankCOLS, input.GCH.fix)
     
-    sites = which(abs(toPlot.fix.og[1,]) == 4 | abs(toPlot.fix.og[1,]) == 1)
+    sites = which(apply(abs(toPlot.fix.og), 2, function(x) any(x %in% c(4, 1))))
     sites.scale <- sites / ncol(toPlot.fix.og) # relative to the 'plot'
     
     
