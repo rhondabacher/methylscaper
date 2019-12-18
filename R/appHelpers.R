@@ -24,7 +24,6 @@ makePlot <- function(orderObject, coordinatesObject, ...)
   plotSequence(orderObject, ...)
   if (coordinatesObject$refine.start != 0 & coordinatesObject$refine.stop != 0) # draw the horizontal lines
   {
-    print("converting raw coordinates for horizontal lines")
     n <- nrow(orderObject$toClust)
     ymin <- (((140:1)[coordinatesObject$refine.start] / n * (n - 10)) + 10) / n # convert back to raw coordinates
     ymax <- (((140:1)[coordinatesObject$refine.stop] / n * (n - 10)) + 10) / n
@@ -58,7 +57,6 @@ handleBrushCoordinates <- function(plot_brush, n, m){
   if(first.row <= 2) first.row <- 1
   if (last.row >= n - 1) last.row <- n
   
-  print("done creating rows")
   
   first.col <- round(plot_brush$xmin, 2)
   last.col <- round(plot_brush$xmax, 2)

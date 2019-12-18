@@ -54,7 +54,6 @@ server <- function(input, output) {
     # now construct the orderObject
     orderObject <- reactiveValues(toClust = 0, order1 = 0)
     observe({
-        print("construction orderObjct")
         tempObj <- buildOrderObjectShiny(input.Data$gch, input.Data$hcg, input$method, coordinatesObject)
         orderObject$order1 <- tempObj$order1
         orderObject$toClust <- tempObj$toClust
@@ -66,7 +65,6 @@ server <- function(input, output) {
     
     # this handles updates to coordinatesObject
     observeEvent(input$plot_brush, {
-            print("updating coordinatesObject")
             n <- nrow(input.Data$gch)
             m <- ncol(input.Data$hcg)
             processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
@@ -97,7 +95,6 @@ server <- function(input, output) {
                 }) 
             }
             
-            print("starting to handle refinement")
             s <- coordinatesObject$refine.start
             f <-coordinatesObject$refine.stop
             if (s != 0 & f != 0)
@@ -105,7 +102,6 @@ server <- function(input, output) {
                 orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
                                                        refine.method = isolate(input$refineMethod), 
                                                        coordinatesObject)
-                print("orderObject updated with refinement")
                 isolate({
                     actionsLog$log <- c(actionsLog$log, 
                                         paste("Applying refinement with", input$refineMethod))
@@ -116,11 +112,9 @@ server <- function(input, output) {
 
     
     output$seqPlot <- renderPlot({ 
-        print("about to make plot")
         obj <- orderObject
         # print(str(as.list(isolate(coordinatesObject))))
         makePlot(obj,isolate(coordinatesObject))
-        print("done making plot")
         }, height=600, width=600)
     
     output$down <- downloadHandler(
@@ -132,7 +126,6 @@ server <- function(input, output) {
             if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svg(file)
           
-            print("download handler")
             makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
             dev.off()
         }
