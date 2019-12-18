@@ -125,11 +125,13 @@ server <- function(input, output) {
     
     output$down <- downloadHandler(
         filename = function(){
-            "plot.png"
+          if (input$filetype == "PNG") "plot.png"
+          if (input$filetype == "SVG") "plot.svg"
         },
         content = function(file){
             if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svg(file)
+          
             print("download handler")
             makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
             dev.off()
@@ -161,6 +163,5 @@ server <- function(input, output) {
 #' @import shiny
 #' @export
 methylScaper <- function() {
- options(shiny.maxRequestSize = 10000*1024^2)
- shinyApp(ui = ui, server = server)
-}
+	options(shiny.maxRequestSize = 10000*1024^2) 
+	shinyApp(ui = ui, server = server)}

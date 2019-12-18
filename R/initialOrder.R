@@ -81,7 +81,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     }
     
   } else{ 
-    # How do we incorprate the weights here (i.e., when non-PCA methods are used)?
+    # Look into weighted distance matrices
     distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
     # Allow drop down methods to be: ARSA.
     order1 <- seriation::seriate(distMat, method=Method)
