@@ -10,7 +10,6 @@
 
 # returns an initial (unrefined) ordering and to 'toClust' object
 #' @import seriation
-#' @importFrom aroma.light wpca
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL, 
                          weightFeature="red", reverse=F){
   
@@ -70,8 +69,16 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
   if (Method=="PCA") {
     if (weighted)
     {
-      try1 <- aroma.light::wpca(x = toClust, w = weightVector, center = TRUE)
-      order1 <- order(try1$pc[,1])
+      w <- weightVector / sum(weightVector)
+      x <- toClust
+      weighted.mean <- as.vector(w %*% x)
+      x.centered <- x
+      for (k in 1:ncol(x))
+      {
+        x.centered[,k] <- x.centered[,k] - weighted.mean[k]
+      }
+      svd.out <- svd(x.centered, nu=1, nv=0)
+      order1 <- order(svd.out$u[,1])
     }
     else
     {

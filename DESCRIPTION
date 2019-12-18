@@ -9,6 +9,5 @@ Encoding: UTF-8
 LazyData: true
 Imports:
   shiny,
-  seriation,
-  aroma.light
+  seriation
 RoxygenNote: 6.1.1
