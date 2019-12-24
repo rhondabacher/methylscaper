@@ -14,6 +14,7 @@ ui <- fluidPage(
                         choices = c("PCA", "HC_average")),
             radioButtons("brush.choice", label = "Brushing for:",
                                choices = c("Refinement", "Weighting"), selected = "Weighting"),
+            actionButton("force.reverse", label = "Force Reverse"),
              verbatimTextOutput("info")
         ),
 
@@ -85,29 +86,35 @@ server <- function(input, output) {
             }
             if (isolate(input$brush.choice) == "Refinement")
             {
-                coordinatesObject$refine.start <- processed.brush$first.row
-                coordinatesObject$refine.stop <- processed.brush$last.row
-                isolate({
-                    actionsLog$log <- c(actionsLog$log, 
-                                        paste("Refining rows", 
-                                              processed.brush$first.row, "to",
-                                              processed.brush$last.row))
-                }) 
-                s <- coordinatesObject$refine.start
-                f <-coordinatesObject$refine.stop
+                s <- processed.brush$first.row
+                f <- processed.brush$last.row
                 if (s != f)
                 {
+                  coordinatesObject$refine.start <- s
+                  coordinatesObject$refine.stop <- f
                     orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
                                                            refine.method = isolate(input$refineMethod), 
                                                            coordinatesObject)
                     isolate({
                         actionsLog$log <- c(actionsLog$log, 
-                                            paste("Applying refinement with", input$refineMethod))
-                    }) 
+                                           paste("Refining rows", 
+                                                 processed.brush$first.row, "to",
+                                                 processed.brush$last.row))
+                        actionsLog$log <- c(actionsLog$log, 
+                                            paste("Applying refinement with", input$refineMethod)) 
+                    })
                 }
             }
             
             
+    })
+    
+    observeEvent( input$force.reverse, {
+      isolate({
+        if (coordinatesObject$refine.start == coordinatesObject$refine.stop) orderObject$order1 <- rev(orderObject$order1)
+        else orderObject$order1[coordinatesObject$refine.start : coordinatesObject$refine.stop] <-
+              orderObject$order1[coordinatesObject$refine.stop : coordinatesObject$refine.start]
+      })
     })
     
 
