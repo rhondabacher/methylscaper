@@ -57,6 +57,12 @@ handleBrushCoordinates <- function(plot_brush, n, m){
   if(first.row <= 2) first.row <- 1
   if (last.row >= n - 1) last.row <- n
   
+  if (first.row >= n - 1 | last.row <= 2)
+  {
+    first.row <- 0
+    last.row <- 0
+  }
+  
   
   first.col <- round(plot_brush$xmin, 2)
   last.col <- round(plot_brush$xmax, 2)
@@ -90,8 +96,8 @@ handleBrushCoordinates <- function(plot_brush, n, m){
   if (first.col <= 2) first.col <- 1
   if (last.col >= (m - 2)) last.col <- m
   
-  return(list(first.row = (140:1)[first.row],
-              last.row = (140:1)[last.row],
+  return(list(first.row = ifelse(first.row == 0, 0, (140:1)[first.row]),
+              last.row = ifelse(last.row == 0, 0, (140:1)[last.row]),
               first.col = first.col,
               last.col = last.col,
               weight.color = weight.color))

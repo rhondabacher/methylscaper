@@ -93,20 +93,21 @@ server <- function(input, output) {
                                               processed.brush$first.row, "to",
                                               processed.brush$last.row))
                 }) 
+                s <- coordinatesObject$refine.start
+                f <-coordinatesObject$refine.stop
+                if (s != f)
+                {
+                    orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
+                                                           refine.method = isolate(input$refineMethod), 
+                                                           coordinatesObject)
+                    isolate({
+                        actionsLog$log <- c(actionsLog$log, 
+                                            paste("Applying refinement with", input$refineMethod))
+                    }) 
+                }
             }
             
-            s <- coordinatesObject$refine.start
-            f <-coordinatesObject$refine.stop
-            if (s != 0 & f != 0)
-            {
-                orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
-                                                       refine.method = isolate(input$refineMethod), 
-                                                       coordinatesObject)
-                isolate({
-                    actionsLog$log <- c(actionsLog$log, 
-                                        paste("Applying refinement with", input$refineMethod))
-                }) 
-            }
+            
     })
     
 
