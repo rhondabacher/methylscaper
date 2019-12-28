@@ -39,14 +39,20 @@ server <- function(input, output) {
     
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
-        input.Data$gch <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
+        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
                                  stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        input.Data$hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1, 
+        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1, 
                                      stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        isolate({
+        if (nrow(temp.gch) == nrow(temp.hcg))
+        {
+          input.Data$gch <- temp.gch
+          input.Data$hcg <- temp.hcg
+          isolate({
             actionsLog$log <- c(actionsLog$log, paste("Loading GCH file:", input$gch.file$name))
             actionsLog$log <- c(actionsLog$log, paste("Loading HCG file:", input$hcg.file$name))
-        })
+          })
+        }
+        
     }})
     
     # this object keeps track of the coordinates for refinement and weighting
@@ -111,9 +117,20 @@ server <- function(input, output) {
     
     observeEvent( input$force.reverse, {
       isolate({
-        if (coordinatesObject$refine.start == coordinatesObject$refine.stop) orderObject$order1 <- rev(orderObject$order1)
-        else orderObject$order1[coordinatesObject$refine.start : coordinatesObject$refine.stop] <-
+        if (coordinatesObject$refine.start == coordinatesObject$refine.stop) 
+          {
+            orderObject$order1 <- rev(orderObject$order1)
+            actionsLog$log <- c(actionsLog$log, paste("Reversing rows 1 to", nrow(input.Data$gch)))
+          }
+        else 
+          {
+              orderObject$order1[coordinatesObject$refine.start : coordinatesObject$refine.stop] <-
               orderObject$order1[coordinatesObject$refine.stop : coordinatesObject$refine.start]
+              actionsLog$log <- c(actionsLog$log, 
+                                  paste("Reversing rows", coordinatesObject$refine.start, 
+                                        "to", coordinatesObject$refine.stop))
+              
+        }
       })
     })
     
