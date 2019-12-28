@@ -18,7 +18,7 @@ refineOrderShiny <- function(orderObject, refine.method, coordinatesObject)
   refineFunction(orderObject, coordinatesObject$refine.start, coordinatesObject$refine.stop, refine.method)
 }
 
-makePlot <- function(orderObject, coordinatesObject, ...)
+makePlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
 {
  
   plotSequence(orderObject, ...)
@@ -27,8 +27,11 @@ makePlot <- function(orderObject, coordinatesObject, ...)
     n <- nrow(orderObject$toClust)
     ymin <- (((140:1)[coordinatesObject$refine.start] / n * (n - 10)) + 10) / n # convert back to raw coordinates
     ymax <- (((140:1)[coordinatesObject$refine.stop] / n * (n - 10)) + 10) / n
-    abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
-    abline(b = 0, a = ymin, col = "blue", lwd = 2.5)
+    if (drawLines)
+    {
+      abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
+      abline(b = 0, a = ymin, col = "blue", lwd = 2.5)
+    }
     
   }
   if (coordinatesObject$weight.start != 0 & coordinatesObject$weight.stop != 0) # draw the vertical lines
@@ -41,8 +44,11 @@ makePlot <- function(orderObject, coordinatesObject, ...)
       xmin <- xmin + 0.55
       xmax <- xmax + 0.55
     }
-    abline(v = xmin, col = "green", lwd = 2.5)
-    abline(v = xmax, col = "green", lwd = 2.5)
+    if (drawLines)
+    {
+      abline(v = xmin, col = "green", lwd = 2.5)
+      abline(v = xmax, col = "green", lwd = 2.5)
+    }
   }
 }
 

@@ -23,7 +23,7 @@ ui <- fluidPage(
                 plotOutput(outputId = "seqPlot",
                            brush = "plot_brush",  width = "100%")),
                  column(width = 2, align='left',       
-                selectInput("filetype", label = "File type", choices = c("PNG", "SVG")),
+                selectInput("filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
                 downloadButton("down", label = "Download the plot"),
                 downloadButton("down_log", label = "Download changes log"))
           
@@ -127,14 +127,16 @@ server <- function(input, output) {
     
     output$down <- downloadHandler(
         filename = function(){
-          if (input$filetype == "PNG") "plot.png"
-          if (input$filetype == "SVG") "plot.svg"
+          if (input$filetype == "PNG") return("plot.png")
+          if (input$filetype == "SVG") return("plot.svg")
+          if (input$filetype == "PDF") return("plot.pdf")
         },
         content = function(file){
             if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svg(file)
+            if (input$filetype == "PDF") pdf(file)
           
-            makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
+            makePlot(orderObject, coordinatesObject, drawLines = FALSE, plotFAST = FALSE)
             dev.off()
         }
     )
