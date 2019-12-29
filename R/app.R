@@ -45,6 +45,10 @@ server <- function(input, output) {
                                      stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
         if (nrow(temp.gch) == nrow(temp.hcg))
         {
+          coordinatesObject$refine.start <- 0
+          coordinatesObject$refine.stop <- 0
+          coordinatesObject$weight.start <- 0
+          coordinatesObject$weight.stop <- 0
           input.Data$gch <- temp.gch
           input.Data$hcg <- temp.hcg
           isolate({
