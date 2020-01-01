@@ -184,7 +184,13 @@ server <- function(input, output) {
 
 
 # Run the application 
+#' methylScaper
+#' 
+#' Runs the methylScaper Shiny app.
+#' 
 #' @import shiny
+#' @importFrom grDevices dev.off pdf png svg
+#' @importFrom utils read.table
 #' @export
 methylScaper <- function() {
 	options(shiny.maxRequestSize = 10000*1024^2) 

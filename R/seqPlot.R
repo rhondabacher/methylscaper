@@ -4,8 +4,21 @@
   ## Title: Title of plot
   ## plotFAST: fast renders a low quality version. for high quality publication image set FALSE.
   ## drawKey: whether to draw a key representing a nucleosome of 147bp at the bottom.
-  
-  plotSequence <- function(orderObject, plotFAST=TRUE,
+
+#' Generate Sequence Plot
+#' 
+#' Generates an ordered sequence plot of methylation data.
+#' 
+#' @param orderObject An object of class \code{orderObject} that contains the processed data and the ordering.
+#' @param plotFAST Logical, setting to FALSE will generate a higher quality plot.
+#' @param blankWidth Indicates the amount of space to leave between the two plots
+#' @param Title The title of the plot.
+#' @param drawLine Logical, indicates whether to draw a line above the CG/GC sites.
+#' @param drawKey Logical, indicates whether to draw a key representing a 147bp nucleosome at the bottom of the plot.
+#' 
+#' @importFrom graphics abline image par axis segments
+#' @export
+plotSequence <- function(orderObject, plotFAST=TRUE,
                            blankWidth=150, Title="",
                            drawLine=T, drawKey=T) {
     # Start with yellow at top as the default:
