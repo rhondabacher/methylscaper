@@ -1,8 +1,9 @@
 
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("methylScaper"),
+ui <- navbarPage("methylScaper",
+                 tabPanel("Alignment",
+                          fileInput("fastq.file", label = "FASTQ File"),
+                          fileInput("ref.file", label = "Reference File")),
+                 tabPanel("Sequence Plot",
 
     sidebarLayout(
         sidebarPanel(
@@ -29,7 +30,7 @@ ui <- fluidPage(
           
         )
        )
-  )
+  ))
 )
 
 server <- function(input, output) {
