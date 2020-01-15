@@ -2,7 +2,9 @@
 ui <- navbarPage("methylScaper",
                  tabPanel("Alignment",
                           fileInput("fastq.file", label = "FASTQ File"),
-                          fileInput("ref.file", label = "Reference File")),
+                          fileInput("ref.file", label = "Reference File"),
+                          textInput("gch.file.name", label = "GCH File Name"),
+                          textInput("hcg.file.name", label = "HCG File Name")),
                  tabPanel("Sequence Plot",
 
     sidebarLayout(
@@ -34,6 +36,22 @@ ui <- navbarPage("methylScaper",
 )
 
 server <- function(input, output) {
+  
+  
+    # alignment handling
+  
+    observe({ if (!is.null(input$fastq.file) & !is.null(input$ref.file) & 
+                  !is.null(input$gch.file.name) & !is.null(input$hcg.file.name))
+      {
+        runAlign(seq1.file = input$ref.file, seq2.file= input$fastq.file, 
+                 gch.file.name = input$ghc.file.name, hcg.file.name = input$hcg.file.name)
+      }
+      
+    })
+  
+  
+  
+  
     
     actionsLog <- reactiveValues(log = c("Loading Day7 data"))
     input.Data <- reactiveValues(gch = day7$gch, hcg = day7$hcg)
@@ -154,8 +172,8 @@ server <- function(input, output) {
           if (input$filetype == "PDF") return("plot.pdf")
         },
         content = function(file){
-            if (input$filetype == "PNG") png(file)
-            if (input$filetype == "SVG") svg(file)
+            if (input$filetype == "PNG") png(file, res=300)
+            if (input$filetype == "SVG") svg(file, res=300)
             if (input$filetype == "PDF") pdf(file)
           
             makePlot(orderObject, coordinatesObject, drawLines = FALSE, plotFAST = FALSE)
@@ -191,7 +209,7 @@ server <- function(input, output) {
 #' 
 #' @import shiny
 #' @importFrom grDevices dev.off pdf png svg
-#' @importFrom utils read.table
+#' @importFrom utils read.table write.table
 #' @export
 methylScaper <- function() {
 	options(shiny.maxRequestSize = 10000*1024^2) 
