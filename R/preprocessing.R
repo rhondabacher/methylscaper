@@ -47,6 +47,7 @@ mapseq <- function(i, sites) {
 }
 
 
+#' @export
 runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multicoreParam = NULL)
 {
   seq1 <- read.fasta(seq1.file)
