@@ -47,7 +47,7 @@ mapseq <- function(i, sites) {
 }
 
 
-runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name)
+runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multicoreParam = NULL)
 {
   seq1 <- read.fasta(seq1.file)
   seq2 <- read.fasta(seq2.file)
@@ -58,7 +58,8 @@ runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name)
   penalty.mat[penalty.mat==0] <- -2
   rownames(penalty.mat) <- colnames(penalty.mat) <- DNA_ALPHABET[1:4]
   
-  alignedseq <- bplapply(1:length(seq2), seqalign) # this is an apply function to handle parallel processing
+  if (if.null(multicoreParam)) alignedseq <- bplapply(1:length(seq2), seqalign) # this is an apply function to handle parallel processing
+  else alignedseq <- bplapply(1:length(seq2), seqalign, BPPARAM = multicoreParam)
   names(alignedseq) <- names(seq2)
   
   # Only keep the 'good' alignments
@@ -71,8 +72,16 @@ runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name)
   CGsites <- gregexpr("CG",c2s(seq1string),fixed=TRUE)[[1]]
   CGsites <- CGsites[which(s2c(paste(seq1string))[CGsites-1] != "G")]
   
-  gcmap <- bplapply(alignedseq, mapseq, sites=GCsites)
-  cgmap <- bplapply(alignedseq, mapseq, sites=CGsites)
+  if (is.null(multicoreParam))
+  {
+    gcmap <- bplapply(alignedseq, mapseq, sites=GCsites)
+    cgmap <- bplapply(alignedseq, mapseq, sites=CGsites)
+  }
+  else
+  {
+    gcmap <- bplapply(alignedseq, mapseq, sites=GCsites, BPPARAM = multicoreParam)
+    cgmap <- bplapply(alignedseq, mapseq, sites=CGsites, BPPARAM = multicoreParam)
+  }
   
   saveCG <- data.matrix(do.call(rbind, lapply(cgmap, function(x) (x))))
   saveCG <- cbind(rownames(saveCG), saveCG)
