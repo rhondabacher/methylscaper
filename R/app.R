@@ -41,8 +41,19 @@ server <- function(input, output) {
   
     # alignment handling
     observeEvent(input$run.align, { 
-        runAlign(seq1.file = input$ref.file$datapath, seq2.file= input$fastq.file$datapath, 
-                 gch.file.name = input$gch.file.name, hcg.file.name = input$hcg.file.name)
+        ref <- read.fasta(input$ref.file$datapath)
+        fastq <- read.fasta(input$fastq.file$datapath)
+        
+        progress <- Progress$new()
+        progress$set(message = "Beginning alignment", value = 0)
+        on.exit(progress$close())
+        
+        updateProgress <- function(value = NULL, message = NULL, detail = NULL) { 
+          progress$set(value = value, message = message, detail = detail)}
+        
+        align.out <- runAlign(ref, fastq, fastq.subset = (1:100), updateProgress = updateProgress)
+        write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
+        write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")
     })
   
   
