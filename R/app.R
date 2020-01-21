@@ -4,7 +4,8 @@ ui <- navbarPage("methylScaper",
                           fileInput("fastq.file", label = "FASTQ File"),
                           fileInput("ref.file", label = "Reference File"),
                           textInput("gch.file.name", label = "GCH File Name"),
-                          textInput("hcg.file.name", label = "HCG File Name")),
+                          textInput("hcg.file.name", label = "HCG File Name"),
+                          actionButton("run.align", label = "Run Alignment")),
                  tabPanel("Sequence Plot",
 
     sidebarLayout(
@@ -39,14 +40,9 @@ server <- function(input, output) {
   
   
     # alignment handling
-  
-    observe({ if (!is.null(input$fastq.file) & !is.null(input$ref.file) & 
-                  !is.null(input$gch.file.name) & !is.null(input$hcg.file.name))
-      {
-        runAlign(seq1.file = input$ref.file, seq2.file= input$fastq.file, 
-                 gch.file.name = input$ghc.file.name, hcg.file.name = input$hcg.file.name)
-      }
-      
+    observeEvent(input$run.align, { 
+        runAlign(seq1.file = input$ref.file$datapath, seq2.file= input$fastq.file$datapath, 
+                 gch.file.name = input$gch.file.name, hcg.file.name = input$hcg.file.name)
     })
   
   

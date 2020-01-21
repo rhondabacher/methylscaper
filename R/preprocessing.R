@@ -1,4 +1,4 @@
-seqalign <- function(i) {
+seqalign <- function(i, seq2, seq1string) {
   seq2string <- DNAString(toupper(c2s(seq2[[i]])))
   
   align.bb <- pairwiseAlignment(reverseComplement(seq1string), reverseComplement(seq2string),type="global-local", gapOpening=8)
@@ -46,12 +46,14 @@ mapseq <- function(i, sites) {
   return(editseq)
 }
 
-
+#' @import Biostrings
+#' @import seqinr
+#' @import BiocParallel 
 #' @export
 runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multicoreParam = NULL)
 {
   seq1 <- read.fasta(seq1.file)
-  seq2 <- read.fasta(seq2.file)
+  seq2 <- read.fasta(seq2.file)[1:100]
   seq1string <- DNAString(toupper(c2s(seq1[[1]])))
   
   penalty.mat <- matrix(0,length(DNA_ALPHABET[1:4]),length(DNA_ALPHABET[1:4]))
@@ -59,12 +61,13 @@ runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multico
   penalty.mat[penalty.mat==0] <- -2
   rownames(penalty.mat) <- colnames(penalty.mat) <- DNA_ALPHABET[1:4]
   
-  if (if.null(multicoreParam)) alignedseq <- bplapply(1:length(seq2), seqalign) # this is an apply function to handle parallel processing
-  else alignedseq <- bplapply(1:length(seq2), seqalign, BPPARAM = multicoreParam)
+  if (is.null(multicoreParam)) alignedseq <- bplapply(1:length(seq2), function(i) {seqalign(i, seq2, seq1string)}) # this is an apply function to handle parallel processing
+  else alignedseq <- bplapply(1:length(seq2), function(i) seqalign(i, seq2, seq1string), BPPARAM = multicoreParam)
   names(alignedseq) <- names(seq2)
   
   # Only keep the 'good' alignments
   alignedseq <- alignedseq[which(!sapply(alignedseq, is.null))]
+  
   
   # We want to avoid GCG sites:
   GCsites <- gregexpr("GC",c2s(seq1string),fixed=TRUE)[[1]] + 1
@@ -72,6 +75,7 @@ runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multico
   
   CGsites <- gregexpr("CG",c2s(seq1string),fixed=TRUE)[[1]]
   CGsites <- CGsites[which(s2c(paste(seq1string))[CGsites-1] != "G")]
+  
   
   if (is.null(multicoreParam))
   {
@@ -83,6 +87,7 @@ runAlign <- function(seq1.file, seq2.file, gch.file.name, hcg.file.name, multico
     gcmap <- bplapply(alignedseq, mapseq, sites=GCsites, BPPARAM = multicoreParam)
     cgmap <- bplapply(alignedseq, mapseq, sites=CGsites, BPPARAM = multicoreParam)
   }
+  
   
   saveCG <- data.matrix(do.call(rbind, lapply(cgmap, function(x) (x))))
   saveCG <- cbind(rownames(saveCG), saveCG)
