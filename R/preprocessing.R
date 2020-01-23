@@ -1,11 +1,11 @@
-seqalign <- function(i, fastq, ref.string) {
+seqalign <- function(i, fasta, ref.string) {
   
-  fastq.string <- DNAString(toupper(c2s(fastq[[i]])))
+  fasta.string <- DNAString(toupper(c2s(fasta[[i]])))
   
   align.bb <- pairwiseAlignment(reverseComplement(ref.string), 
-                                reverseComplement(fastq.string),type="global-local", gapOpening=8)
-  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fastq.string),type="global-local", gapOpening=8)
-  align.aa <- pairwiseAlignment(ref.string, fastq.string,type="global-local", gapOpening=8)
+                                reverseComplement(fasta.string),type="global-local", gapOpening=8)
+  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fasta.string),type="global-local", gapOpening=8)
+  align.aa <- pairwiseAlignment(ref.string, fasta.string,type="global-local", gapOpening=8)
   
   maxAlign <- which.max(c(score(align.bb), score(align.ab), score(align.aa)))
   allseq <- list(align.bb, align.ab, align.aa)
@@ -48,13 +48,24 @@ mapseq <- function(i, sites) {
   return(editseq)
 }
 
-#' @import Biostrings
-#' @import seqinr
-#' @import BiocParallel 
+
+#' runAlign
+#' 
+#' Runs the preprocessing methods on sequences.
+#' 
+#' @param ref A reference sequence
+#' @param fasta A list of sequences
+#' @param fasta.subset A vector of indices indicating which sequences to process.
+#' @param multicoreParam A MulticoreParam object, used to align sequences in parallel.
+#' @param updateProgress Used to add a progress bar to the Shiny app. Should not be used otherwise.
+#' 
+#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement pairwiseAlignment score pattern subject
+#' @importFrom seqinr c2s s2c read.fasta
+#' @importFrom BiocParallel bplapply
 #' @export
-runAlign <- function(ref, fastq, fastq.subset = (1:length(seq2)), multicoreParam = NULL, updateProgress = NULL)
+runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)), multicoreParam = NULL, updateProgress = NULL)
 {
-  fastq <- fastq[fastq.subset]
+  fasta <- fasta[fasta.subset]
   ref.string <- DNAString(toupper(c2s(ref[[1]])))
   
   penalty.mat <- matrix(0,length(DNA_ALPHABET[1:4]),length(DNA_ALPHABET[1:4]))
@@ -64,14 +75,14 @@ runAlign <- function(ref, fastq, fastq.subset = (1:length(seq2)), multicoreParam
   
   if (is.function(updateProgress)) updateProgress(message = "Aligning sequences", value = 0.1)
   
-  if (is.null(multicoreParam)) alignedseq <- lapply(1:length(fastq), function(i) {
+  if (is.null(multicoreParam)) alignedseq <- lapply(1:length(fasta), function(i) {
     if (is.function(updateProgress))updateProgress(message = "Aligning seqences",
-                                                                 detail = paste(i, "/", length(fastq)), 
-                                                                 value = (0.1+ 0.65/length(fastq) * i))
-    seqalign(i, fastq, ref.string)
+                                                                 detail = paste(i, "/", length(fasta)), 
+                                                                 value = (0.1+ 0.65/length(fasta) * i))
+    seqalign(i, fasta, ref.string)
     })
-  else alignedseq <- bplapply(1:length(fastq), function(i) seqalign(i, fastq, ref.string), BPPARAM = multicoreParam)
-  names(alignedseq) <- names(fastq)
+  else alignedseq <- bplapply(1:length(fasta), function(i) seqalign(i, fasta, ref.string), BPPARAM = multicoreParam)
+  names(alignedseq) <- names(fasta)
   
   # Only keep the 'good' alignments
   alignedseq <- alignedseq[which(!sapply(alignedseq, is.null))]

@@ -1,11 +1,11 @@
 
 ui <- navbarPage("methylScaper",
-                 tabPanel("Alignment",
-                          fileInput("fastq.file", label = "FASTQ File"),
+                 tabPanel("Preprocessing",
+                          fileInput("fasta.file", label = "FASTA File"),
                           fileInput("ref.file", label = "Reference File"),
                           textInput("gch.file.name", label = "GCH File Name"),
                           textInput("hcg.file.name", label = "HCG File Name"),
-                          actionButton("run.align", label = "Run Alignment")),
+                          actionButton("run.align", label = "Run")),
                  tabPanel("Sequence Plot",
 
     sidebarLayout(
@@ -42,7 +42,7 @@ server <- function(input, output) {
     # alignment handling
     observeEvent(input$run.align, { 
         ref <- read.fasta(input$ref.file$datapath)
-        fastq <- read.fasta(input$fastq.file$datapath)
+        fasta <- read.fasta(input$fasta.file$datapath)
         
         progress <- Progress$new()
         progress$set(message = "Beginning alignment", value = 0)
@@ -51,7 +51,7 @@ server <- function(input, output) {
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) { 
           progress$set(value = value, message = message, detail = detail)}
         
-        align.out <- runAlign(ref, fastq, fastq.subset = (1:100), updateProgress = updateProgress)
+        align.out <- runAlign(ref, fasta, fasta.subset = (1:100), updateProgress = updateProgress)
         write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
         write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")
     })
@@ -61,7 +61,7 @@ server <- function(input, output) {
   
     
     actionsLog <- reactiveValues(log = c("Loading Day7 data"))
-    input.Data <- reactiveValues(gch = day7$gch, hcg = day7$hcg)
+    input.Data <- reactiveValues(gch = methylScaper::day7$gch, hcg = methylScaper::day7$hcg)
     
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
@@ -180,7 +180,7 @@ server <- function(input, output) {
         },
         content = function(file){
             if (input$filetype == "PNG") png(file, res=300)
-            if (input$filetype == "SVG") svg(file, res=300)
+            if (input$filetype == "SVG") svg(file)
             if (input$filetype == "PDF") pdf(file)
           
             makePlot(orderObject, coordinatesObject, drawLines = FALSE, plotFAST = FALSE)
