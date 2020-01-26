@@ -1,16 +1,20 @@
-## Upload fields:
-## input.GCH: The GCH csv from Alberto.
-## input.HCG: The HCG csv from Alberto.
-
-# User optional fields:
-## weightStart: Where along the DNA to begin the weight the read ordering.
-## weightEnd: Where along the DNA to end weight the read ordering.
-## weightFeature: Whether to weight the methylation or accessibility ordering.
-## reverse: Force the ordering to be exactly reversed.
-
-# returns an initial (unrefined) ordering and to 'toClust' object
-#' @import seriation
-#' @importFrom aroma.light wpca
+#' Ordering of methylation data
+#' 
+#' Orders methylation data using a given seriation method. This function can also perform a weighted seriation if the method is set to "PCA".
+#' 
+#' @param input.GCH The GCH input data.
+#' @param input.HCG The HCG input data.
+#' @param Method Indicates the seriation method to use. The default option is "PCA", which orders the data using the 
+#' first principal component. Any seriation method provided in the \code{seriation} package is valid.
+#' @param weightStart Index of the first column used in the weighted seriation.
+#' @param weightEnd Index of the last column used in the weighted seriation.
+#' @param weightFeature Indicates whether to weight the GCH or HCG data. 
+#' @param reverse Logical, indicates whether to reverse the ordering.
+#' 
+#' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
+#' @importFrom seriation seriate get_order
+#' @importFrom stats dist
+#' @export
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL, 
                          weightFeature="red", reverse=F){
   
@@ -70,8 +74,16 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
   if (Method=="PCA") {
     if (weighted)
     {
-      try1 <- aroma.light::wpca(x = toClust, w = weightVector, center = TRUE)
-      order1 <- order(try1$pc[,1])
+      w <- weightVector / sum(weightVector)
+      x <- toClust
+      weighted.mean <- as.vector(w %*% x)
+      x.centered <- x
+      for (k in 1:ncol(x))
+      {
+        x.centered[,k] <- x.centered[,k] - weighted.mean[k]
+      }
+      svd.out <- svd(x.centered, nu=1, nv=0)
+      order1 <- order(svd.out$u[,1])
     }
     else
     {
@@ -81,7 +93,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     }
     
   } else{ 
-    # How do we incorprate the weights here (i.e., when non-PCA methods are used)?
+    # Look into weighted distance matrices
     distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
     # Allow drop down methods to be: ARSA.
     order1 <- seriation::seriate(distMat, method=Method)

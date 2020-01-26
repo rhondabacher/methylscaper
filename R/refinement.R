@@ -1,8 +1,14 @@
-## There is something in shiny app that lets you select ON the interactive plot...it's called brush
-# https://shiny.rstudio.com/articles/plot-interaction.html
-# That would be better to just click the ones to refine rather than input numbers.
-
-# returns the final ordering after refinement
+#' Refinement step
+#' 
+#' Reorders a subset of the methylation data. 
+#' 
+#' @param orderObject An object of class \code{orderObject}, generated with the \code{initialOrder} function.
+#' @param refineStart The index of the first sample (row) used in the refinement.
+#' @param refineEnd The index of the last sample used in the refinement.
+#' @param Method The seriation method used to perform the refinement.
+#' 
+#' @return The new complete ordering with the refinement applied.
+#' @export
 refineFunction <- function(orderObject, refineStart, refineEnd,  Method="HC_average") {
   
   toClust <- orderObject$toClust
@@ -20,8 +26,8 @@ refineFunction <- function(orderObject, refineStart, refineEnd,  Method="HC_aver
     ## Shouldn't need to recalculate the distance each time!!
     if (is.null(orderObject$distMat)) distMat <- dist(toRefine.clust,method = "euclidean")
     else distMat <- orderObject$distMat[toRefine.order,toRefine.order]
-    order.new <- seriate(distMat, method=Method, verbose=FALSE)
-    order.new <- get_order(order.new)
+    order.new <- seriation::seriate(distMat, method=Method, verbose=FALSE)
+    order.new <- seriation::get_order(order.new)
   }
   
   

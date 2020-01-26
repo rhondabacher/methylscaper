@@ -18,18 +18,20 @@ refineOrderShiny <- function(orderObject, refine.method, coordinatesObject)
   refineFunction(orderObject, coordinatesObject$refine.start, coordinatesObject$refine.stop, refine.method)
 }
 
-makePlot <- function(orderObject, coordinatesObject, ...)
+makePlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
 {
  
   plotSequence(orderObject, ...)
   if (coordinatesObject$refine.start != 0 & coordinatesObject$refine.stop != 0) # draw the horizontal lines
   {
-    print("converting raw coordinates for horizontal lines")
     n <- nrow(orderObject$toClust)
-    ymin <- (((140:1)[coordinatesObject$refine.start] / n * (n - 10)) + 10) / n # convert back to raw coordinates
-    ymax <- (((140:1)[coordinatesObject$refine.stop] / n * (n - 10)) + 10) / n
-    abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
-    abline(b = 0, a = ymin, col = "blue", lwd = 2.5)
+    ymin <- (((n:1)[coordinatesObject$refine.start] / n * (n - 10)) + 10) / n # convert back to raw coordinates
+    ymax <- (((n:1)[coordinatesObject$refine.stop] / n * (n - 10)) + 10) / n
+    if (drawLines)
+    {
+      abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
+      abline(b = 0, a = ymin, col = "blue", lwd = 2.5)
+    }
     
   }
   if (coordinatesObject$weight.start != 0 & coordinatesObject$weight.stop != 0) # draw the vertical lines
@@ -42,8 +44,11 @@ makePlot <- function(orderObject, coordinatesObject, ...)
       xmin <- xmin + 0.55
       xmax <- xmax + 0.55
     }
-    abline(v = xmin, col = "green", lwd = 2.5)
-    abline(v = xmax, col = "green", lwd = 2.5)
+    if (drawLines)
+    {
+      abline(v = xmin, col = "green", lwd = 2.5)
+      abline(v = xmax, col = "green", lwd = 2.5)
+    }
   }
 }
 
@@ -58,7 +63,12 @@ handleBrushCoordinates <- function(plot_brush, n, m){
   if(first.row <= 2) first.row <- 1
   if (last.row >= n - 1) last.row <- n
   
-  print("done creating rows")
+  if (first.row >= n - 1 | last.row <= 2)
+  {
+    first.row <- 0
+    last.row <- 0
+  }
+  
   
   first.col <- round(plot_brush$xmin, 2)
   last.col <- round(plot_brush$xmax, 2)
@@ -92,8 +102,8 @@ handleBrushCoordinates <- function(plot_brush, n, m){
   if (first.col <= 2) first.col <- 1
   if (last.col >= (m - 2)) last.col <- m
   
-  return(list(first.row = (140:1)[first.row],
-              last.row = (140:1)[last.row],
+  return(list(first.row = ifelse(first.row == 0, 0, (n:1)[first.row]),
+              last.row = ifelse(last.row == 0, 0, (n:1)[last.row]),
               first.col = first.col,
               last.col = last.col,
               weight.color = weight.color))

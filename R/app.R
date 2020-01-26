@@ -1,8 +1,12 @@
 
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("methylScaper"),
+ui <- navbarPage("methylScaper",
+                 tabPanel("Preprocessing",
+                          fileInput("fasta.file", label = "FASTA File"),
+                          fileInput("ref.file", label = "Reference File"),
+                          textInput("gch.file.name", label = "GCH File Name"),
+                          textInput("hcg.file.name", label = "HCG File Name"),
+                          actionButton("run.align", label = "Run")),
+                 tabPanel("Sequence Plot",
 
     sidebarLayout(
         sidebarPanel(
@@ -14,6 +18,7 @@ ui <- fluidPage(
                         choices = c("PCA", "HC_average")),
             radioButtons("brush.choice", label = "Brushing for:",
                                choices = c("Refinement", "Weighting"), selected = "Weighting"),
+            actionButton("force.reverse", label = "Force Reverse"),
              verbatimTextOutput("info")
         ),
 
@@ -22,30 +27,62 @@ ui <- fluidPage(
                 plotOutput(outputId = "seqPlot",
                            brush = "plot_brush",  width = "100%")),
                  column(width = 2, align='left',       
-                selectInput("filetype", label = "File type", choices = c("PNG", "SVG")),
+                selectInput("filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
                 downloadButton("down", label = "Download the plot"),
                 downloadButton("down_log", label = "Download changes log"))
           
         )
        )
-  )
+  ))
 )
 
 server <- function(input, output) {
+  
+  
+    # alignment handling
+    observeEvent(input$run.align, { 
+        ref <- read.fasta(input$ref.file$datapath)
+        fasta <- read.fasta(input$fasta.file$datapath)
+        
+        progress <- Progress$new()
+        progress$set(message = "Beginning alignment", value = 0)
+        on.exit(progress$close())
+        
+        updateProgress <- function(value = NULL, message = NULL, detail = NULL) { 
+          progress$set(value = value, message = message, detail = detail)}
+        
+        align.out <- runAlign(ref, fasta, fasta.subset = (1:100), updateProgress = updateProgress)
+        write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
+        write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")
+    })
+  
+  
+  
+  
     
     actionsLog <- reactiveValues(log = c("Loading Day7 data"))
-    input.Data <- reactiveValues(gch = day7$gch, hcg = day7$hcg)
+    input.Data <- reactiveValues(gch = methylScaper::day7$gch, hcg = methylScaper::day7$hcg)
     
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
-        input.Data$gch <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
+        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1, 
                                  stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        input.Data$hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1, 
+        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1, 
                                      stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        isolate({
+        if (nrow(temp.gch) == nrow(temp.hcg))
+        {
+          coordinatesObject$refine.start <- 0
+          coordinatesObject$refine.stop <- 0
+          coordinatesObject$weight.start <- 0
+          coordinatesObject$weight.stop <- 0
+          input.Data$gch <- temp.gch
+          input.Data$hcg <- temp.hcg
+          isolate({
             actionsLog$log <- c(actionsLog$log, paste("Loading GCH file:", input$gch.file$name))
             actionsLog$log <- c(actionsLog$log, paste("Loading HCG file:", input$hcg.file$name))
-        })
+          })
+        }
+        
     }})
     
     # this object keeps track of the coordinates for refinement and weighting
@@ -54,7 +91,6 @@ server <- function(input, output) {
     # now construct the orderObject
     orderObject <- reactiveValues(toClust = 0, order1 = 0)
     observe({
-        print("construction orderObjct")
         tempObj <- buildOrderObjectShiny(input.Data$gch, input.Data$hcg, input$method, coordinatesObject)
         orderObject$order1 <- tempObj$order1
         orderObject$toClust <- tempObj$toClust
@@ -66,7 +102,6 @@ server <- function(input, output) {
     
     # this handles updates to coordinatesObject
     observeEvent(input$plot_brush, {
-            print("updating coordinatesObject")
             n <- nrow(input.Data$gch)
             m <- ncol(input.Data$hcg)
             processed.brush <- handleBrushCoordinates(input$plot_brush, n, m)
@@ -87,51 +122,68 @@ server <- function(input, output) {
             }
             if (isolate(input$brush.choice) == "Refinement")
             {
-                coordinatesObject$refine.start <- processed.brush$first.row
-                coordinatesObject$refine.stop <- processed.brush$last.row
-                isolate({
-                    actionsLog$log <- c(actionsLog$log, 
-                                        paste("Refining rows", 
-                                              processed.brush$first.row, "to",
-                                              processed.brush$last.row))
-                }) 
+                s <- processed.brush$first.row
+                f <- processed.brush$last.row
+                if (s != f)
+                {
+                  coordinatesObject$refine.start <- s
+                  coordinatesObject$refine.stop <- f
+                    orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
+                                                           refine.method = isolate(input$refineMethod), 
+                                                           coordinatesObject)
+                    isolate({
+                        actionsLog$log <- c(actionsLog$log, 
+                                           paste("Refining rows", 
+                                                 processed.brush$first.row, "to",
+                                                 processed.brush$last.row))
+                        actionsLog$log <- c(actionsLog$log, 
+                                            paste("Applying refinement with", input$refineMethod)) 
+                    })
+                }
             }
             
-            print("starting to handle refinement")
-            s <- coordinatesObject$refine.start
-            f <-coordinatesObject$refine.stop
-            if (s != 0 & f != 0)
-            {
-                orderObject$order1 <- refineOrderShiny(isolate(orderObject), 
-                                                       refine.method = isolate(input$refineMethod), 
-                                                       coordinatesObject)
-                print("orderObject updated with refinement")
-                isolate({
-                    actionsLog$log <- c(actionsLog$log, 
-                                        paste("Applying refinement with", input$refineMethod))
-                }) 
-            }
+            
+    })
+    
+    observeEvent( input$force.reverse, {
+      isolate({
+        if (coordinatesObject$refine.start == coordinatesObject$refine.stop) 
+          {
+            orderObject$order1 <- rev(orderObject$order1)
+            actionsLog$log <- c(actionsLog$log, paste("Reversing rows 1 to", nrow(input.Data$gch)))
+          }
+        else 
+          {
+              orderObject$order1[coordinatesObject$refine.start : coordinatesObject$refine.stop] <-
+              orderObject$order1[coordinatesObject$refine.stop : coordinatesObject$refine.start]
+              actionsLog$log <- c(actionsLog$log, 
+                                  paste("Reversing rows", coordinatesObject$refine.start, 
+                                        "to", coordinatesObject$refine.stop))
+              
+        }
+      })
     })
     
 
     
     output$seqPlot <- renderPlot({ 
-        print("about to make plot")
         obj <- orderObject
         # print(str(as.list(isolate(coordinatesObject))))
         makePlot(obj,isolate(coordinatesObject))
-        print("done making plot")
         }, height=600, width=600)
     
     output$down <- downloadHandler(
         filename = function(){
-            "plot.png"
+          if (input$filetype == "PNG") return("plot.png")
+          if (input$filetype == "SVG") return("plot.svg")
+          if (input$filetype == "PDF") return("plot.pdf")
         },
         content = function(file){
-            if (input$filetype == "PNG") png(file)
+            if (input$filetype == "PNG") png(file, res=300)
             if (input$filetype == "SVG") svg(file)
-            print("download handler")
-            makePlot(orderObject, coordinatesObject, plotFAST = FALSE)
+            if (input$filetype == "PDF") pdf(file)
+          
+            makePlot(orderObject, coordinatesObject, drawLines = FALSE, plotFAST = FALSE)
             dev.off()
         }
     )
@@ -158,9 +210,14 @@ server <- function(input, output) {
 
 
 # Run the application 
+#' methylScaper
+#' 
+#' Runs the methylScaper Shiny app.
+#' 
 #' @import shiny
+#' @importFrom grDevices dev.off pdf png svg
+#' @importFrom utils read.table write.table
 #' @export
 methylScaper <- function() {
- options(shiny.maxRequestSize = 10000*1024^2)
- shinyApp(ui = ui, server = server)
-}
+	options(shiny.maxRequestSize = 10000*1024^2) 
+	shinyApp(ui = ui, server = server)}
