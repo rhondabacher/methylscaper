@@ -11,7 +11,8 @@ initialOrder(
   weightStart = NULL,
   weightEnd = NULL,
   weightFeature = "red",
-  reverse = F
+  reverse = F,
+  updateProgress = NULL
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ first principal component. Any seriation method provided in the \code{seriation}
 \item{weightFeature}{Indicates whether to weight the GCH or HCG data.}
 
 \item{reverse}{Logical, indicates whether to reverse the ordering.}
+
+\item{updateProgress}{A function to handle the progress bar for the Shiny app. Should not be used when using the function independently.}
 }
 \value{
 An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.

@@ -10,6 +10,7 @@
 #' @param weightEnd Index of the last column used in the weighted seriation.
 #' @param weightFeature Indicates whether to weight the GCH or HCG data.
 #' @param reverse Logical, indicates whether to reverse the ordering.
+#' @param updateProgress A function to handle the progress bar for the Shiny app. Should not be used when using the function independently.
 #'
 #' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
 #' @importFrom seriation seriate get_order
@@ -17,12 +18,13 @@
 #' @importFrom Rfast Dist
 #' @export
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL,
-                         weightFeature="red", reverse=F){
+                         weightFeature="red", reverse=F, updateProgress = NULL){
 
     ## File checks:
     if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
 
 
+    if (is.function(updateProgress)) updateProgress(message = "Recoding input data", value = 0.1)
     recoded <- recode(input.GCH, input.HCG)
     input.GCH <- recoded$input.GCH
     input.HCG <- recoded$input.HCG
@@ -34,6 +36,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
                                         # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
     if (!is.null(weightStart) & !is.null(weightEnd)) {
+        if (is.function(updateProgress)) updateProgress(message = "Weighting selected columns", value = 0.2)
         weighted = TRUE
         if (weightFeature == "red") {
             FEATURE = 3
@@ -51,6 +54,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     }
 
 
+    if (is.function(updateProgress)) updateProgress(message = paste("Ordering with", Method), value = 0.35)
     ## PCA should be the default method:
     if (Method=="PCA") {
         if (weighted)
@@ -83,6 +87,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     if (isTRUE(reverse)) {order1 <- rev(order1)}
     orderObject <- list(toClust = toClust, order1 = order1)
     if (Method != "PCA") orderObject$distMat <- distMat
+    if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
     return(orderObject)
 }
 
