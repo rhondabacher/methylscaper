@@ -12,5 +12,6 @@ Imports:
   seriation,
   BiocParallel,
   seqinr,
-  Biostrings
+  Biostrings,
+  Rfast
 RoxygenNote: 7.0.2

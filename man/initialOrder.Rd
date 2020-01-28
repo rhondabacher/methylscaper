@@ -19,7 +19,7 @@ initialOrder(
 
 \item{input.HCG}{The HCG input data.}
 
-\item{Method}{Indicates the seriation method to use. The default option is "PCA", which orders the data using the 
+\item{Method}{Indicates the seriation method to use. The default option is "PCA", which orders the data using the
 first principal component. Any seriation method provided in the \code{seriation} package is valid.}
 
 \item{weightStart}{Index of the first column used in the weighted seriation.}

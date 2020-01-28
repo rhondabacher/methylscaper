@@ -13,7 +13,8 @@
 #'
 #' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
 #' @importFrom seriation seriate get_order
-#' @importFrom stats dist
+#' @importFrom stats as.dist dist
+#' @importFrom Rfast Dist
 #' @export
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL,
                          weightFeature="red", reverse=F){
@@ -74,7 +75,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
     } else{
                                         # Look into weighted distance matrices
-        distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
+        distMat <- as.dist(Rfast::Dist(toClust,method = "euclidean")) # put in my faster dist code i made before
                                         # Allow drop down methods to be: ARSA.
         order1 <- seriation::seriate(distMat, method=Method)
         order1 <- seriation::get_order(order1)
