@@ -187,7 +187,7 @@ server <- function(input, output) {
         },
         content = function(file){
             if (input$filetype == "PNG") png(file, res=300)
-            if (input$filetype == "SVG") svg(file)
+            if (input$filetype == "SVG") svglite::svglite(file)
             if (input$filetype == "PDF") pdf(file)
 
             makePlot(orderObject, coordinatesObject, drawLines = FALSE, plotFAST = FALSE)
@@ -224,6 +224,7 @@ server <- function(input, output) {
 #' @import shiny
 #' @importFrom grDevices dev.off pdf png svg
 #' @importFrom utils read.table write.table
+#' @importFrom svglite svglite
 #' @export
 methylScaper <- function() {
 	options(shiny.maxRequestSize = 10000*1024^2)
