@@ -1,106 +1,112 @@
 #' Ordering of methylation data
-#' 
+#'
 #' Orders methylation data using a given seriation method. This function can also perform a weighted seriation if the method is set to "PCA".
-#' 
+#'
 #' @param input.GCH The GCH input data.
 #' @param input.HCG The HCG input data.
-#' @param Method Indicates the seriation method to use. The default option is "PCA", which orders the data using the 
+#' @param Method Indicates the seriation method to use. The default option is "PCA", which orders the data using the
 #' first principal component. Any seriation method provided in the \code{seriation} package is valid.
 #' @param weightStart Index of the first column used in the weighted seriation.
 #' @param weightEnd Index of the last column used in the weighted seriation.
-#' @param weightFeature Indicates whether to weight the GCH or HCG data. 
+#' @param weightFeature Indicates whether to weight the GCH or HCG data.
 #' @param reverse Logical, indicates whether to reverse the ordering.
-#' 
+#'
 #' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
 #' @importFrom seriation seriate get_order
 #' @importFrom stats dist
 #' @export
-initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL, 
+initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL,
                          weightFeature="red", reverse=F){
-  
-  ## File checks:
-  if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
-  
-  # Currently Alberto has a software that is not published that gets us the CSV files.
-  # I think we could move most of that to R, but will still need to have a python script 
-  # that takes in REF and SEQ's and does the overlap alignment.
-  # After that, the rest could ALL be done in R and the recoding would not be necesary.
-  ## To do: Talk to Alberto.
-  
-  # Recoding for heatmaps plots; might be able to move this:
-  input.GCH[input.GCH=="."] <- 99
-  input.GCH <- data.matrix(input.GCH)
-  input.GCH[input.GCH==2] <- -4
-  input.GCH[input.GCH==1] <- -3
-  input.GCH[input.GCH==0] <- -2.5
-  input.GCH[input.GCH==-1] <- -99
-  input.GCH[input.GCH==-2] <- -1
-  input.GCH[input.GCH==-99] <- -2
-  input.GCH[input.GCH==99] <- 0
-  
-  input.HCG[input.HCG=="."] <- 99
-  input.HCG <- data.matrix(input.HCG)
-  input.HCG[input.HCG==2] <- 4
-  input.HCG[input.HCG==1] <- 3
-  input.HCG[input.HCG==0] <- 2.5
-  input.HCG[input.HCG==-1] <- 2
-  input.HCG[input.HCG==-2] <- 1
-  input.HCG[input.HCG==99] <- 0
-  
-  ## Clustering:  
-  toClust <- cbind(input.GCH, input.HCG)
-  weighted = FALSE
-  
-  # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
-  if (!is.null(weightStart) & !is.null(weightEnd)) {
-    weighted = TRUE
-    if (weightFeature == "red") {
-      FEATURE = 3
-      weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+
+    ## File checks:
+    if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
+
+
+    recoded <- recode(input.GCH, input.HCG)
+    input.GCH <- recoded$input.GCH
+    input.HCG <- recoded$input.HCG
+
+
+    ## Clustering:
+    toClust <- cbind(input.GCH, input.HCG)
+    weighted = FALSE
+
+                                        # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
+    if (!is.null(weightStart) & !is.null(weightEnd)) {
+        weighted = TRUE
+        if (weightFeature == "red") {
+            FEATURE = 3
+            weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+        }
+        if (weightFeature == "yellow") {
+            FEATURE = -3
+            weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+        }
+        weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
+        weightVector <- abs(weightVector) # weights should only be positive
+                                        # weightMat <- diag(weightVector) # creates the diagonal matrix of weights
+                                        # toClust <- cbind(weightVector, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
+                                        # toClust <- weightMat %*% cbind(input.GCH, input.HCG)
     }
-    if (weightFeature == "yellow") {
-      FEATURE = -3
-      weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+
+
+    ## PCA should be the default method:
+    if (Method=="PCA") {
+        if (weighted)
+        {
+            w <- weightVector / sum(weightVector)
+            x <- toClust
+            weighted.mean <- as.vector(w %*% x)
+            x.centered <- x
+            for (k in 1:ncol(x))
+            {
+                x.centered[,k] <- x.centered[,k] - weighted.mean[k]
+            }
+            svd.out <- svd(x.centered, nu=1, nv=0)
+            order1 <- order(svd.out$u[,1])
+        }
+        else
+        {
+            col.centered <- apply(toClust, 2, function(x) x - mean(x))
+            try1 <- svd(col.centered, nu = 1, nv = 0)
+            order1 <- order(try1$u[,1])
+        }
+
+    } else{
+                                        # Look into weighted distance matrices
+        distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
+                                        # Allow drop down methods to be: ARSA.
+        order1 <- seriation::seriate(distMat, method=Method)
+        order1 <- seriation::get_order(order1)
     }
-    weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
-    weightVector <- abs(weightVector) # weights should only be positive
-    # weightMat <- diag(weightVector) # creates the diagonal matrix of weights
-    # toClust <- cbind(weightVector, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
-    # toClust <- weightMat %*% cbind(input.GCH, input.HCG)
-  }
-  
-  
-  ## PCA should be the default method:
-  if (Method=="PCA") {
-    if (weighted)
-    {
-      w <- weightVector / sum(weightVector)
-      x <- toClust
-      weighted.mean <- as.vector(w %*% x)
-      x.centered <- x
-      for (k in 1:ncol(x))
-      {
-        x.centered[,k] <- x.centered[,k] - weighted.mean[k]
-      }
-      svd.out <- svd(x.centered, nu=1, nv=0)
-      order1 <- order(svd.out$u[,1])
-    }
-    else
-    {
-      col.centered <- apply(toClust, 2, function(x) x - mean(x))
-      try1 <- svd(col.centered, nu = 1, nv = 0)
-      order1 <- order(try1$u[,1])
-    }
-    
-  } else{ 
-    # Look into weighted distance matrices
-    distMat <- dist(toClust,method = "euclidean") # put in my faster dist code i made before
-    # Allow drop down methods to be: ARSA.
-    order1 <- seriation::seriate(distMat, method=Method)
-    order1 <- seriation::get_order(order1)
-  }
-  if (isTRUE(reverse)) {order1 <- rev(order1)}
-  orderObject <- list(toClust = toClust, order1 = order1)
-  if (Method != "PCA") orderObject$distMat <- distMat
-  return(orderObject)
+    if (isTRUE(reverse)) {order1 <- rev(order1)}
+    orderObject <- list(toClust = toClust, order1 = order1)
+    if (Method != "PCA") orderObject$distMat <- distMat
+    return(orderObject)
+}
+
+
+recode <- function(input.GCH, input.HCG)
+{
+    input.GCH[input.GCH=="."] <- 99
+    input.GCH <- data.matrix(input.GCH)
+    input.GCH[input.GCH==2] <- -4
+    input.GCH[input.GCH==1] <- -3
+    input.GCH[input.GCH==0] <- -2.5
+    input.GCH[input.GCH==-1] <- -99
+    input.GCH[input.GCH==-2] <- -1
+    input.GCH[input.GCH==-99] <- -2
+    input.GCH[input.GCH==99] <- 0
+
+    input.HCG[input.HCG=="."] <- 99
+    input.HCG <- data.matrix(input.HCG)
+    input.HCG[input.HCG==2] <- 4
+    input.HCG[input.HCG==1] <- 3
+    input.HCG[input.HCG==0] <- 2.5
+    input.HCG[input.HCG==-1] <- 2
+    input.HCG[input.HCG==-2] <- 1
+    input.HCG[input.HCG==99] <- 0
+
+    return(list(input.GCH = input.GCH, input.HCG = input.HCG))
+
 }
