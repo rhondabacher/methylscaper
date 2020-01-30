@@ -34,7 +34,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     toClust <- cbind(input.GCH, input.HCG)
     weighted = FALSE
 
-                                        # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
+    # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
     if (!is.null(weightStart) & !is.null(weightEnd)) {
         if (is.function(updateProgress)) updateProgress(message = "Weighting selected columns", value = 0.2)
         weighted = TRUE
@@ -47,10 +47,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
             weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
-        weightVector <- abs(weightVector) # weights should only be positive
-                                        # weightMat <- diag(weightVector) # creates the diagonal matrix of weights
-                                        # toClust <- cbind(weightVector, input.GCH, input.HCG) # ask about this, are we accounting for weights in the seriation correctly?
-                                        # toClust <- weightMat %*% cbind(input.GCH, input.HCG)
+        weightVector <- abs(weightVector)
     }
 
 
@@ -77,12 +74,25 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
             order1 <- order(try1$u[,1])
         }
 
-    } else{
-                                        # Look into weighted distance matrices
-        distMat <- as.dist(Rfast::Dist(toClust,method = "euclidean")) # put in my faster dist code i made before
-                                        # Allow drop down methods to be: ARSA.
-        order1 <- seriation::seriate(distMat, method=Method)
-        order1 <- seriation::get_order(order1)
+    } else {
+
+        if (weighted)
+        {
+            w <- weightVector / sum(weightVector)
+            w.sqrt <- sqrt(w)
+            toClust.weighted <- diag(w) %*% toClust
+
+            distMat <- as.dist(Rfast::Dist(toClust.weighted,method = "euclidean"))
+            order1 <- seriation::seriate(distMat, method=Method)
+            order1 <- seriation::get_order(order1)
+        }
+        else
+        {
+            distMat <- as.dist(Rfast::Dist(toClust,method = "euclidean"))
+            order1 <- seriation::seriate(distMat, method=Method)
+            order1 <- seriation::get_order(order1)
+
+        }
     }
     if (isTRUE(reverse)) {order1 <- rev(order1)}
     orderObject <- list(toClust = toClust, order1 = order1)
