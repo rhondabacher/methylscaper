@@ -61,7 +61,7 @@ server <- function(input, output) {
 
 
     actionsLog <- reactiveValues(log = c("Loading Day7 data"))
-    input.Data <- reactiveValues(gch = methylScaper::day7$gch, hcg = methylScaper::day7$hcg)
+    input.Data <- reactiveValues(gch = NULL, hcg = NULL)
 
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
@@ -90,21 +90,24 @@ server <- function(input, output) {
                                         weight.start = 0, weight.stop = 0, weight.color = "red")
     # now construct the orderObject
     orderObject <- reactiveValues(toClust = 0, order1 = 0)
-    observe({
-        progress <- Progress$new()
-        progress$set(message = "Beginning seriation", value = 0)
-        on.exit(progress$close())
+    observe({ if (!is.null(input.Data$gch) & !is.null(input.Data$hcg))
+              {
+                  progress <- Progress$new()
+                  progress$set(message = "Beginning seriation", value = 0)
+                  on.exit(progress$close())
 
-        updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
-            progress$set(value = value, message = message, detail = detail)}
+                  updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
+                      progress$set(value = value, message = message, detail = detail)}
 
-        tempObj <- buildOrderObjectShiny(input.Data$gch, input.Data$hcg, input$method, coordinatesObject, updateProgress)
-        orderObject$order1 <- tempObj$order1
-        orderObject$toClust <- tempObj$toClust
-        isolate({
-            actionsLog$log <- c(actionsLog$log,
-                                paste("Ordering with", input$method))
-            })
+                  tempObj <- buildOrderObjectShiny(input.Data$gch, input.Data$hcg, input$method, coordinatesObject, updateProgress)
+                  orderObject$order1 <- tempObj$order1
+                  orderObject$toClust <- tempObj$toClust
+                  isolate({
+                      actionsLog$log <- c(actionsLog$log,
+                                          paste("Ordering with", input$method))
+                  })
+              }
+
         })
 
     # this handles updates to coordinatesObject
@@ -175,8 +178,8 @@ server <- function(input, output) {
 
     output$seqPlot <- renderPlot({
         obj <- orderObject
-        # print(str(as.list(isolate(coordinatesObject))))
-        makePlot(obj,isolate(coordinatesObject))
+        if (sum(obj$toClust) == 0) {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
+        else makePlot(obj,isolate(coordinatesObject))
         }, height=600, width=600)
 
     output$down <- downloadHandler(
