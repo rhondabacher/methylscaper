@@ -1,0 +1,11 @@
+---
+title: "methylScaper"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{methylScaper}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Introduction
+

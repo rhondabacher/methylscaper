@@ -13,5 +13,9 @@ Imports:
   BiocParallel,
   seqinr,
   Biostrings,
-  Rfast
+  Rfast,
+  svglite
 RoxygenNote: 7.0.2
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+
