@@ -82,9 +82,37 @@ have made.
 
 <img src="sequence_plot_panel.png" width="600" height="400" />
 
+The green lines indicate the columns selected for weighting, and the
+blue lines indicate the rows that were most recently refined.
+
 After making any desired changes, the sequence plot can be saved as
 either a PNG, PDF, or SVG file. Additionally, `methylScaper` keeps
 track of all changes made to the plots in the form of a changes log,
 which can be saved as a text file.
 
 ### R Functions
+
+`methylScaper` also exports a handful of functions that provide the
+same processing, ordering, and plotting functionality of the Shiny app.
+
+The `runAlign` function performs the alignment, quality control, and
+numerical encoding that was described above to sequence data. It also
+provides support for parallel processing via the BiocParallel
+package. Users can pass an object of class `MulticoreParam` to run the
+sequence alignment in parallel.
+
+`initialOrder` orders GC and CG site data with a given seriation
+method. PCA is used by default, but users can specify any seriation
+	method offered by the `seriation` package. An object of class
+	`orderObject` is returned, which contains the ordering as well as
+	the cleaned data matrix.
+
+`refineFunction` refines a given range of rows of an
+`orderObject`, with any method provided by the `seriation`
+package. The new ordering is returned, which can be used to update
+`orderObject` used for the refinement.
+
+Finally, the `plotSequence` function generates a sequence plot from an
+`orderObject`, as seen in the Shiny app.
+
+
