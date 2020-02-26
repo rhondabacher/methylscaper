@@ -6,35 +6,39 @@ ui <- navbarPage("methylScaper",
                           textInput("gch.file.name", label = "GCH File Name"),
                           textInput("hcg.file.name", label = "HCG File Name"),
                           actionButton("run.align", label = "Run")),
-                 tabPanel("Sequence Plot",
+                 tabPanel("Analysis",
 
-    sidebarLayout(
-        sidebarPanel(
-            fileInput("gch.file", label = "GCH Data file input (csv)"),
-            fileInput("hcg.file", label = "HCG Data file input (csv)"),
-            selectInput("method", label = "Seriation Method:",
-                        choices = c("PCA", "ARSA")),
-            selectInput("refineMethod", label = "Refinement Method:",
-                        choices = c("PCA", "HC_average")),
-            radioButtons("brush.choice", label = "Brushing for:",
-                               choices = c("Refinement", "Weighting"), selected = "Weighting"),
-            actionButton("force.reverse", label = "Force Reverse"),
-             verbatimTextOutput("info")
-        ),
+    navbarPage("", 
+               tabPanel( "Sequence Plot",
+                      sidebarLayout(
+                          sidebarPanel(
+                              fileInput("gch.file", label = "GCH Data file input (csv)"),
+                              fileInput("hcg.file", label = "HCG Data file input (csv)"),
+                              selectInput("method", label = "Seriation Method:",
+                                          choices = c("PCA", "ARSA")),
+                              selectInput("refineMethod", label = "Refinement Method:",
+                                          choices = c("PCA", "HC_average")),
+                              radioButtons("brush.choice", label = "Brushing for:",
+                                                 choices = c("Refinement", "Weighting"), selected = "Weighting"),
+                              actionButton("force.reverse", label = "Force Reverse"),
+                               verbatimTextOutput("info")
+                                    ),
 
-        mainPanel(
-         fluidRow(column(width = 8,
-                plotOutput(outputId = "seqPlot",
-                           brush = "plot_brush",  width = "100%")),
-                 column(width = 2, align='left',
-                selectInput("filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
-                downloadButton("down", label = "Download the plot"),
-                downloadButton("down_log", label = "Download changes log"))
+                          mainPanel(
+                           fluidRow(column(width = 8,
+                                  plotOutput(outputId = "seqPlot",
+                                             brush = "plot_brush",  width = "100%")),
+                                   column(width = 2, align='left',
+                                  selectInput("filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
+                                  downloadButton("down", label = "Download the plot"),
+                                  downloadButton("down_log", label = "Download changes log"))
 
         )
        )
-  ))
-)
+  )),
+                tabPanel("Summary Statistics",
+                         plotOutput(outputId = "proportion_yellow_histogram"))
+)))
 
 server <- function(input, output) {
 
@@ -212,6 +216,13 @@ server <- function(input, output) {
     output$info <- renderText({
         paste0("Refinement selection: ", coordinatesObject$refine.start, " ", coordinatesObject$refine.stop, "\n",
                "Weighting selection: ", coordinatesObject$weight.start, " ", coordinatesObject$weight.stop)
+    })
+    
+    output$proportion_yellow_histogram <- renderPlot({
+      obj <- orderObject
+      if (sum(obj$toClust) == 0) 
+        {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
+      else proportion_yellow(obj, plotHistogram = TRUE)
     })
 }
 

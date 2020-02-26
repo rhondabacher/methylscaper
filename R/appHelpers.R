@@ -110,3 +110,4 @@ handleBrushCoordinates <- function(plot_brush, n, m){
               weight.color = weight.color))
 
 }
+
