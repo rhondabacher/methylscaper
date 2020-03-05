@@ -8,7 +8,7 @@ ui <- navbarPage("methylScaper",
                           actionButton("run.align", label = "Run")),
                  tabPanel("Analysis",
 
-    navbarPage("", 
+    navbarPage("",
                tabPanel( "Sequence Plot",
                       sidebarLayout(
                           sidebarPanel(
@@ -36,8 +36,9 @@ ui <- navbarPage("methylScaper",
         )
        )
   )),
-                tabPanel("Summary Statistics",
-                         plotOutput(outputId = "proportion_yellow_histogram"))
+  tabPanel("Summary Statistics",
+                         radioButtons("proportion.choice", label = "Proportion of:", choices = c("Yellow", "Red"), selected = "Yellow"),
+                         plotOutput(outputId = "proportion_color_histogram"))
 )))
 
 server <- function(input, output) {
@@ -217,12 +218,12 @@ server <- function(input, output) {
         paste0("Refinement selection: ", coordinatesObject$refine.start, " ", coordinatesObject$refine.stop, "\n",
                "Weighting selection: ", coordinatesObject$weight.start, " ", coordinatesObject$weight.stop)
     })
-    
-    output$proportion_yellow_histogram <- renderPlot({
+
+    output$proportion_color_histogram <- renderPlot({
       obj <- orderObject
-      if (sum(obj$toClust) == 0) 
+      if (sum(obj$toClust) == 0)
         {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
-      else proportion_yellow(obj, plotHistogram = TRUE)
+      else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$proportion.choice))
     })
 }
 
