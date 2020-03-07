@@ -38,7 +38,8 @@ ui <- navbarPage("methylScaper",
   )),
   tabPanel("Summary Statistics",
                          radioButtons("proportion.choice", label = "Proportion of:", choices = c("Yellow", "Red"), selected = "Yellow"),
-                         plotOutput(outputId = "proportion_color_histogram"))
+           plotOutput(outputId = "proportion_color_histogram"),
+           plotOutput(outputId = "percent_C"))
 )))
 
 server <- function(input, output) {
@@ -224,6 +225,13 @@ server <- function(input, output) {
       if (sum(obj$toClust) == 0)
         {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
       else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$proportion.choice))
+    })
+
+    output$percent_C <- renderPlot({
+        obj <- orderObject
+        if (sum(obj$toClust) == 0)
+        {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
+      else percent_C(obj)
     })
 }
 
