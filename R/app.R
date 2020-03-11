@@ -231,7 +231,7 @@ server <- function(input, output) {
         obj <- orderObject
         if (sum(obj$toClust) == 0)
         {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
-      else percent_C(obj)
+      else percent_C(obj, plotPercents=TRUE)
     })
 }
 
