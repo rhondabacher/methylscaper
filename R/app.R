@@ -39,7 +39,11 @@ ui <- navbarPage("methylScaper",
   tabPanel("Summary Statistics",
                          radioButtons("proportion.choice", label = "Proportion of:", choices = c("Yellow", "Red"), selected = "Yellow"),
            plotOutput(outputId = "proportion_color_histogram"),
-           plotOutput(outputId = "percent_C"))
+           downloadButton("proportion_hist_download", label = "Download histogram"),
+           downloadButton("proportion_data_download", label = "Download proportion data"),
+           plotOutput(outputId = "percent_C"),
+           downloadButton("percentC_plot_download", label = "Download plot"),
+           downloadButton("percentC_data_download", label = "Download percentage data"))
 )))
 
 server <- function(input, output) {
@@ -195,7 +199,7 @@ server <- function(input, output) {
           if (input$filetype == "PDF") return("plot.pdf")
         },
         content = function(file){
-            if (input$filetype == "PNG") png(file, res=300)
+            if (input$filetype == "PNG") png(file)
             if (input$filetype == "SVG") svglite::svglite(file)
             if (input$filetype == "PDF") pdf(file)
 
@@ -227,12 +231,65 @@ server <- function(input, output) {
       else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$proportion.choice))
     })
 
+    output$proportion_hist_download <- downloadHandler(
+        filename = function(){
+          if (input$filetype == "PNG") return("hist.png")
+          if (input$filetype == "SVG") return("hist.svg")
+          if (input$filetype == "PDF") return("hist.pdf")
+        },
+        content = function(file){
+            if (input$filetype == "PNG") png(file)
+            if (input$filetype == "SVG") svglite::svglite(file)
+            if (input$filetype == "PDF") pdf(file)
+
+            proportion_color(orderObject, plotHistogram = TRUE,
+                             color = toupper(input$proportion.choice))
+            dev.off()
+        }
+    )
+    output$proportion_data_download <- downloadHandler(
+        filename = function(){
+            return("proportion_data.csv")
+        },
+        content = function(file){
+            dat <-  proportion_color(orderObject, plotHistogram = FALSE,
+                                     color = toupper(input$proportion.choice))
+            write.csv(dat, file = file)
+        }
+    )
+
     output$percent_C <- renderPlot({
         obj <- orderObject
         if (sum(obj$toClust) == 0)
         {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
       else percent_C(obj, plotPercents=TRUE)
     })
+
+    output$percentC_plot_download <- downloadHandler(
+        filename = function(){
+          if (input$filetype == "PNG") return("percentC.png")
+          if (input$filetype == "SVG") return("percentC.svg")
+          if (input$filetype == "PDF") return("percentC.pdf")
+        },
+        content = function(file){
+            if (input$filetype == "PNG") png(file)
+            if (input$filetype == "SVG") svglite::svglite(file)
+            if (input$filetype == "PDF") pdf(file)
+
+            percent_C(orderObject, plotPercents = TRUE)
+            dev.off()
+        }
+    )
+
+    output$percentC_data_download <- downloadHandler(
+        filename = function(){
+            return("proportion_data.RData")
+        },
+        content = function(file){
+            dat <-  percent_C(orderObject, plotPercents = FALSE)
+            save(dat, file = file)
+        }
+    )
 }
 
 

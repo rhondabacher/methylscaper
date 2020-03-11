@@ -25,8 +25,8 @@ percent_C <- function(orderObject, plotPercents = FALSE){
         n.sites <- length(union(red.sites, yellow.sites))
         labs <- union(red.sites, yellow.sites)[seq(1, n.sites, by=n.sites/12)]
     }
-    final <- matrix(c.red, c.yellow)
-    colnames(final) = c("red", "yellow")
+    final <- list(c.red, c.yellow)
+    names(final) = c("red", "yellow")
     return(final)
 
 }
