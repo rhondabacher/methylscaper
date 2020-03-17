@@ -18,10 +18,10 @@ percent_C <- function(orderObject, plotPercents = FALSE){
     if (plotPercents)
     {
         plot(x = red.sites - ncol(dat)/2, y = c.red,
-             col="red", pch=19, ylim=c(0,1), xlab = "Site Number", ylab="%C")
-        lines(x = red.sites - ncol(dat)/2, y = c.red, col="red")
-        points(x = yellow.sites, y = c.yellow, col="yellow", pch=19)
-        lines(x = yellow.sites, y = c.yellow, col="yellow")
+             col="darkred", pch=19, ylim=c(0,1), xlab = "Region (Base Pair)", ylab="%C")
+        lines(x = red.sites - ncol(dat)/2, y = c.red, col="darkred")
+        points(x = yellow.sites, y = c.yellow, col="goldenrod", pch=19)
+        lines(x = yellow.sites, y = c.yellow, col="goldenrod")
         n.sites <- length(union(red.sites, yellow.sites))
         labs <- union(red.sites, yellow.sites)[seq(1, n.sites, by=n.sites/12)]
     }
@@ -42,7 +42,10 @@ proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE)
   })
   if (plotHistogram) hist(Proportion,
                           main=paste("Proportion of", ifelse(color.indicator==-1, "Yellow", "Red"), "per Read"),
-                          xlim=c(0,1))
+                          xlim=c(0,1),
+                          border=ifelse(color == "YELLOW", "goldenrod", "darkred"),
+                          col="gray",
+                          lwd=2)
 
   return(Proportion)
 }
