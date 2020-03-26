@@ -2,6 +2,7 @@
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param plotPercents Logical, indicates whether to generate the percentage plot
+#' @export
 percent_C <- function(orderObject, plotPercents = FALSE){
     dat <- orderObject$toClust
     red.sites <- which(dat[1,1:ncol(dat)] == 4 |
@@ -35,6 +36,7 @@ percent_C <- function(orderObject, plotPercents = FALSE){
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param color Indicates which data set to compute proportions for
+#' @export
 proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE){
   color.indicator <- ifelse(color=="YELLOW", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){

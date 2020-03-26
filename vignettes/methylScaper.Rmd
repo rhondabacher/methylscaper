@@ -112,7 +112,43 @@ method. PCA is used by default, but users can specify any seriation
 package. The new ordering is returned, which can be used to update
 `orderObject` used for the refinement.
 
-Finally, the `plotSequence` function generates a sequence plot from an
+The `plotSequence` function generates a sequence plot from an
 `orderObject`, as seen in the Shiny app.
 
+Finally, the package exports functions for computing and plotting
+summary statistics.
 
+## Example Analysis
+
+The package also includes a small data set, titled `day7`, that can be used for
+testing and demonstration. (describe where the data came from?) The
+data is loaded as follows: 
+
+```{r}
+library(methylScaper)
+data("day7")
+```
+
+The `day7` object is a list containing sets of HCG and GCH
+data. We can perform an ordering of the data with the `initialOrder`
+function:
+
+```{r, fig.height = 4, fig.width = 4}
+orderObj <- initialOrder(input.GCH = day7$gch, input.HCG = day7$hcg,
+Method = "PCA")
+plot1.out <- plotSequence(orderObj)
+```
+
+We can then refine a subset of the data, and generate a new plot:
+
+```{r, fig.height = 4, fig.width = 4}
+orderObj$order1 <- refineFunction(orderObj, 1, 20)
+plot2.out <- plotSequence(orderObj)
+```
+
+We can also generate basic summary plots of the data.
+
+```{r, fig.height = 4, fig.width = 5}
+percent.c.out <- percent_C(orderObj, plotPercents = TRUE)
+prop.color.out <- proportion_color(orderObj, color = "YELLOW", plotHistogram = TRUE)
+```

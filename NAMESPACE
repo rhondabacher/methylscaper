@@ -2,7 +2,9 @@
 
 export(initialOrder)
 export(methylScaper)
+export(percent_C)
 export(plotSequence)
+export(proportion_color)
 export(refineFunction)
 export(runAlign)
 import(shiny)
