@@ -36,6 +36,7 @@ percent_C <- function(orderObject, plotPercents = FALSE){
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param color Indicates which data set to compute proportions for
+#' @param plotHistogram Indicates whether to plot a histogram of the proportions across all reads.
 #' @export
 proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE){
   color.indicator <- ifelse(color=="YELLOW", -1, 1)

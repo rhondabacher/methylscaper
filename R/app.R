@@ -5,6 +5,7 @@ ui <- navbarPage("methylScaper",
                           fileInput("ref.file", label = "Reference File"),
                           textInput("gch.file.name", label = "GCH File Name"),
                           textInput("hcg.file.name", label = "HCG File Name"),
+                          textInput("processing.log.name", label = "Processing Log File Name"),
                           actionButton("run.align", label = "Run")),
                  tabPanel("Analysis",
 
@@ -61,7 +62,8 @@ server <- function(input, output) {
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
           progress$set(value = value, message = message, detail = detail)}
 
-        align.out <- runAlign(ref, fasta, fasta.subset = (1:100), updateProgress = updateProgress)
+        align.out <- runAlign(ref, fasta, fasta.subset = (1:50), updateProgress = updateProgress,
+                              log.file = input$processing.log.name)
         write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
         write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")
     })
@@ -69,8 +71,7 @@ server <- function(input, output) {
 
 
 
-
-    actionsLog <- reactiveValues(log = c("Loading Day7 data"))
+    actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
     input.Data <- reactiveValues(gch = NULL, hcg = NULL)
 
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))

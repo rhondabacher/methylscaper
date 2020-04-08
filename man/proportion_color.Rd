@@ -10,6 +10,8 @@ proportion_color(orderObject, color = "YELLOW", plotHistogram = FALSE)
 \item{orderObject}{An object of class \code{orderObject}}
 
 \item{color}{Indicates which data set to compute proportions for}
+
+\item{plotHistogram}{Indicates whether to plot a histogram of the proportions across all reads.}
 }
 \description{
 Calculate the proportion of methylated bases for the GCH and HCG data sets.
