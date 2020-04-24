@@ -62,7 +62,7 @@ server <- function(input, output) {
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
           progress$set(value = value, message = message, detail = detail)}
 
-        align.out <- runAlign(ref, fasta, fasta.subset = (1:50), updateProgress = updateProgress,
+        align.out <- runAlign(ref, fasta, updateProgress = updateProgress,
                               log.file = input$processing.log.name)
         write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
         write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")

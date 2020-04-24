@@ -11,7 +11,9 @@ seqalign <- function(i, fasta, ref.string) {
   allseq <- list(align.bb, align.ab, align.aa)
   useseq <- allseq[[maxAlign]]
 
-  if (score(useseq) > -500) { # if all alignments are "bad" then throw them away.-500 worked well in practice.
+  alignment.score <- score(useseq)
+
+  if (alignment.score > -500) { # if all alignments are "bad" then throw them away.-500 worked well in practice. How can we incorporate ALL of the scores to find the right cutoff?
     SEQ1 = s2c(paste(pattern(useseq)))
     SEQ2 = s2c(paste(subject(useseq)))
     toreplace <- SEQ1[which(SEQ2=="-")]
@@ -22,7 +24,7 @@ seqalign <- function(i, fasta, ref.string) {
     if (maxAlign == 1) {SEQ2 <- s2c(paste(reverseComplement(DNAString(c2s(SEQ2)))))}
     alignedseq <- SEQ2
   } else alignedseq <- NULL
-  return(alignedseq)
+  return(list(a = alignedseq, score = alignment.score))
 }
 
 mapseq <- function(i, sites) {
@@ -36,7 +38,9 @@ mapseq <- function(i, sites) {
   for (j in 1:(length(sites.temp)-1)) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
     s1 <- editseq[pmax(1, sites.temp[j])]
-    s2 <- editseq[pmin(650, sites.temp[j+1])]
+    s2 <- editseq[pmin(length(i), sites.temp[j+1])] # currently using the length of the current read, but
+    # 650 was the length of the reference. However, this seems to be working.
+
     if (s1 == "2" & s2 == "2") {
       fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
         fillvec <- 0} else if (s1 == "-2" & s2 == "2") {
@@ -83,13 +87,19 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)), multicorePara
                                                                  value = (0.1+ 0.65/length(fasta) * i))
     seqalign(i, fasta, ref.string)
     })
-  else alignedseq <- bplapply(1:length(fasta), function(i) seqalign(i, fasta, ref.string), BPPARAM = multicoreParam)
+  else alignedseq <- bplapply(1:length(fasta),
+                              function(i) seqalign(i, fasta, ref.string), BPPARAM = multicoreParam)
+  scores <- sapply(alignedseq, function(i) i$score) # this needs to be tested
+  alignedseq <- lapply(alignedseq, function(i) i$a)
   names(alignedseq) <- names(fasta)
+
+  # save(scores, file="~/Desktop/scores.RData")
 
   # Only keep the 'good' alignments
   good.alignments <- which(!sapply(alignedseq, is.null))
   log.vector <- c(log.vector, paste("Throwing out", length(alignedseq) - length(good.alignments), "alignments"))
   alignedseq <- alignedseq[good.alignments]
+
 
   if (is.function(updateProgress)) updateProgress(message = "Identifying sites", value = 0.75)
   # We want to avoid GCG sites:
@@ -104,6 +114,7 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)), multicorePara
 
   if (is.function(updateProgress)) updateProgress(message = "Mapping sites", value = 0.8)
 
+
   if (is.null(multicoreParam))
   {
     gcmap <- lapply(alignedseq, mapseq, sites=GCsites)
@@ -117,11 +128,13 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)), multicorePara
 
   if (is.function(updateProgress)) updateProgress(message = "Preparing matrices", value = 0.95)
 
+
+  # this is the section that introduces NA values... why??
   saveCG <- data.matrix(do.call(rbind, lapply(cgmap, function(x) (x))))
-  saveCG <- cbind(rownames(saveCG), saveCG)
+  #saveCG <- cbind(rownames(saveCG), saveCG)
 
   saveGC <- data.matrix(do.call(rbind, lapply(gcmap, function(x) (x))))
-  saveGC <- cbind(rownames(saveGC), saveGC)
+  #saveGC <- cbind(rownames(saveGC), saveGC)
   if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
 
   if (!is.null(log.file))
