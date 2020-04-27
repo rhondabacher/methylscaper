@@ -20,11 +20,6 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
 
   log.vector <- c("Beginning preprocessing")
 
-  penalty.mat <- matrix(0,length(DNA_ALPHABET[1:4]),length(DNA_ALPHABET[1:4]))
-  penalty.mat[1:4,1:4] <- c(1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1)
-  penalty.mat[penalty.mat==0] <- -2
-  rownames(penalty.mat) <- colnames(penalty.mat) <- DNA_ALPHABET[1:4]
-
   if (is.function(updateProgress)) updateProgress(message = "Aligning sequences", value = 0.1)
   alignment.out <- alignSequences(fasta, ref.string, log.vector, multicoreParam, updateProgress)
 
@@ -58,7 +53,6 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
 
   if (is.function(updateProgress)) updateProgress(message = "Preparing matrices", value = 0.95)
 
-
   # this is the section that introduces NA values... why??
   saveCG <- data.matrix(do.call(rbind, lapply(cgmap, function(x) (x))))
   #saveCG <- cbind(rownames(saveCG), saveCG)
@@ -90,7 +84,6 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
     else seqalign.out <- bplapply(1:length(fasta),
                                   function(i) seqalign(fasta[[i]], ref.string),
                                   BPPARAM = multicoreParam)
-
     useseqs <- sapply(seqalign.out, function(i) i$u)
     scores <- sapply(seqalign.out, function (i) i$score)
     maxAligns <- sapply(seqalign.out, function (i) i$maxAlign)
@@ -100,7 +93,7 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
 
     good.alignment.idxs <- which(scores > score.cutoff)
 
-    alignedseq <- sapply(good.alignment.idxs, function(i){
+    alignedseq <- lapply(good.alignment.idxs, function(i){
         SEQ1 = s2c(paste(pattern(useseqs[[i]])))
         SEQ2 = s2c(paste(subject(useseqs[[i]])))
 
@@ -114,7 +107,6 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
 
         SEQ2
     })
-
     log.vector <- c(log.vector, paste("Throwing out", length(useseqs) - length(good.alignment.idxs), "alignments"))
 
     names(alignedseq) <- names(fasta)[good.alignment.idxs]
@@ -137,7 +129,7 @@ seqalign <- function(read, ref.string) {
   maxAlign <- which.max(c(score(align.bb), score(align.ab), score(align.aa)))
   allseq <- list(align.bb, align.ab, align.aa)
   useseq <- allseq[[maxAlign]]
-
+  
   return(list(u = useseq, score = score(useseq), maxAlign = maxAlign))
 }
 
@@ -152,8 +144,7 @@ mapseq <- function(i, sites) {
   for (j in 1:(length(sites.temp)-1)) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
     s1 <- editseq[pmax(1, sites.temp[j])]
-    s2 <- editseq[pmin(length(i), sites.temp[j+1])] # currently using the length of the current read, but
-    # 650 was the length of the reference. However, this seems to be working.
+    s2 <- editseq[pmin(length(i), sites.temp[j+1])]
 
     if (s1 == "2" & s2 == "2") {
       fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
