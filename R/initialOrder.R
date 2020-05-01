@@ -104,8 +104,8 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
 recode <- function(input.GCH, input.HCG)
 {
-    input.GCH[input.GCH=="."] <- 99
-    input.GCH <- data.matrix(input.GCH)
+    input.GCH[input.GCH=="." | input.GCH == "N"] <- 99
+    input.GCH <- apply(input.GCH, 2, as.numeric)
     input.GCH[input.GCH==2] <- -4
     input.GCH[input.GCH==1] <- -3
     input.GCH[input.GCH==0] <- -2.5
@@ -114,8 +114,8 @@ recode <- function(input.GCH, input.HCG)
     input.GCH[input.GCH==-99] <- -2
     input.GCH[input.GCH==99] <- 0
 
-    input.HCG[input.HCG=="."] <- 99
-    input.HCG <- data.matrix(input.HCG)
+    input.HCG[input.HCG=="." | input.HCG == "N"] <- 99
+    input.HCG <- apply(input.HCG, 2, as.numeric)
     input.HCG[input.HCG==2] <- 4
     input.HCG[input.HCG==1] <- 3
     input.HCG[input.HCG==0] <- 2.5

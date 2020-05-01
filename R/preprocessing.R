@@ -8,7 +8,7 @@
 #' @param multicoreParam A MulticoreParam object, used to align sequences in parallel.
 #' @param updateProgress Used to add a progress bar to the Shiny app. Should not be used otherwise.
 #'
-#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement pairwiseAlignment score pattern subject
+#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement pairwiseAlignment score alignedPattern alignedSubject
 #' @importFrom seqinr c2s s2c read.fasta
 #' @importFrom BiocParallel bplapply
 #' @export
@@ -74,15 +74,23 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
 # this needs the log.vector, multicoreParam, and updateProgress so that we can continue keeping track of these things
 alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL, updateProgress = NULL)
 {
+    ## this creates the substitution matrix for use in alignment
+    penalty.mat <- matrix(0,length(DNA_ALPHABET[1:4]),length(DNA_ALPHABET[1:4]))
+    penalty.mat[1:4,1:4] <- c(1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1)
+    penalty.mat[penalty.mat==0] <- -1
+    penalty.mat <- cbind(penalty.mat, c(0,0,0,0))
+    penalty.mat <- rbind(penalty.mat, c(0,0,0,0,1))
+    rownames(penalty.mat) <- colnames(penalty.mat) <- c(DNA_ALPHABET[1:4], "N")
+
     if (is.null(multicoreParam)) seqalign.out <- lapply(1:length(fasta), function(i) {
 
         if (is.function(updateProgress))updateProgress(message = "Aligning seqences",
                                                        detail = paste(i, "/", length(fasta)),
                                                        value = (0.1+ 0.65/length(fasta) * i))
-        seqalign(fasta[[i]], ref.string)
+        seqalign(fasta[[i]], ref.string, substitutionMatrix = penalty.mat)
       })
     else seqalign.out <- bplapply(1:length(fasta),
-                                  function(i) seqalign(fasta[[i]], ref.string),
+                                  function(i) seqalign(fasta[[i]], ref.string, substitutionMatrix = penalty.mat),
                                   BPPARAM = multicoreParam)
     useseqs <- sapply(seqalign.out, function(i) i$u)
     scores <- sapply(seqalign.out, function (i) i$score)
@@ -94,8 +102,8 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
     good.alignment.idxs <- which(scores > score.cutoff)
 
     alignedseq <- lapply(good.alignment.idxs, function(i){
-        SEQ1 = s2c(paste(pattern(useseqs[[i]])))
-        SEQ2 = s2c(paste(subject(useseqs[[i]])))
+        SEQ1 = s2c(paste(alignedPattern(useseqs[[i]])))
+        SEQ2 = s2c(paste(alignedSubject(useseqs[[i]])))
 
         toreplace <- SEQ1[which(SEQ2=="-")]
         toreplace[toreplace!="C"] <- "."
@@ -117,19 +125,19 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
 
 
 # aligns a single read to the reference, returns the useseq string. Alignment is finished in the alignSequences fn
-seqalign <- function(read, ref.string) {
+seqalign <- function(read, ref.string, ...) {
 
   fasta.string <- DNAString(toupper(c2s(read)))
 
   align.bb <- pairwiseAlignment(reverseComplement(ref.string),
-                                reverseComplement(fasta.string),type="global-local", gapOpening=8)
-  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fasta.string),type="global-local", gapOpening=8)
-  align.aa <- pairwiseAlignment(ref.string, fasta.string,type="global-local", gapOpening=8)
+                                reverseComplement(fasta.string),type="global-local", gapOpening=8, ...)
+  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fasta.string),type="global-local", gapOpening=8, ...)
+  align.aa <- pairwiseAlignment(ref.string, fasta.string,type="global-local", gapOpening=8, ...)
 
   maxAlign <- which.max(c(score(align.bb), score(align.ab), score(align.aa)))
   allseq <- list(align.bb, align.ab, align.aa)
   useseq <- allseq[[maxAlign]]
-  
+
   return(list(u = useseq, score = score(useseq), maxAlign = maxAlign))
 }
 

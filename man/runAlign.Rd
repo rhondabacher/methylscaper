@@ -9,7 +9,8 @@ runAlign(
   fasta,
   fasta.subset = (1:length(fasta)),
   multicoreParam = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  log.file = NULL
 )
 }
 \arguments{
