@@ -147,6 +147,7 @@ mapseq <- function(i, sites) {
   editseq[sites][editseq[sites] == "C"] <- "2"
   editseq[sites][editseq[sites] == "G"] <- "."
   editseq[sites][editseq[sites] == "A"] <- "."
+  editseq[sites][editseq[sites] == "N"] <- "."
 
   sites.temp <- c(0, sites, length(editseq)+1)
   for (j in 1:(length(sites.temp)-1)) {
