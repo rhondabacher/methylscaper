@@ -22,6 +22,9 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
     ## File checks:
     if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
+    
+    if (all(rownames(input.GCH) == input.GCH[,1])) input.GCH <- input.GCH[,-1]
+    if (all(rownames(input.HCG) == input.HCG[,1])) input.HCG <- input.HCG[,-1]
 
 
     if (is.function(updateProgress)) updateProgress(message = "Recoding input data", value = 0.1)
