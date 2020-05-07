@@ -304,7 +304,7 @@ server <- function(input, output) {
 #'
 #' @import shiny
 #' @importFrom grDevices dev.off pdf png svg
-#' @importFrom utils read.table write.table
+#' @importFrom utils read.table write.table write.csv
 #' @importFrom svglite svglite
 #' @export
 methylScaper <- function() {

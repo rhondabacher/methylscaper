@@ -3,6 +3,8 @@
 #' @param orderObject An object of class \code{orderObject}
 #' @param plotPercents Logical, indicates whether to generate the percentage plot
 #' @param ... Additional parameters used by the \code{plot} function.
+#' 
+#' @importFrom graphics hist lines plot points
 #' @export
 percent_C <- function(orderObject, plotPercents = FALSE, ...){
     dat <- orderObject$toClust
@@ -39,6 +41,8 @@ percent_C <- function(orderObject, plotPercents = FALSE, ...){
 #' @param color Indicates which data set to compute proportions for
 #' @param plotHistogram Indicates whether to plot a histogram of the proportions across all reads.
 #' @param ... Additional parameters used by the \code{hist} function.
+#' 
+#' @importFrom graphics hist
 #' @export
 proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE, ...){
   color.indicator <- ifelse(color=="YELLOW", -1, 1)

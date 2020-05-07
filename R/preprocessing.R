@@ -7,6 +7,7 @@
 #' @param fasta.subset A vector of indices indicating which sequences to process.
 #' @param multicoreParam A MulticoreParam object, used to align sequences in parallel.
 #' @param updateProgress Used to add a progress bar to the Shiny app. Should not be used otherwise.
+#' @param log.file String indicating where to save a log of the alignment process. If left NULL, no log is saved.
 #'
 #' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement pairwiseAlignment score alignedPattern alignedSubject
 #' @importFrom seqinr c2s s2c read.fasta
