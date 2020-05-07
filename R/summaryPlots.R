@@ -2,8 +2,9 @@
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param plotPercents Logical, indicates whether to generate the percentage plot
+#' @param ... Additional parameters used by the \code{plot} function.
 #' @export
-percent_C <- function(orderObject, plotPercents = FALSE){
+percent_C <- function(orderObject, plotPercents = FALSE, ...){
     dat <- orderObject$toClust
     red.sites <- which(dat[1,1:ncol(dat)] == 4 |
                           dat[1,1:ncol(dat)] == 1)
@@ -19,7 +20,7 @@ percent_C <- function(orderObject, plotPercents = FALSE){
     if (plotPercents)
     {
         plot(x = red.sites - ncol(dat)/2, y = c.red,
-             col="darkred", pch=19, ylim=c(0,1), xlab = "Region (Base Pair)", ylab="%C")
+             col="darkred", pch=19, ylim=c(0,1), xlab = "Region (Base Pair)", ylab="%C", ...)
         lines(x = red.sites - ncol(dat)/2, y = c.red, col="darkred")
         points(x = yellow.sites, y = c.yellow, col="goldenrod", pch=19)
         lines(x = yellow.sites, y = c.yellow, col="goldenrod")
@@ -37,18 +38,18 @@ percent_C <- function(orderObject, plotPercents = FALSE){
 #' @param orderObject An object of class \code{orderObject}
 #' @param color Indicates which data set to compute proportions for
 #' @param plotHistogram Indicates whether to plot a histogram of the proportions across all reads.
+#' @param ... Additional parameters used by the \code{hist} function.
 #' @export
-proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE){
+proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE, ...){
   color.indicator <- ifelse(color=="YELLOW", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){
     sum(x == color.indicator * 3 | x == color.indicator * 4) / (length(x) / 2)
   })
   if (plotHistogram) hist(Proportion,
-                          main=paste("Proportion of", ifelse(color.indicator==-1, "Yellow", "Red"), "per Read"),
                           xlim=c(0,1),
                           border=ifelse(color == "YELLOW", "goldenrod", "darkred"),
                           col="gray",
-                          lwd=2)
+                          lwd=2, ...)
 
   return(Proportion)
 }

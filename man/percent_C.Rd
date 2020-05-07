@@ -4,12 +4,14 @@
 \alias{percent_C}
 \title{Calculates the percentage of C at each methylation site}
 \usage{
-percent_C(orderObject, plotPercents = FALSE)
+percent_C(orderObject, plotPercents = FALSE, ...)
 }
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}}
 
 \item{plotPercents}{Logical, indicates whether to generate the percentage plot}
+
+\item{...}{Additional parameters used by the \code{plot} function.}
 }
 \description{
 Calculates the percentage of C at each methylation site
