@@ -64,8 +64,13 @@ server <- function(input, output) {
 
         align.out <- runAlign(ref, fasta, updateProgress = updateProgress,
                               log.file = input$processing.log.name)
-        write.table(align.out$hcg, file=input$hcg.file.name, quote=F, row.names = F, sep="\t")
-        write.table(align.out$gch, file=input$gch.file.name, quote=F, row.names = F, sep="\t")
+        
+        hcg.file.name <- input$hcg.file.name
+        gch.file.name <- input$gch.file.name
+        if (grepl(pattern = ".csv", x = hcg.file.name, fixed=TRUE) == FALSE) hcg.file.name <- paste0(hcg.file.name, ".csv")
+        if (grepl(pattern = ".csv", x = gch.file.name, fixed=TRUE) == FALSE) gch.file.name <- paste0(gch.file.name, ".csv")
+        write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep="\t")
+        write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep="\t")
     })
 
 
@@ -211,7 +216,7 @@ server <- function(input, output) {
 
     output$down_log <- downloadHandler(
         filename = function(){
-            "changes.log"
+            "changes.txt"
         },
         content = function(file){
             fileConn <- file(file)
