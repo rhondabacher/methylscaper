@@ -16,7 +16,7 @@ buildOrderObjectShiny <- function(gch, hcg, method,
 
 refineOrderShiny <- function(orderObject, refine.method, coordinatesObject)
 {
-  refineFunction(orderObject, coordinatesObject$refine.start, coordinatesObject$refine.stop, refine.method)
+  refineFunction(orderObject, coordinatesObject$refine.start, coordinatesObject$refine.stop, Method=refine.method)
 }
 
 makePlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
