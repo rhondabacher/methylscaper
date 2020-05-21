@@ -78,5 +78,4 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
       segments(0,top1,plot1,top1, lwd=1)
       segments(plot2,top1, 1,top1, lwd=1)
     } 
-    return(list(toPlot.fix.og, Title, blankWidth, input.HCG.fix, input.GCH.fix))
   }
