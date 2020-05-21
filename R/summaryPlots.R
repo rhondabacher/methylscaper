@@ -21,13 +21,17 @@ percent_C <- function(orderObject, plotPercents = FALSE, ...){
     })
     if (plotPercents)
     {
-        plot(x = red.sites - ncol(dat)/2, y = c.red,
-             col="darkred", pch=19, ylim=c(0,1), xlab = "Region (Base Pair)", ylab="%C", ...)
-        lines(x = red.sites - ncol(dat)/2, y = c.red, col="darkred")
-        points(x = yellow.sites, y = c.yellow, col="goldenrod", pch=19)
-        lines(x = yellow.sites, y = c.yellow, col="goldenrod")
-        n.sites <- length(union(red.sites, yellow.sites))
-        labs <- union(red.sites, yellow.sites)[seq(1, n.sites, by=n.sites/12)]
+       plot(x = red.sites - ncol(dat)/2, y = c.red,
+            col="brown1", pch=19, ylim=c(0,1), xlab = "Region (Base Pair)", ylab="%C",
+            bty='n', cex.lab=1.3, xaxt='n', yaxt='n',...)
+       axis(side = 1, lwd = 2, cex.axis=1.2)
+       axis(side = 2, lwd = 2, cex.axis=1.2)
+       lines(x = red.sites - ncol(dat)/2, y = c.red, col="brown1")
+       points(x = yellow.sites, y = c.yellow, col="gold2", pch=19)
+       lines(x = yellow.sites, y = c.yellow, col="gold2")
+      
+       n.sites <- length(union(red.sites, yellow.sites))
+       labs <- union(red.sites, yellow.sites)[seq(1, n.sites, by=n.sites/12)]
     }
     final <- list(c.red, c.yellow)
     names(final) = c("red", "yellow")
@@ -49,12 +53,14 @@ proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE,
   Proportion <- apply(orderObject$toClust, 1, function(x){
     sum(x == color.indicator * 3 | x == color.indicator * 4) / (length(x) / 2)
   })
-  if (plotHistogram) hist(Proportion,
-                          xlim=c(0,1),
-                          border=ifelse(color == "YELLOW", "goldenrod", "darkred"),
-                          col="gray",
-                          lwd=2, ...)
-
+  if (plotHistogram) {
+    opar <- par(lwd=4)
+    H = hist(Proportion, plot=F)
+    plot(H, xlim=c(0,1), border=ifelse(color == "YELLOW", "gold2", "brown1"),
+       col="gray75",
+       lwd=2,...)
+    par(opar) 
+  }
   return(Proportion)
 }
 
