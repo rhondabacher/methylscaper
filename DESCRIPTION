@@ -1,7 +1,7 @@
 Package: methylScaper
 Title: Visualization of Methylation Data
 Description: A shiny app for visualizing methylation data.
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: person("Parker", "Knight", email = "pknight24@ufl.edu", role = c("aut", "cre"))
 Depends: R (>= 3.6.0)
 License: GPL-2

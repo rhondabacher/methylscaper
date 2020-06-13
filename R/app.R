@@ -49,7 +49,6 @@ ui <- navbarPage("methylScaper",
 
 server <- function(input, output) {
 
-
     # alignment handling
     observeEvent(input$run.align, {
         ref <- read.fasta(input$ref.file$datapath)
@@ -313,5 +312,7 @@ server <- function(input, output) {
 #' @importFrom svglite svglite
 #' @export
 methylScaper <- function() {
-	options(shiny.maxRequestSize = 10000*1024^2)
+
+	options(shiny.maxRequestSize = 10000*1024^5) 
+
 	shinyApp(ui = ui, server = server)}
