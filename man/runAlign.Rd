@@ -9,7 +9,8 @@ runAlign(
   fasta,
   fasta.subset = (1:length(fasta)),
   multicoreParam = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  log.file = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ runAlign(
 \item{multicoreParam}{A MulticoreParam object, used to align sequences in parallel.}
 
 \item{updateProgress}{Used to add a progress bar to the Shiny app. Should not be used otherwise.}
+
+\item{log.file}{String indicating where to save a log of the alignment process. If left NULL, no log is saved.}
 }
 \description{
 Runs the preprocessing methods on sequences.

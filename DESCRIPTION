@@ -12,5 +12,9 @@ Imports:
   seriation,
   BiocParallel,
   seqinr,
-  Biostrings
-RoxygenNote: 7.0.2
+  Biostrings,
+  Rfast,
+  svglite
+RoxygenNote: 7.1.0
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr

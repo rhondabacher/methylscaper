@@ -5,11 +5,12 @@
 #' @param orderObject An object of class \code{orderObject}, generated with the \code{initialOrder} function.
 #' @param refineStart The index of the first sample (row) used in the refinement.
 #' @param refineEnd The index of the last sample used in the refinement.
+#' @param reverse Logical, indicates whether to reverse the refined ordering.
 #' @param Method The seriation method used to perform the refinement.
 #' 
 #' @return The new complete ordering with the refinement applied.
 #' @export
-refineFunction <- function(orderObject, refineStart, refineEnd,  Method="HC_average") {
+refineFunction <- function(orderObject, refineStart, refineEnd,  reverse = FALSE, Method="HC_average") {
   
   toClust <- orderObject$toClust
   order1 <- orderObject$order1
@@ -36,21 +37,8 @@ refineFunction <- function(orderObject, refineStart, refineEnd,  Method="HC_aver
   order.final <- order1
   order.final[refineStart:refineEnd] <- order.new
   
+  if (reverse) order.final <- rev(order.final)
   
-  # if (isTRUE(reverse)) {order.new <- rev(order.new)}
-  
-  # This is because we only want the updated order of the intended rows:
-  # if (refineStart > 1 & refineEnd < nrow(toClust)) {
-  #   order.final <- c(order1[seq(1,(refineStart-1))], 
-  #                    order.new, 
-  #                    order1[seq(from=(refineEnd+1), to=nrow(toClust))])
-  # } else if (refineStart == 1) {
-  #   order.final <- c(order.new, 
-  #                    order1[seq((refineEnd+1),nrow(toClust))])
-  # }  else if (refineEnd == nrow(toClust)) {
-  #   order.final <- c(order1[seq(1,(refineStart-1))],
-  #                    order.new)
-  # }
   return(order.final)
 }
 

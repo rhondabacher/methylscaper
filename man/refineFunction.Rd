@@ -4,7 +4,13 @@
 \alias{refineFunction}
 \title{Refinement step}
 \usage{
-refineFunction(orderObject, refineStart, refineEnd, Method = "HC_average")
+refineFunction(
+  orderObject,
+  refineStart,
+  refineEnd,
+  reverse = FALSE,
+  Method = "HC_average"
+)
 }
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}, generated with the \code{initialOrder} function.}
@@ -12,6 +18,8 @@ refineFunction(orderObject, refineStart, refineEnd, Method = "HC_average")
 \item{refineStart}{The index of the first sample (row) used in the refinement.}
 
 \item{refineEnd}{The index of the last sample used in the refinement.}
+
+\item{reverse}{Logical, indicates whether to reverse the refined ordering.}
 
 \item{Method}{The seriation method used to perform the refinement.}
 }
