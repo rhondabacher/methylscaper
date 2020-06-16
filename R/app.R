@@ -13,8 +13,8 @@ ui <- navbarPage("methylScaper",
                tabPanel( "Sequence Plot",
                       sidebarLayout(
                           sidebarPanel(
-                              fileInput("gch.file", label = "GCH Data file input (csv)"),
-                              fileInput("hcg.file", label = "HCG Data file input (csv)"),
+                              fileInput("gch.file", label = "GCH Data file input"),
+                              fileInput("hcg.file", label = "HCG Data file input"),
                               selectInput("method", label = "Seriation Method:",
                                           choices = c("PCA", "ARSA")),
                               selectInput("refineMethod", label = "Refinement Method:",
@@ -66,10 +66,10 @@ server <- function(input, output) {
         
         hcg.file.name <- input$hcg.file.name
         gch.file.name <- input$gch.file.name
-        if (grepl(pattern = ".csv", x = hcg.file.name, fixed=TRUE) == FALSE) hcg.file.name <- paste0(hcg.file.name, ".csv")
-        if (grepl(pattern = ".csv", x = gch.file.name, fixed=TRUE) == FALSE) gch.file.name <- paste0(gch.file.name, ".csv")
-        write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep="\t")
-        write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep="\t")
+        
+        writeMethylationData(dat = align.out$hcg, filepath = hcg.file.name)
+        writeMethylationData(dat = align.out$gch, filepath = gch.file.name)
+        
     })
 
 
@@ -80,10 +80,8 @@ server <- function(input, output) {
 
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
-        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1,
-                                 stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1,
-                                     stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+      temp.gch <- readMethylationData(filepath = input$gch.file$datapath)
+      temp.hcg <- readMethylationData(filepath = input$hcg.file$datapath)
         if (nrow(temp.gch) == nrow(temp.hcg))
         {
           coordinatesObject$refine.start <- 0
@@ -308,7 +306,7 @@ server <- function(input, output) {
 #'
 #' @import shiny
 #' @importFrom grDevices dev.off pdf png svg
-#' @importFrom utils read.table write.table write.csv
+#' @importFrom utils write.csv
 #' @importFrom svglite svglite
 #' @export
 methylScaper <- function() {

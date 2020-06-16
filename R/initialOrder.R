@@ -43,14 +43,13 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
         weighted = TRUE
         if (weightFeature == "red") {
             FEATURE = 3
-            weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+            weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x==FEATURE))
         }
         if (weightFeature == "yellow") {
             FEATURE = -3
-            weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x[x==FEATURE]))
+            weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x==FEATURE))
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
-        weightVector <- abs(weightVector)
     }
 
 
@@ -67,8 +66,12 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
             {
                 x.centered[,k] <- x.centered[,k] - weighted.mean[k]
             }
-            svd.out <- svd(x.centered, nu=1, nv=0)
-            order1 <- order(svd.out$u[,1])
+            x.centered <- sqrt(w) * x.centered
+            svd.out <- svd(x.centered, nv=0)
+            pc <- svd.out$u
+            for (k in 1:nrow(pc)) pc[k,] * svd.out$d
+            pc <- pc / sqrt(w)
+            order1 <- order(pc[,1])
         }
         else
         {
@@ -83,7 +86,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
         {
             w <- weightVector / sum(weightVector)
             w.sqrt <- sqrt(w)
-            toClust.weighted <- diag(w) %*% toClust
+            toClust.weighted <- diag(w.sqrt) %*% toClust
 
             distMat <- as.dist(Rfast::Dist(toClust.weighted,method = "euclidean"))
             order1 <- seriation::seriate(distMat, method=Method)
@@ -100,6 +103,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     if (isTRUE(reverse)) {order1 <- rev(order1)}
     orderObject <- list(toClust = toClust, order1 = order1)
     if (Method != "PCA") orderObject$distMat <- distMat
+    if (weighted) orderObject$weights <- weightVector
     if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
     return(orderObject)
 }
