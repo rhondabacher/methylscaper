@@ -13,8 +13,8 @@ ui <- navbarPage("methylScaper",
                tabPanel( "Sequence Plot",
                       sidebarLayout(
                           sidebarPanel(
-                              fileInput("gch.file", label = "GCH Data file input (csv)"),
-                              fileInput("hcg.file", label = "HCG Data file input (csv)"),
+                              fileInput("gch.file", label = "GCH Data file input"),
+                              fileInput("hcg.file", label = "HCG Data file input"),
                               selectInput("method", label = "Seriation Method:",
                                           choices = c("PCA", "ARSA")),
                               selectInput("refineMethod", label = "Refinement Method:",
@@ -67,10 +67,31 @@ server <- function(input, output) {
         
         hcg.file.name <- input$hcg.file.name
         gch.file.name <- input$gch.file.name
-        if (grepl(pattern = ".csv", x = hcg.file.name, fixed=TRUE) == FALSE) hcg.file.name <- paste0(hcg.file.name, ".csv")
-        if (grepl(pattern = ".csv", x = gch.file.name, fixed=TRUE) == FALSE) gch.file.name <- paste0(gch.file.name, ".csv")
-        write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep="\t")
-        write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep="\t")
+        
+        ## first handle the hcg file
+        if (grepl(pattern = ".csv", x = hcg.file.name, fixed=TRUE))
+          write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep=",")
+        else if (grepl(pattern = ".tsv", x = hcg.file.name, fixed=TRUE) | 
+                 grepl(pattern = ".txt", x = hcg.file.name, fixed=TRUE))
+          write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep="\t")
+        else # if the file isn't csv, tsv, or txt, we force it to be csv
+          {
+            hcg.file.name <- paste0(hcg.file.name, ".csv")
+            write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep=",")
+          }
+        
+        # now the gch file
+        if (grepl(pattern = ".csv", x = gch.file.name, fixed=TRUE))
+          write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep=",")
+        else if (grepl(pattern = ".tsv", x = gch.file.name, fixed=TRUE) | 
+                 grepl(pattern = ".txt", x = gch.file.name, fixed=TRUE))
+          write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep="\t")
+        else # if the file isn't csv, tsv, or txt, we force it to be csv
+        {
+          gch.file.name <- paste0(gch.file.name, ".csv")
+          write.table(align.out$gch, file=hcg.file.name, quote=F, row.names = F, sep=",")
+        }
+        
     })
 
 
@@ -81,10 +102,21 @@ server <- function(input, output) {
 
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
+      if (grepl(pattern = ".tsv", x = input$gch.file$datapath, fixed=TRUE) | 
+          grepl(pattern = ".txt", x = input$gch.file$datapath, fixed = TRUE))
         temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1,
                                  stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+      else
+        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1,
+                               stringsAsFactors = F, quote = "", sep = ",", comment.char = "")
+      if (grepl(pattern = ".tsv", x = input$hcg.file$datapath, fixed=TRUE) | 
+          grepl(pattern = ".txt", x = input$hcg.file$datapath, fixed = TRUE))
         temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1,
-                                     stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+                               stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
+      else
+        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1,
+                               stringsAsFactors = F, quote = "", sep = ",", comment.char = "")
+      
         if (nrow(temp.gch) == nrow(temp.hcg))
         {
           coordinatesObject$refine.start <- 0

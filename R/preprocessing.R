@@ -54,7 +54,6 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
 
   if (is.function(updateProgress)) updateProgress(message = "Preparing matrices", value = 0.95)
 
-  # this is the section that introduces NA values... why??
   saveCG <- data.matrix(do.call(rbind, lapply(cgmap, function(x) (x))))
   saveCG <- cbind(rownames(saveCG), saveCG)
 
