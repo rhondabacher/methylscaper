@@ -67,29 +67,8 @@ server <- function(input, output) {
         hcg.file.name <- input$hcg.file.name
         gch.file.name <- input$gch.file.name
         
-        ## first handle the hcg file
-        if (grepl(pattern = ".csv", x = hcg.file.name, fixed=TRUE))
-          write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep=",")
-        else if (grepl(pattern = ".tsv", x = hcg.file.name, fixed=TRUE) | 
-                 grepl(pattern = ".txt", x = hcg.file.name, fixed=TRUE))
-          write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep="\t")
-        else # if the file isn't csv, tsv, or txt, we force it to be csv
-          {
-            hcg.file.name <- paste0(hcg.file.name, ".csv")
-            write.table(align.out$hcg, file=hcg.file.name, quote=F, row.names = F, sep=",")
-          }
-        
-        # now the gch file
-        if (grepl(pattern = ".csv", x = gch.file.name, fixed=TRUE))
-          write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep=",")
-        else if (grepl(pattern = ".tsv", x = gch.file.name, fixed=TRUE) | 
-                 grepl(pattern = ".txt", x = gch.file.name, fixed=TRUE))
-          write.table(align.out$gch, file=gch.file.name, quote=F, row.names = F, sep="\t")
-        else # if the file isn't csv, tsv, or txt, we force it to be csv
-        {
-          gch.file.name <- paste0(gch.file.name, ".csv")
-          write.table(align.out$gch, file=hcg.file.name, quote=F, row.names = F, sep=",")
-        }
+        writeMethylationData(dat = align.out$hcg, filepath = hcg.file.name)
+        writeMethylationData(dat = align.out$gch, filepath = gch.file.name)
         
     })
 
@@ -101,21 +80,8 @@ server <- function(input, output) {
 
     observe({if (!is.null(input$gch.file) & !is.null(input$hcg.file))
     {
-      if (grepl(pattern = ".tsv", x = input$gch.file$datapath, fixed=TRUE) | 
-          grepl(pattern = ".txt", x = input$gch.file$datapath, fixed = TRUE))
-        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1,
-                                 stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-      else
-        temp.gch <- read.table(input$gch.file$datapath, header=T, row.names = 1,
-                               stringsAsFactors = F, quote = "", sep = ",", comment.char = "")
-      if (grepl(pattern = ".tsv", x = input$hcg.file$datapath, fixed=TRUE) | 
-          grepl(pattern = ".txt", x = input$hcg.file$datapath, fixed = TRUE))
-        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1,
-                               stringsAsFactors = F, quote = "", sep = "\t", comment.char = "")
-      else
-        temp.hcg <- read.table(input$hcg.file$datapath, header=T, row.names = 1,
-                               stringsAsFactors = F, quote = "", sep = ",", comment.char = "")
-      
+      temp.gch <- readMethylationData(filepath = input$gch.file$datapath)
+      temp.hcg <- readMethylationData(filepath = input$hcg.file$datapath)
         if (nrow(temp.gch) == nrow(temp.hcg))
         {
           coordinatesObject$refine.start <- 0
@@ -340,7 +306,7 @@ server <- function(input, output) {
 #'
 #' @import shiny
 #' @importFrom grDevices dev.off pdf png svg
-#' @importFrom utils read.table write.table write.csv
+#' @importFrom utils write.csv
 #' @importFrom svglite svglite
 #' @export
 methylScaper <- function() {
