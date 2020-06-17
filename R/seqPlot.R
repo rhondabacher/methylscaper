@@ -26,9 +26,9 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
     order1 <- orderObject$order1
     input.GCH <- toClust[,1:(ncol(toClust) / 2)]
     input.HCG <- toClust[,(ncol(toClust) / 2 + 1):ncol(toClust)]
-    # X <- sum(toClust[order1[1:5],] == -3)
-    # Y <- sum(toClust[rev(order1)[1:5],] == -3)
-    # if (Y > X) {order1 <- rev(order1)}
+    X <- sum(toClust[order1[1:5],] == -3)
+    Y <- sum(toClust[rev(order1)[1:5],] == -3)
+    if (Y > X) {order1 <- rev(order1)}
     
     mycols <- c("darkgoldenrod2", "yellow", "gray62",  "black", "gray80", "white", "gray80", "black", "gray62", "red", "darkred")
     VALS <- c(-5,-4,-3,-2.5,-2,-1,0,1,2,2.5,3,4)
