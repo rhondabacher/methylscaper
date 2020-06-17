@@ -26,7 +26,7 @@ refineFunction <- function(orderObject, refineStart, refineEnd,  reverse = FALSE
   } else { # Methods available for refining are: ARSA, HC_complete, HC_average, HC_ward.
     ## Shouldn't need to recalculate the distance each time!!
     if (is.null(orderObject$distMat)) distMat <- dist(toRefine.clust,method = "euclidean")
-    else distMat <- orderObject$distMat[toRefine.order,toRefine.order]
+    else distMat <- as.dist(as.matrix(orderObject$distMat)[toRefine.order,toRefine.order])
     order.new <- seriation::seriate(distMat, method=Method, verbose=FALSE)
     order.new <- seriation::get_order(order.new)
   }
