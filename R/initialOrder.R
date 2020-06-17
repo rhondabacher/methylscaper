@@ -9,7 +9,6 @@
 #' @param weightStart Index of the first column used in the weighted seriation.
 #' @param weightEnd Index of the last column used in the weighted seriation.
 #' @param weightFeature Indicates whether to weight the GCH or HCG data.
-#' @param reverse Logical, indicates whether to reverse the ordering.
 #' @param updateProgress A function to handle the progress bar for the Shiny app. Should not be used when using the function independently.
 #'
 #' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
@@ -18,7 +17,7 @@
 #' @importFrom Rfast Dist
 #' @export
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL,
-                         weightFeature="red", reverse=F, updateProgress = NULL){
+                         weightFeature="red", updateProgress = NULL){
 
     ## File checks:
     if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
@@ -100,7 +99,6 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
         }
     }
-    if (isTRUE(reverse)) {order1 <- rev(order1)}
     orderObject <- list(toClust = toClust, order1 = order1)
     if (Method != "PCA") orderObject$distMat <- distMat
     if (weighted) orderObject$weights <- weightVector

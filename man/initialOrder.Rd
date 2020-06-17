@@ -11,7 +11,6 @@ initialOrder(
   weightStart = NULL,
   weightEnd = NULL,
   weightFeature = "red",
-  reverse = F,
   updateProgress = NULL
 )
 }
@@ -28,8 +27,6 @@ first principal component. Any seriation method provided in the \code{seriation}
 \item{weightEnd}{Index of the last column used in the weighted seriation.}
 
 \item{weightFeature}{Indicates whether to weight the GCH or HCG data.}
-
-\item{reverse}{Logical, indicates whether to reverse the ordering.}
 
 \item{updateProgress}{A function to handle the progress bar for the Shiny app. Should not be used when using the function independently.}
 }
