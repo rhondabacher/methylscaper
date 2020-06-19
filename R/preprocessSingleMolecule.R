@@ -1,6 +1,6 @@
 #' runAlign
 #'
-#' Runs the preprocessing methods on sequences.
+#' Runs the preprocessing methods for single-molecule data on sequences.
 #'
 #' @param ref A reference sequence
 #' @param fasta A list of sequences
