@@ -194,7 +194,7 @@ server <- function(input, output) {
     obj <- sc_orderObject
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
-    else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$proportion.choice))
+    else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$sc_proportion_choice))
   })
 
   output$sc_proportion_hist_download <- downloadHandler(
@@ -209,7 +209,7 @@ server <- function(input, output) {
       if (input$filetype == "PDF") pdf(file)
 
       proportion_color(sc_orderObject, plotHistogram = TRUE,
-                       color = toupper(input$proportion.choice))
+                       color = toupper(input$sc_proportion_choice))
       dev.off()
     }
   )
@@ -219,7 +219,7 @@ server <- function(input, output) {
     },
     content = function(file){
       dat <-  proportion_color(sc_orderObject, plotHistogram = FALSE,
-                               color = toupper(input$proportion.choice))
+                               color = toupper(input$sc_proportion_choice))
       write.csv(dat, file = file)
     }
   )
@@ -443,7 +443,7 @@ server <- function(input, output) {
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.", type="message");NULL}
-    else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$proportion.choice))
+    else proportion_color(obj, plotHistogram = TRUE, color = toupper(input$sm_proportion_choice))
   })
 
   output$sm_proportion_hist_download <- downloadHandler(
@@ -458,7 +458,7 @@ server <- function(input, output) {
       if (input$filetype == "PDF") pdf(file)
 
       proportion_color(sm_orderObject, plotHistogram = TRUE,
-                       color = toupper(input$proportion.choice))
+                       color = toupper(input$sm_proportion_choice))
       dev.off()
     }
   )
@@ -468,7 +468,7 @@ server <- function(input, output) {
     },
     content = function(file){
       dat <-  proportion_color(sm_orderObject, plotHistogram = FALSE,
-                               color = toupper(input$proportion.choice))
+                               color = toupper(input$sm_proportion_choice))
       write.csv(dat, file = file)
     }
   )

@@ -17,7 +17,7 @@ ui <- navbarPage("methylScaper",
                                                   actionButton("sc_force_reverse", label = "Force Reverse"),
                                                   verbatimTextOutput("sc_info")
                                                 ),
-                                                
+
                                                 mainPanel(
                                                   fluidRow(column(width = 8,
                                                                   plotOutput(outputId = "sc_seqPlot",
@@ -26,12 +26,21 @@ ui <- navbarPage("methylScaper",
                                                                   selectInput("sc_plot_filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
                                                                   downloadButton("sc_plot_down", label = "Download the plot"),
                                                                   downloadButton("sc_log_down", label = "Download changes log"))
-                                                           
+
                                                   )
                                                 )
                                               )),
-                                     tabPanel("Summary Statistics"))
-                 ),
+                                     tabPanel("Summary Statistics",
+                                              radioButtons("sc_proportion_choice", label = "Proportion of:", choices = c("Yellow", "Red"), selected = "Yellow"),
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                  plotOutput(outputId = "sc_proportion_color_histogram"),
+                                                  plotOutput(outputId = "sc_percent_C")),
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                downloadButton("sc_proportion_hist_download", label = "Download histogram"),
+                                                downloadButton("sc_percentC_plot_download", label = "Download plot")),
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                downloadButton("sc_proportion_data_download", label = "Download proportion data"),
+                                                downloadButton("sc_percentC_data_download", label = "Download percentage data"))))),
                  tabPanel("Single-molecule",
                           navbarPage("",
                                      tabPanel("Preprocessing",
@@ -55,7 +64,7 @@ ui <- navbarPage("methylScaper",
                                                    actionButton("sm_force_reverse", label = "Force Reverse"),
                                                    verbatimTextOutput("sm_info")
                                                  ),
-                                                 
+
                                                  mainPanel(
                                                    fluidRow(column(width = 8,
                                                                    plotOutput(outputId = "sm_seqPlot",
@@ -64,16 +73,18 @@ ui <- navbarPage("methylScaper",
                                                                    selectInput("sm_filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
                                                                    downloadButton("sm_plot_down", label = "Download the plot"),
                                                                    downloadButton("sm_log_down", label = "Download changes log"))
-                                                            
+
                                                    )
                                                  )
                                                )),
                                      tabPanel("Summary Statistics",
                                               radioButtons("sm_proportion_choice", label = "Proportion of:", choices = c("Yellow", "Red"), selected = "Yellow"),
-                                              plotOutput(outputId = "sm_proportion_color_histogram"),
-                                              downloadButton("sm_proportion_hist_download", label = "Download histogram"),
-                                              downloadButton("sm_proportion_data_download", label = "Download proportion data"),
-                                              plotOutput(outputId = "sm_percent_C"),
-                                              downloadButton("sm_percentC_plot_download", label = "Download plot"),
-                                              downloadButton("sm_percentC_data_download", label = "Download percentage data"))
-                          )))
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                  plotOutput(outputId = "sm_proportion_color_histogram"),
+                                                  plotOutput(outputId = "sm_percent_C")),
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                downloadButton("sm_proportion_hist_download", label = "Download histogram"),
+                                                downloadButton("sm_percentC_plot_download", label = "Download plot")),
+                                              splitLayout(cellWidths = c("50%", "50%"),
+                                                downloadButton("sm_proportion_data_download", label = "Download proportion data"),
+                                                downloadButton("sm_percentC_data_download", label = "Download percentage data"))))))
