@@ -27,8 +27,23 @@ server <- function(input, output) {
     }
   })
 
+
+    output$positionSlider <- renderUI({
+        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+        {
+            # cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
+            # cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
+            # gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
+            # gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
+
+            sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = input$startPos - 500, max = input$endPos + 500,
+                        value = c(input$startPos, input$endPos))
+        }
+
+    })
+
   observe({
-    if ( (input$startPos < input$endPos) & !is.null(input$gch_seq_file) & !is.null(input$hcg_seq_file))
+    if (!is.null(input$positionSliderInput))
     {
         progress <- Progress$new()
         progress$set(message = "Beginning single-cell processing", value = 0)
@@ -37,7 +52,7 @@ server <- function(input, output) {
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-        prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, input$startPos, input$endPos,
+        prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, input$positionSliderInput[1], input$positionSliderInput[2],
                            updateProgress = updateProgress)
 
         temp.gch <- prep_out$gch
@@ -52,7 +67,7 @@ server <- function(input, output) {
           sc_input_data$hcg <- temp.hcg
           isolate({
             actionsLog$log <- c(actionsLog$log, paste("Beginning single-cell data analysis"))
-            actionsLog$log <- c(actionsLog$log, paste("From position", input$startPos, "to", input$endPos))
+            actionsLog$log <- c(actionsLog$log, paste("From position", input$positionSliderInput[1], "to", input$positionSliderInput[2]))
           })
         }
 
