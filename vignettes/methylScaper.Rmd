@@ -7,55 +7,181 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## Introduction
+# Introduction
 
-`methylScaper` is an R package that provides functions for processing raw sequence reads and
-visualizing methylation. Users can run the package either with an interactive Shiny app, or
-through the basic helper functions.
+`methylScaper` is an R package that provides functions for processing and
+visualizing methylation data. The package offers processing for
+both single-cell and single-molecule data, and a common interface for
+seriating and visualizing both data types through the generation of
+representational methylation-state matrices. Users may also run the
+package through a Shiny app which provide an interactive seriation
+process through refinement and re-weighting.
 
-### Installation
+## Installation
 
 Currently, the only way to install `methylScaper` is via the development version on GitHub.
 
 ```{r, eval = FALSE}
-library(devtools)
+install.packages(devtools)
 devtools::install_github("pknight24/methylScaper")
+library(methylScaper)
 ```
 
-## Usage
+```{r, echo=FALSE, message = FALSE}
+library(methylScaper)
+```
 
-### Shiny App
+# Usage
 
-The Shiny app is the primary way to use `methylScaper`, and can be run
+## Data processing
+
+### Single-cell data
+
+`methylScaper` can handle the analysis of BS-seq (?) data processed
+with the Bismarck software tool. Specifically, we use the read-level output of
+the "bismarck\_methylation\_extractor" script to generate the
+methylation-state matrix which is used in further analysis.
+
+Most of the processing is handled by the `prepSC()` function, but the
+input data does need to be filtered to the chromosome level. The code
+below demonstrates this using data from (citation for GSE109262),
+obtained from
+[here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE109262). For
+the sake of this example, we assume that the `GSE109262_RAW.tar`
+directory is
+downloaded to `~/Downloads/`.
+
+```{r, eval=FALSE}
+setwd("~/Downloads/GSE109262_RAW/")
+cgfiles <- sort(grep("met", list.files("~/Downloads/GSE109262_RAW/"), value = T))
+gcfiles <- sort(grep("acc", list.files("~/Downloads/GSE109262_RAW/"), value = T))
+
+useChr <- "8" # we only save the input data for chromosome 8
+
+cg.seq <- list()
+for(i in 1:length(cgfiles)) {
+  cg.seq[[i]] <- read.table(cgfiles[i], header=T, stringsAsFactors = F)
+}
+
+gc.seq <- list()
+for(i in 1:length(gcfiles)) {
+  gc.seq[[i]] <- read.table(gcfiles[i], header=F, stringsAsFactors = F, 
+                            colClasses = c("character", "numeric", "numeric"))
+  colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
+}
+
+cg.seq.sub <- lapply(cg.seq, function(x) {
+  QQ <- x[order(x$pos),]
+  QQ = subset(QQ, chr==useChr)
+  return(QQ)
+})
+
+
+gc.seq.sub <- lapply(gc.seq, function(x) {
+  QQ <- x[order(x$pos),]
+  QQ = subset(QQ, chr==useChr)
+  return(QQ)
+})
+```
+
+Now that the data is filtered to the chromosome level, we can use `methylScaper` to
+generate the methylation-state matrix. The `prepSC` function
+requires users to indicate a subset of the reads to process, via the
+`startPos` and `endPos` arguments. This subset generally corresponds
+to a gene of interest; for this example, we use the
+[Ctcf](http://www.informatics.jax.org/marker/MGI:109447) gene.
+
+```{r, eval = FALSE}
+prepsc.out <- prepSC(gc.seq.sub, cg.seq.sub, startPos = 105636488, endPos = 105636993)
+gch <- prepsc.out$gch
+hcg <- prepsc.out$hcg
+```
+The `gch` and `hcg` objects are matrices representing accessibility
+and methylation status, respectively, and are used by other
+`methylScaper` functions for visualization.
+
+### Single-molecule data
+
+`methylScaper` can process single-molecule data from .fasta files
+(given an appropriate reference file) with
+the `runAlign` function. The sequences are aligned to the reference
+with the `Biostrings` package, and then mapped to the methylation- and
+accessibility-state matrices.
+
+```{r, eval = FALSE}
+fasta <- read.fasta("seq_file.fasta")
+ref <- read.fasta("ref.Pacbio.fa")
+align.out <- runAlign(fasta = fasta, ref = ref)
+gch <- align.out$gch
+hcg <- align.out$hcg
+```
+
+## Seriation and visualization
+
+Once the methylation- and accessibility-state matrices have been
+generated, we can can generate an ordering of the reads and visualize
+them with a sequence plot. To demonstrate this, we use the `day7`
+dataset which is included in the package.
+
+The `initialOrder` function computes an ordering of the state
+matrices, using a given method. By default, the function uses a
+PCA-based ordering, but any method supported by the `seriation`
+package can be used. It can also perform a weighted ordering,
+according to the methylation or accessibility status of a subset of
+the data's columns.
+
+```{r}
+data(day7)
+gch <- day7$gch
+hcg <- day7$hcg
+orderObj <- initialOrder(gch, hcg, Method = "PCA")
+```
+
+`initialOrder` returns an object of class `orderObject`, which
+includes the combined state data matrix and the ordering of the
+reads. We then generate a sequence plot with the `plotSequence`
+function.
+
+```{r}
+plotSequence(orderObj)
+```
+
+The plot on the left corresponds to methylation data, and the right to
+accessibility data. The colored portions represent the areas on each
+read that are methylated/accessible.
+
+We can also refine the ordering of the reads with `refineFunction`,
+which reorders a subset of the reads with a given method. The
+code below reorders the first 50 reads with Hierarchical Clustering,
+and generates a new sequence plot.
+
+```{r}
+orderObj$order1 <- refineFunction(orderObj, 1, 50, Method = "HC")
+plotSequence(orderObj)
+```
+
+We can also generate basic summary plots of the data.
+
+```{r, fig.height = 5, fig.width = 6, fig.align="center"}
+percent.c.out <- percent_C(orderObj, plotPercents = TRUE)
+prop.color.out <- proportion_color(orderObj, color = "YELLOW", plotHistogram = TRUE)
+```
+
+
+
+## Shiny App
+
+The Shiny app offers all of the package functionality described above, and can be run
 by calling the function `methylScaper()` from an R session with the
-package loaded. The app provides two panels:
-one for preprocessing raw sequence reads, and the other for
-interactively visualizing the processed reads. 
+package loaded. The app is organized into single-cell and
+single-molecule panels, which each have tabs for processing and
+visualization.
 
-The "Preprocessing" panel, shown below, is opened by default. Here,
-users are prompted to input two raw sequence FASTA files, the first
-containing all of the raw reads and second containing the reference
-sequence for the region of interest. 
-
-After clicking "Run", `methylScaper` will perform a pairwise alignment
-of each sequence, quality control and filtering poorly aligned
-sequences, and conversion of the aligned sequences to methylation and
-occupancy sites. We then assign a numeric value to each site, which
-allows the package to order the sites for visualization using
-numerical methods. 
-
-Users are asked to enter two files paths, indicating where to save the
-two processed output files. The GCH file contains the GC site data,
-and the HCG file contains CG site data. 
-
-![*The Preprocessing panel of the Shiny app*](preprocessing_panel.png)
-
-The "Sequence Plot" panel takes the two site data files as input, and
-generates a pair of sequence plots corresponding to the GC and CG site
-data.
-By default, the reads are ordered by the value of the first Principal
-Component of the site matrix, but users may select to use Simulated
-Annealing ("ARSA") as an alternative seriation method. 
+In the "Single-cell" panel, users upload the raw data (after being filtered
+to the chromosome level) as .rds files and then enter start and end
+position values to initiate the processing. After the initial
+processing is complete, the Shiny app generates a slider that can be
+used to adjust the selected region. 
 
 Once the initial sequence plot is generated, `methylScaper` allows the
 user to dynamically refine and re-weight the plot via Shiny's brushing
@@ -70,6 +196,7 @@ the Simulated Annealing algorithm. Note that weighting is
 done with respect to either the GC sites or the CG sites - the plot on
 which brushing is performed determines which sites to use.
 
+
 If "Refinement" is selected as the brushing option, clicking and
 dragging on the sequence plot will select reads (i.e., rows) to
 reorder locally. PCA is used by default, but Hierarchical Clustering
@@ -80,8 +207,6 @@ is important to note that re-weighting the sites will reorder the
 entire set of data, and hence will undo any refinements that you may
 have made.
 
-<img src="sequence_plot_panel.png" width="600" height="400" />
-
 The green lines indicate the columns selected for weighting, and the
 blue lines indicate the rows that were most recently refined.
 
@@ -90,64 +215,13 @@ either a PNG, PDF, or SVG file. Additionally, `methylScaper` keeps
 track of all changes made to the plots in the form of a changes log,
 which can be saved as a text file.
 
-### R Functions
-
-`methylScaper` also exports a handful of functions that provide the
-same processing, ordering, and plotting functionality of the Shiny app.
-
-The `runAlign` function performs the alignment, quality control, and
-numerical encoding that was described above to sequence data. It also
-provides support for parallel processing via the BiocParallel
-package. Users can pass an object of class `MulticoreParam` to run the
-sequence alignment in parallel.
-
-`initialOrder` orders GC and CG site data with a given seriation
-method. PCA is used by default, but users can specify any seriation
-	method offered by the `seriation` package. An object of class
-	`orderObject` is returned, which contains the ordering as well as
-	the cleaned data matrix.
-
-`refineFunction` refines a given range of rows of an
-`orderObject`, with any method provided by the `seriation`
-package. The new ordering is returned, which can be used to update
-`orderObject` used for the refinement.
-
-The `plotSequence` function generates a sequence plot from an
-`orderObject`, as seen in the Shiny app.
-
-Finally, the package exports the `percent_C` and `proportionColor` functions for computing and plotting summary statistics.
-
-## Example Analysis
-
-The package also includes a small data set, titled `day7`, that can be used for
-testing and demonstration. (describe where the data came from?) The
-data is loaded as follows: 
-
-```{r}
-library(methylScaper)
-data("day7")
-```
-
-The `day7` object is a list containing sets of HCG and GCH
-data. We can perform an ordering of the data with the `initialOrder`
-function:
-
-```{r, fig.height = 5, fig.width = 6, fig.align="center"}
-orderObj <- initialOrder(input.GCH = day7$gch, input.HCG = day7$hcg,
-Method = "PCA")
-plot1.out <- plotSequence(orderObj)
-```
-
-We can then refine a subset of the data, and generate a new plot:
-
-```{r, fig.height = 5, fig.width = 6, fig.align="center"}
-orderObj$order1 <- refineFunction(orderObj, 1, 20)
-plot2.out <- plotSequence(orderObj)
-```
-
-We can also generate basic summary plots of the data.
-
-```{r, fig.height = 5, fig.width = 6, fig.align="center"}
-percent.c.out <- percent_C(orderObj, plotPercents = TRUE)
-prop.color.out <- proportion_color(orderObj, color = "YELLOW", plotHistogram = TRUE)
-```
+The "Single-molecule" panel includes a "Preprocessing" tab, where
+users are prompted to input two sequence FASTA files, the first
+containing all of the raw reads and second containing the reference
+sequence for the region of interest. Users are asked to enter two
+files paths, indicating where to save the 
+two processed state matrices. The GCH file contains the GC site
+accessibility data,
+and the HCG file contains CG site methylation data. These files can
+then be loaded on the "Seriation" tab, which offers the same
+functionality as described above.
