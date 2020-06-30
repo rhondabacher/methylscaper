@@ -45,9 +45,7 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
   {
     gcmap <- lapply(alignedseq, mapseq, sites=GCsites)
     cgmap <- lapply(alignedseq, mapseq, sites=CGsites)
-  }
-  else
-  {
+  } else {
     gcmap <- bplapply(alignedseq, mapseq, sites=GCsites, BPPARAM = multicoreParam)
     cgmap <- bplapply(alignedseq, mapseq, sites=CGsites, BPPARAM = multicoreParam)
   }
@@ -77,19 +75,18 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
     ## this creates the substitution matrix for use in alignment
     penalty.mat <- matrix(0,length(DNA_ALPHABET[1:4]),length(DNA_ALPHABET[1:4]))
     penalty.mat[1:4,1:4] <- c(1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1)
-    penalty.mat[penalty.mat==0] <- -1
+    penalty.mat[penalty.mat==0] <- -5
     penalty.mat <- cbind(penalty.mat, c(0,0,0,0))
     penalty.mat <- rbind(penalty.mat, c(0,0,0,0,1))
     rownames(penalty.mat) <- colnames(penalty.mat) <- c(DNA_ALPHABET[1:4], "N")
 
     if (is.null(multicoreParam)) seqalign.out <- lapply(1:length(fasta), function(i) {
 
-        if (is.function(updateProgress))updateProgress(message = "Aligning seqences",
+        if (is.function(updateProgress)) updateProgress(message = "Aligning seqences",
                                                        detail = paste(i, "/", length(fasta)),
                                                        value = (0.1+ 0.65/length(fasta) * i))
         seqalign(fasta[[i]], ref.string, substitutionMatrix = penalty.mat)
-      })
-    else seqalign.out <- bplapply(1:length(fasta),
+      }) else seqalign.out <- bplapply(1:length(fasta),
                                   function(i) seqalign(fasta[[i]], ref.string, substitutionMatrix = penalty.mat),
                                   BPPARAM = multicoreParam)
     useseqs <- sapply(seqalign.out, function(i) i$u)
@@ -107,7 +104,7 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
 
         toreplace <- SEQ1[which(SEQ2=="-")]
         toreplace[toreplace!="C"] <- "."
-        toreplace[toreplace=="C"] <- "T"
+        toreplace[toreplace=="C"] <- "." #or T?. Leave as "." for now.
 
         SEQ2[which(SEQ2=="-")] <- toreplace
         SEQ2 <- SEQ2[which(SEQ1!="-")]
@@ -125,14 +122,14 @@ alignSequences <- function(fasta, ref.string, log.vector, multicoreParam = NULL,
 
 
 # aligns a single read to the reference, returns the useseq string. Alignment is finished in the alignSequences fn
-seqalign <- function(read, ref.string, ...) {
+seqalign <- function(read, ref.string, substitutionMatrix) {
 
   fasta.string <- DNAString(toupper(c2s(read)))
 
   align.bb <- pairwiseAlignment(reverseComplement(ref.string),
-                                reverseComplement(fasta.string),type="global-local", gapOpening=8, ...)
-  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fasta.string),type="global-local", gapOpening=8, ...)
-  align.aa <- pairwiseAlignment(ref.string, fasta.string,type="global-local", gapOpening=8, ...)
+                                reverseComplement(fasta.string),type="global-local", gapOpening=8, substitutionMatrix=substitutionMatrix)
+  align.ab <- pairwiseAlignment(ref.string, reverseComplement(fasta.string),type="global-local", gapOpening=8, substitutionMatrix=substitutionMatrix)
+  align.aa <- pairwiseAlignment(ref.string, fasta.string,type="global-local", gapOpening=8, substitutionMatrix=substitutionMatrix)
 
   maxAlign <- which.max(c(score(align.bb), score(align.ab), score(align.aa)))
   allseq <- list(align.bb, align.ab, align.aa)
