@@ -36,8 +36,17 @@ server <- function(input, output) {
             # gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
             # gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
 
-            sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = input$startPos - 500, max = input$endPos + 500,
-                        value = c(input$startPos, input$endPos))
+            if (input$endPos - input$startPos > 10000)
+            {
+                showNotification("Selected range is longer than 10k bp, reducing length for stability.", type="warning")
+                end <- input$startPos + 10000
+            }
+            else end <- input$endPos
+
+            len <- end - input$startPos
+
+            sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = input$startPos - len, max = end + len,
+                        value = c(input$startPos, end))
         }
 
     })
