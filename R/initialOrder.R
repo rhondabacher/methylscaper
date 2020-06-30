@@ -21,7 +21,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
     ## File checks:
     if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
-    
+
     if (all(rownames(input.GCH) == input.GCH[,1])) input.GCH <- input.GCH[,-1]
     if (all(rownames(input.HCG) == input.HCG[,1])) input.HCG <- input.HCG[,-1]
 
@@ -58,19 +58,12 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
         if (weighted)
         {
             w <- weightVector / sum(weightVector)
-            x <- toClust
-            weighted.mean <- as.vector(w %*% x)
-            x.centered <- x
-            for (k in 1:ncol(x))
-            {
-                x.centered[,k] <- x.centered[,k] - weighted.mean[k]
-            }
-            x.centered <- sqrt(w) * x.centered
-            svd.out <- svd(x.centered, nv=0)
-            pc <- svd.out$u
-            for (k in 1:nrow(pc)) pc[k,] * svd.out$d
-            pc <- pc / sqrt(w)
-            order1 <- order(pc[,1])
+            w.sqrt <- sqrt(w)
+            toClust.weighted <- diag(w.sqrt) %*% toClust
+
+            col.centered <- apply(toClust.weighted, 2, function(x) x - mean(x))
+            try1 <- svd(col.centered, nu = 1, nv = 0)
+            order1 <- order(try1$u[,1])
         }
         else
         {
