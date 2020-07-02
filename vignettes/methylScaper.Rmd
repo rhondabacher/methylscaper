@@ -1,15 +1,15 @@
 ---
-title: "methylScaper: Interactive Visualization of the Methylation Landscape"
+title: "methylscaper: Interactive Visualization of the Methylation Landscape"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{methylScaper}
+  %\VignetteIndexEntry{methylscaper}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Introduction
 
-`methylScaper` is an R package that provides functions for processing and
+`methylscaper` is an R package that provides functions for processing and
 visualizing methylation data. The package offers processing for
 both single-cell and single-molecule data, and a common interface for
 seriating and visualizing both data types through the generation of
@@ -19,16 +19,16 @@ process through refinement and re-weighting.
 
 ## Installation
 
-Currently, the only way to install `methylScaper` is via the development version on GitHub.
+Currently, the only way to install `methylscaper` is via the development version on GitHub.
 
 ```{r, eval = FALSE}
 install.packages(devtools)
-devtools::install_github("pknight24/methylScaper")
-library(methylScaper)
+devtools::install_github("pknight24/methylscaper")
+library(methylscaper)
 ```
 
 ```{r, echo=FALSE, message = FALSE}
-library(methylScaper)
+library(methylscaper)
 ```
 
 # Usage
@@ -37,7 +37,7 @@ library(methylScaper)
 
 ### Single-cell data
 
-`methylScaper` can handle the analysis of BS-seq (?) data processed
+`methylscaper` can handle the analysis of BS-seq (?) data processed
 with the Bismarck software tool. Specifically, we use the read-level output of
 the "bismarck\_methylation\_extractor" script to generate the
 methylation-state matrix which is used in further analysis.
@@ -84,7 +84,7 @@ gc.seq.sub <- lapply(gc.seq, function(x) {
 })
 ```
 
-Now that the data is filtered to the chromosome level, we can use `methylScaper` to
+Now that the data is filtered to the chromosome level, we can use `methylscaper` to
 generate the methylation-state matrix. The `prepSC` function
 requires users to indicate a subset of the reads to process, via the
 `startPos` and `endPos` arguments. This subset generally corresponds
@@ -98,11 +98,11 @@ hcg <- prepsc.out$hcg
 ```
 The `gch` and `hcg` objects are matrices representing accessibility
 and methylation status, respectively, and are used by other
-`methylScaper` functions for visualization.
+`methylscaper` functions for visualization.
 
 ### Single-molecule data
 
-`methylScaper` can process single-molecule data from .fasta files
+`methylscaper` can process single-molecule data from .fasta files
 (given an appropriate reference file) with
 the `runAlign` function. The sequences are aligned to the reference
 with the `Biostrings` package, and then mapped to the methylation- and
@@ -172,7 +172,7 @@ prop.color.out <- proportion_color(orderObj, color = "YELLOW", plotHistogram = T
 ## Shiny App
 
 The Shiny app offers all of the package functionality described above, and can be run
-by calling the function `methylScaper()` from an R session with the
+by calling the function `methylscaper()` from an R session with the
 package loaded. The app is organized into single-cell and
 single-molecule panels, which each have tabs for processing and
 visualization.
@@ -183,11 +183,11 @@ position values to initiate the processing. After the initial
 processing is complete, the Shiny app generates a slider that can be
 used to adjust the selected region. 
 
-Once the initial sequence plot is generated, `methylScaper` allows the
+Once the initial sequence plot is generated, `methylscaper` allows the
 user to dynamically refine and re-weight the plot via Shiny's brushing
 mechanics. Clicking and dragging along either of the two plots will
 select sites (i.e., columns) by which to weight the data in the site
-matrix. `methylScaper` will then regenerate the plot with a new
+matrix. `methylscaper` will then regenerate the plot with a new
 ordering, influenced by the weighted sites. With "PCA" selected as the
 seriation method, the new ordering will be generated with a weighted
 Principal Components Analysis. If "ARSA" is selected, the ordering is found by first
@@ -211,7 +211,7 @@ The green lines indicate the columns selected for weighting, and the
 blue lines indicate the rows that were most recently refined.
 
 After making any desired changes, the sequence plot can be saved as
-either a PNG, PDF, or SVG file. Additionally, `methylScaper` keeps
+either a PNG, PDF, or SVG file. Additionally, `methylscaper` keeps
 track of all changes made to the plots in the form of a changes log,
 which can be saved as a text file.
 

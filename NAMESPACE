@@ -2,7 +2,7 @@
 
 export(forceReverse)
 export(initialOrder)
-export(methylScaper)
+export(methylscaper)
 export(percent_C)
 export(plotSequence)
 export(prepSC)

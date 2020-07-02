@@ -1,4 +1,4 @@
-ui <- navbarPage("methylScaper",
+ui <- navbarPage("methylscaper",
                  tabPanel("Single-cell",
                           navbarPage("",
                                      tabPanel("Seriation",
