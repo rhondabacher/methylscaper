@@ -79,8 +79,13 @@ average_status <- function(orderObject, window_length = 1, plotAverages = FALSE,
     gch.num <- orderObject$toClust[,1:(ncol(orderObject$toClust) / 2)]
     hcg.num <- orderObject$toClust[,(ncol(orderObject$toClust) / 2 + 1):ncol(orderObject$toClust)]
 
-    acc.avg <- colMeans(gch.num == -3)
-    meth.avg <- colMeans(hcg.num == 3)
+    acc.sum <- colSums(gch.num == -3)
+    meth.sum <- colSums(hcg.num == 3)
+    acc.denom <- colSums(gch.num != 0)
+    meth.denom <- colSums(hcg.num != 0)
+    acc.avg <- acc.sum / acc.denom
+    meth.avg <- meth.sum / meth.denom
+
     width <- window_length
     moving.acc.avg <- filter(x = acc.avg, filter = rep(1, width)) / width
     moving.meth.avg <- filter(x = meth.avg, filter = rep(1, width)) / width
