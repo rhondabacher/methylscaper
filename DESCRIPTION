@@ -1,4 +1,4 @@
-Package: methylScaper
+Package: methylscaper
 Title: Visualization of Methylation Data
 Description: A shiny app for visualizing methylation data.
 Version: 0.0.3

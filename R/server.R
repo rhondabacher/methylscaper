@@ -31,21 +31,26 @@ server <- function(input, output) {
     output$positionSlider <- renderUI({
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
         {
-            # cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
-            # cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
-            # gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
-            # gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
+            cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
+            cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
+            gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
+            gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
+            start <- input$startPos
+            end <- input$endPos
 
-            if (input$endPos - input$startPos > 10000)
+            if (start < cg.min.pos | start < gc.min.pos | end > cg.max.pos | end > gc.max.pos)
+            {
+                showNotification("Selected range is out of bounds. Please choose a valid starting and end position to generate the plot.", type="error")
+                return(NULL)
+            }
+            if (end -  start > 10000)
             {
                 showNotification("Selected range is longer than 10k bp, reducing length for stability.", type="warning")
-                end <- input$startPos + 10000
+                end <- start + 10000
             }
-            else end <- input$endPos
+            len <- end - start
 
-            len <- end - input$startPos
-
-            sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = input$startPos - len, max = end + len,
+            sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = start - len, max = end + len,
                         value = c(input$startPos, end))
         }
 
