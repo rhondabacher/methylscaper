@@ -33,6 +33,11 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos, endPos,
 
   useseq <- intersect(which(sapply(cg_seq_sub, function(x) nrow(x)) > 0 ),
                       which(sapply(gc_seq_sub, function(x) nrow(x)) > 0 ))
+  if (length(useseq) == 0)
+  {
+    stop("No valid sites in designated range. Try different start and end positions.")
+  }
+
   cg_seq_sub <- cg_seq_sub[useseq]
     gc_seq_sub <- gc_seq_sub[useseq]
 
