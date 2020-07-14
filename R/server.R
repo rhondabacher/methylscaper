@@ -29,7 +29,8 @@ server <- function(input, output) {
 
 
     output$positionSlider <- renderUI({
-        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) &
+            input$startPos != 0 & input$endPos != 0)
         {
             cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
             cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
@@ -51,7 +52,7 @@ server <- function(input, output) {
             len <- end - start
 
             sliderInput(inputId = "positionSliderInput", label = "Position adjustment slider", min = start - len, max = end + len,
-                        value = c(input$startPos, end))
+                        value = c(start, end))
         }
 
     })
@@ -66,7 +67,8 @@ server <- function(input, output) {
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-        prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, input$positionSliderInput[1], input$positionSliderInput[2],
+        prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, input$positionSliderInput[1],
+                           input$positionSliderInput[2],
                            updateProgress = updateProgress)
 
         temp.gch <- prep_out$gch
