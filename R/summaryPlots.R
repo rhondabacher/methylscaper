@@ -55,7 +55,7 @@ proportion_color <- function(orderObject, color = "YELLOW", plotHistogram=FALSE,
   })
   if (plotHistogram) {
     opar <- par(lwd=4)
-    H = hist(Proportion, plot=F)
+    H = hist(Proportion, plot=F, breaks = 15)
     plot(H, xlim=c(0,1), border=ifelse(color == "YELLOW", "gold2", "brown1"),
        col="gray75",
        lwd=2,...)

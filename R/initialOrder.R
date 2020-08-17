@@ -102,6 +102,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
 
 recode <- function(input.GCH, input.HCG)
 {
+    print(sum(input.GCH == "."))
     input.GCH[input.GCH=="."] <- 99
     input.GCH <- apply(input.GCH, 2, as.numeric)
     input.GCH[input.GCH==2] <- -4
@@ -112,6 +113,7 @@ recode <- function(input.GCH, input.HCG)
     input.GCH[input.GCH==-99] <- -2
     input.GCH[input.GCH==99] <- 0
 
+    print(sum(input.HCG == "."))
     input.HCG[input.HCG=="."] <- 99
     input.HCG <- apply(input.HCG, 2, as.numeric)
     input.HCG[input.HCG==2] <- 4

@@ -140,6 +140,7 @@ seqalign <- function(read, ref.string, substitutionMatrix) {
 
 mapseq <- function(i, sites) {
   editseq <- i
+  missing_bp <- editseq[sites] == "N"
   editseq[sites][editseq[sites] == "T"] <- "-2"
   editseq[sites][editseq[sites] == "C"] <- "2"
   editseq[sites][editseq[sites] == "G"] <- "."
@@ -160,6 +161,7 @@ mapseq <- function(i, sites) {
     fillvec <- rep(fillvec, length(tofill))
     editseq[tofill] <- fillvec
   }
+  editseq[missing_bp] <- "."
   return(editseq)
 }
 
