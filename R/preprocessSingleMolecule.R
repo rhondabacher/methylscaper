@@ -140,12 +140,12 @@ seqalign <- function(read, ref.string, substitutionMatrix) {
 
 mapseq <- function(i, sites) {
   editseq <- i
-  missing_bp <- editseq[sites] == "N"
+  missing_bp <- which(editseq[sites] == "N")
   editseq[sites][editseq[sites] == "T"] <- "-2"
   editseq[sites][editseq[sites] == "C"] <- "2"
   editseq[sites][editseq[sites] == "G"] <- "."
   editseq[sites][editseq[sites] == "A"] <- "."
-  editseq[sites][editseq[sites] == "N"] <- "."
+  editseq[sites][editseq[sites] == "N"] <- "." # we need to make sure that the N sites stay marked with a "."
 
   sites.temp <- c(0, sites, length(editseq)+1)
   for (j in 1:(length(sites.temp)-1)) {
@@ -153,15 +153,15 @@ mapseq <- function(i, sites) {
     s1 <- editseq[pmax(1, sites.temp[j])]
     s2 <- editseq[pmin(length(i), sites.temp[j+1])]
 
-    if (s1 == "2" & s2 == "2") {
-      fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
-        fillvec <- 0} else if (s1 == "-2" & s2 == "2") {
-          fillvec <- 0} else if (s1 == "-2" & s2 == "-2") {
-            fillvec <- -1} else {fillvec <- 0}
+    if (s1 == "2" & s2 == "2") { fillvec <- 1 }
+    else if (s1 == "2" & s2 == "-2") {fillvec <- 0}
+    else if (s1 == "-2" & s2 == "2") {fillvec <- 0}
+    else if (s1 == "-2" & s2 == "-2") {fillvec <- -1}
+    else if (s1 == "." & s2 == "."){fillvec <- "."}
+    else {fillvec <- 0}
     fillvec <- rep(fillvec, length(tofill))
     editseq[tofill] <- fillvec
   }
-  editseq[missing_bp] <- "."
   return(editseq)
 }
 

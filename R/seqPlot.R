@@ -27,8 +27,6 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
     input.GCH <- toClust[,1:(ncol(toClust) / 2)]
     input.HCG <- toClust[,(ncol(toClust) / 2 + 1):ncol(toClust)]
 
-    print(sum(input.GCH == 0))
-    print(sum(input.HCG == 0))
     mycols <- c("darkgoldenrod2", "yellow", "gray62",  "black", "gray80", "white", "gray80", "black", "gray62", "red", "darkred")
     VALS <- c(-5,-4,-3,-2.5,-2,-1,0,1,2,2.5,3,4)
 
