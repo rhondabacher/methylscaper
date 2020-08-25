@@ -19,7 +19,7 @@
 #' @importFrom graphics abline image par axis segments
 #' @export
 plotSequence <- function(orderObject, plotFAST=TRUE,
-                           blankWidth=150, Title="",
+                           blankWidth=75, Title="",
                            drawLine=T, drawKey=T) {
     # Start with yellow at top as the default:
     toClust <- orderObject$toClust
@@ -51,21 +51,25 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
     }
 
     # Plotting:
-    par(xpd = F, mar=c(2,2,2,1))
+    par(xpd = F, mar=c(2,2,2,1), mgp = c(0,0.5,0))
     image(t(toPlot.fix), col=mycols, axes=F, breaks=VALS,
-          main=Title, useRaster=plotFAST, ylim=c(0,1.03))
+          main=Title, useRaster=plotFAST, ylim=c(0,1.028))
     axis(3, at = sites.scale, labels = rep("", length(sites.scale)),
-         tick=T, line = .1, col="white", cex=1, lwd=1.5,
+         tick=T, line = .1, col="white", cex=1, lwd=1,
          col.ticks = "black", tck = .02)
     # Where to put the axes:
     plot1 <- round(ncol(input.HCG.fix)/ncol(toPlot.fix), 2) # convert these back to the site number so we can do refinement
     plot2 <- round((ncol(input.HCG.fix)+blankWidth)/ncol(toPlot.fix), 2)
 
+    title("HCG", adj = plot1 / 2 - 0.025) # these shifts of 0.025 seem arbitrary but tend to center the title a bit better
+    title("GCH", adj = plot2 + 0.025 + (1 - plot2) / 2)
+
     toLabel <- rev(c(seq(1, length(order1), by=round(length(order1)/8)), length(order1)))
     axis(2, at = seq(0.077,1,length.out=length(toLabel)), labels=toLabel)
     toLabel <- round(c(seq(1, ncol(input.HCG.fix), length.out=5),
                        seq(1, ncol(input.GCH.fix), length.out=5)))
-    axis(1, at = c(seq(0,plot1,length.out=5), seq(plot2,1,length.out=5)), labels=toLabel)
+    axis(1, at = seq(0,plot1,length.out=5), labels=toLabel[1:5])
+    axis(1, at = seq(plot2,1,length.out=5), labels=toLabel[1:5])
 
     # Just drawing a straight DNA line:
     if (drawLine==TRUE) {
