@@ -27,7 +27,6 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
   alignedseq <- alignment.out$alignedseq
   log.vector <- alignment.out$log.vector
 
-  print(alignedseq[["H4XQCM208I9DJK"]][1:10])
 
   if (is.function(updateProgress)) updateProgress(message = "Identifying sites", value = 0.75)
   # We want to avoid GCG sites:
