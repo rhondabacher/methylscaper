@@ -27,6 +27,7 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
   alignedseq <- alignment.out$alignedseq
   log.vector <- alignment.out$log.vector
 
+
   if (is.function(updateProgress)) updateProgress(message = "Identifying sites", value = 0.75)
   # We want to avoid GCG sites:
   GCsites <- gregexpr("GC",c2s(ref.string),fixed=TRUE)[[1]] + 1
@@ -140,7 +141,7 @@ seqalign <- function(read, ref.string, substitutionMatrix) {
 
 mapseq <- function(i, sites) {
   editseq <- i
-  missing_bp <- which(editseq[sites] == "N")
+  missing_bp <- which(editseq == ".")
   editseq[sites][editseq[sites] == "T"] <- "-2"
   editseq[sites][editseq[sites] == "C"] <- "2"
   editseq[sites][editseq[sites] == "G"] <- "."
@@ -152,15 +153,18 @@ mapseq <- function(i, sites) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
     s1 <- editseq[pmax(1, sites.temp[j])]
     s2 <- editseq[pmin(length(i), sites.temp[j+1])]
+    is.first <- (pmax(1, sites.temp[j]) == 1)
 
     if (s1 == "2" & s2 == "2") { fillvec <- 1 }
     else if (s1 == "2" & s2 == "-2") {fillvec <- 0}
     else if (s1 == "-2" & s2 == "2") {fillvec <- 0}
     else if (s1 == "-2" & s2 == "-2") {fillvec <- -1}
     else if (s1 == "." & s2 == "."){fillvec <- "."}
-    else {fillvec <- 0}
+    else if (is.first & s2 == ".") {fillvec <- "."}
+    else fillvec <- 0
     fillvec <- rep(fillvec, length(tofill))
     editseq[tofill] <- fillvec
+    editseq[intersect(tofill, missing_bp)] <- "."
   }
   return(editseq)
 }
