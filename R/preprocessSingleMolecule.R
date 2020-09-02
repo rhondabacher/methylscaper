@@ -141,13 +141,14 @@ seqalign <- function(read, ref.string, substitutionMatrix) {
 
 mapseq <- function(i, sites) {
   editseq <- i
-  missing_bp <- which(editseq == ".")
+  editseq[sites][editseq[sites] == "."] <- "T"
   editseq[sites][editseq[sites] == "T"] <- "-2"
   editseq[sites][editseq[sites] == "C"] <- "2"
   editseq[sites][editseq[sites] == "G"] <- "."
   editseq[sites][editseq[sites] == "A"] <- "."
   editseq[sites][editseq[sites] == "N"] <- "." # we need to make sure that the N sites stay marked with a "."
-
+  missing_bp <- which(editseq == ".")
+  
   sites.temp <- c(0, sites, length(editseq)+1)
   for (j in 1:(length(sites.temp)-1)) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
