@@ -2,6 +2,7 @@
 
 export(average_status)
 export(forceReverse)
+export(get_contig_substrings)
 export(initialOrder)
 export(methylscaper)
 export(percent_C)

@@ -148,7 +148,7 @@ mapseq <- function(i, sites) {
   editseq[sites][editseq[sites] == "A"] <- "."
   editseq[sites][editseq[sites] == "N"] <- "." # we need to make sure that the N sites stay marked with a "."
   missing_bp <- which(editseq == ".")
-  
+
   sites.temp <- c(0, sites, length(editseq)+1)
   for (j in 1:(length(sites.temp)-1)) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
@@ -167,7 +167,44 @@ mapseq <- function(i, sites) {
     editseq[tofill] <- fillvec
     editseq[intersect(tofill, missing_bp)] <- "."
   }
+
+  substring.table <- get_contig_substrings(editseq)
+  long.missing <- which(substring.table$char == "." & substring.table$count > 3)
+  short.non.missing <- which(substring.table$char == "-" & substring.table$count <= 20)
+  short.non.missing.surrounded <- short.non.missing[(short.non.missing + 1) %in% long.missing | (short.non.missing - 1) %in% long.missing]
+  counts <- as.numeric(substring.table$count)
+  for (idx in short.non.missing.surrounded) # this part is tricky... we want to change the short non-missing sections to missing
+  {
+      if (idx == 1) editseq[1:counts[idx]] <- "."
+      else
+      {
+          first <- sum(counts[1:(idx-1)]) + 1
+          last <- first + counts[idx] - 1
+          editseq[first:last] <- "."
+      }
+  }
+
   return(editseq)
 }
 
 
+## we want to be able to get all contiguous substrings of a certain string... in particular one of the editseq strings used above
+## i want to return a table
+#' @export # temporarily exporting for testing
+get_contig_substrings <- function(s)
+{
+    ## we want some sort of table to keep track of the substrings
+    substring.table <- data.frame(char = "a", count = 0)
+
+    s <- ifelse(s == ".", ".", "-") ## use "-" to denote the non-missing ones... so we only keep track of missing and non missing
+    i <- 1
+    while (i <= length(s))
+    {
+        j <- i
+        while(s[j] == s[i] & j <= length(s)) j <- j + 1
+        substring.table <- rbind(substring.table, c(s[i], j - i))
+        i <- j
+    }
+    substring.table <- data.frame(char = substring.table$char[-1], count = as.numeric(substring.table$count[-1]))
+    return(substring.table)
+}
