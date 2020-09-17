@@ -190,7 +190,6 @@ mapseq <- function(i, sites) {
 
 ## we want to be able to get all contiguous substrings of a certain string... in particular one of the editseq strings used above
 ## i want to return a table
-#' @export # temporarily exporting for testing
 get_contig_substrings <- function(s)
 {
     ## we want some sort of table to keep track of the substrings
