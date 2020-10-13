@@ -64,8 +64,11 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
     title("HCG", adj = plot1 / 2 - 0.025) # these shifts of 0.025 seem arbitrary but tend to center the title a bit better
     title("GCH", adj = plot2 + 0.025 + (1 - plot2) / 2)
 
-    toLabel <- rev(c(seq(1, length(order1), by=round(length(order1)/8)), length(order1)))
-    axis(2, at = seq(0.077,1,length.out=length(toLabel)), labels=toLabel)
+    toLabel <- rev(seq(1, length(order1), by=round(length(order1)/8)))
+    if (!(length(order1) %in% toLabel)) toLabel <- c(length(order1), toLabel)
+    y.axis.starting.point <- ifelse(drawKey, nrow(blankROW) / nrow(toPlot.fix), 0)
+    axis(2, at = seq(y.axis.starting.point,1,length.out=length(toLabel)), labels=toLabel)
+
     toLabel <- round(c(seq(1, ncol(input.HCG.fix), length.out=5),
                        seq(1, ncol(input.GCH.fix), length.out=5)))
     axis(1, at = seq(0,plot1,length.out=5), labels=toLabel[1:5])
