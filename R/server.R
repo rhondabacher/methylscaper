@@ -27,10 +27,37 @@ server <- function(input, output) {
     }
   })
 
+  output$startPos <- renderUI({
+      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+      {
+          cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
+          cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
+          gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
+          gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
 
+          start <- pmax(cg.min.pos, gc.min.pos)
+          numericInput(inputId = "startPos", label = "Start Position", min = 0, 
+                      value = start)
+      }
+
+  })
+  
+  output$endPos <- renderUI({
+      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+      {
+          cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
+          cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
+          gc.max.pos <- max(sapply(sc_seq_data$gch, FUN=function(x) max(x$pos)))
+          gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
+
+          end <- pmax(cg.min.pos, gc.min.pos) + 1000
+          numericInput(inputId = "endPos", label = "End Position", min = 0, 
+                      value = end)
+      }
+
+  })
     output$positionSlider <- renderUI({
-        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) &
-            input$startPos != 0 & input$endPos != 0)
+        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
         {
             cg.max.pos <- max(sapply(sc_seq_data$hcg, FUN=function(x) max(x$pos)))
             cg.min.pos <- min(sapply(sc_seq_data$hcg, FUN=function(x) min(x$pos)))
@@ -38,7 +65,7 @@ server <- function(input, output) {
             gc.min.pos <- min(sapply(sc_seq_data$gch, FUN=function(x) min(x$pos)))
             start <- input$startPos
             end <- input$endPos
-
+            
             if (start < cg.min.pos | start < gc.min.pos | end > cg.max.pos | end > gc.max.pos)
             {
                 showNotification("Selected range is out of bounds. Please choose a valid starting and end position to generate the plot.", type="error")
@@ -70,22 +97,25 @@ server <- function(input, output) {
         prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, input$positionSliderInput[1],
                            input$positionSliderInput[2],
                            updateProgress = updateProgress)
-
-        temp.gch <- prep_out$gch
-        temp.hcg <- prep_out$hcg
-        if (nrow(temp.gch) == nrow(temp.hcg))
-        {
-          sc_coordinatesObject$refine.start <- 0
-          sc_coordinatesObject$refine.stop <- 0
-          sc_coordinatesObject$weight.start <- 0
-          sc_coordinatesObject$weight.stop <- 0
-          sc_input_data$gch <- temp.gch
-          sc_input_data$hcg <- temp.hcg
-          isolate({
-            actionsLog$log <- c(actionsLog$log, paste("Beginning single-cell data analysis"))
-            actionsLog$log <- c(actionsLog$log, paste("From position", input$positionSliderInput[1], "to", input$positionSliderInput[2]))
-          })
-        }
+        if (!is.list(prep_out)) {
+          showNotification("No valid sites in designated range. Try different start and end positions or a larger range.")
+         } else {
+         temp.gch <- prep_out$gch
+         temp.hcg <- prep_out$hcg
+          if (nrow(temp.gch) == nrow(temp.hcg))
+          {
+            sc_coordinatesObject$refine.start <- 0
+            sc_coordinatesObject$refine.stop <- 0
+            sc_coordinatesObject$weight.start <- 0
+            sc_coordinatesObject$weight.stop <- 0
+            sc_input_data$gch <- temp.gch
+            sc_input_data$hcg <- temp.hcg
+            isolate({
+              actionsLog$log <- c(actionsLog$log, paste("Beginning single-cell data analysis"))
+              actionsLog$log <- c(actionsLog$log, paste("From position", input$positionSliderInput[1], "to", input$positionSliderInput[2]))
+            })
+          }
+         }
 
 
     }

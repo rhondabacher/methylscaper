@@ -16,11 +16,11 @@ process of refinement and re-weighting that optimally orders the single DNA mole
 
 ## Installation
 
-Currently, the only way to install `methylscaper` is via the development version on GitHub.
+`methylscaper` can be installed via GitHub.
 
 ```{r, eval = FALSE}
 install.packages(devtools)
-devtools::install_github("pknight24/methylscaper", build_vignettes=TRUE)
+devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE)
 library(methylscaper)
 ```
 
