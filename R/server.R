@@ -10,6 +10,15 @@ server <- function(input, output) {
   sc_seq_data <- reactiveValues(gch = NULL, hcg = NULL) # for raw data
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
 
+  
+
+  observe({
+   volumes = getVolumes()
+    shinyDirChoose(input, 'folder', roots=volumes)
+    print(input$folder)
+   })
+    
+    
   observe({
     if (!is.null(input$gch_seq_file) & !is.null(input$hcg_seq_file))
     {

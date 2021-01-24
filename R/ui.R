@@ -1,6 +1,14 @@
+library(shinyFiles)
 ui <- navbarPage("methylscaper",
                  tabPanel("Single-cell",
                           navbarPage("",
+                                   tabPanel("Preprocessing",
+                                            # fileInput("fasta.file", label = "FASTA File"),
+                                            shinyDirButton('folder', 'Select a folder', 'Please select a folder'),
+                                            # textInput("gch.file.name", label = "GCH File Name"),
+                                            # textInput("hcg.file.name", label = "HCG File Name"),
+                                            actionButton("run.subset", label = "Run")),
+                                   
                                      tabPanel("Seriation",
                                               sidebarLayout(
                                                 sidebarPanel(
