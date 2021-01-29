@@ -1,11 +1,13 @@
+library(shinyFiles)
+
 ui <- navbarPage("methylscaper",
                  tabPanel("Single-cell",
                           navbarPage("",
                                      tabPanel("Seriation",
                                               sidebarLayout(
                                                 sidebarPanel(
-                                                  fileInput("gch_seq_file", label = "GCH Sequence RDS file"),
-                                                  fileInput("hcg_seq_file", label = "HCG Sequence RDS file"),
+                                                 fileInput("gch_seq_file", label = "GCH Sequence RDS file", accept=".RDS"),
+                                                 fileInput("hcg_seq_file", label = "HCG Sequence RDS file", accept=".RDS"),
                                                   uiOutput("startPos"),
                                                   uiOutput("endPos"),
                                                   uiOutput("positionSlider"),
@@ -45,8 +47,8 @@ ui <- navbarPage("methylscaper",
                  tabPanel("Single-molecule",
                           navbarPage("",
                                      tabPanel("Preprocessing",
-                                              fileInput("fasta.file", label = "FASTA File"),
-                                              fileInput("ref.file", label = "Reference File"),
+                                              fileInput("fasta.file", label = "FASTA File", accept= c(".fa", ".txt", ".fasta")),
+                                              fileInput("ref.file", label = "Reference File", accept= c(".fa", ".txt", ".fasta")),
                                               textInput("gch.file.name", label = "GCH File Name"),
                                               textInput("hcg.file.name", label = "HCG File Name"),
                                               textInput("processing.log.name", label = "Processing Log File Name"),
@@ -54,8 +56,8 @@ ui <- navbarPage("methylscaper",
                                      tabPanel( "Seriation",
                                                sidebarLayout(
                                                  sidebarPanel(
-                                                   fileInput("sm_gch_file", label = "GCH Data file input"),
-                                                   fileInput("sm_hcg_file", label = "HCG Data file input"),
+                                                   fileInput("sm_gch_file", label = "GCH Data file input", accept= c(".csv", ".txt", ".tsv")),
+                                                   fileInput("sm_hcg_file", label = "HCG Data file input", accept= c(".csv", ".txt", ".tsv")),
                                                    selectInput("sm_ser_method", label = "Seriation Method:",
                                                                choices = c("PCA", "ARSA")),
                                                    selectInput("sm_refine_method", label = "Refinement Method:",
