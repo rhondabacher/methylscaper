@@ -10,14 +10,33 @@ server <- function(input, output) {
   sc_seq_data <- reactiveValues(gch = NULL, hcg = NULL) # for raw data
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
 
+  sc_input_folder <- reactiveValues(path = NULL)
   
 
+  ## preprocessing tab
   observe({
    volumes = getVolumes()
-    shinyDirChoose(input, 'folder', roots=volumes)
-    print(input$folder)
+    shinyDirChoose(input, 'folder', roots=volumes())
+    path.list <- input$folder["path"][[1]]
+    path <- paste(unlist(path.list), collapse = "/")
+    print(path)
+    if (!is.null(path.list)) sc_input_folder$path <- path
+
    })
-    
+
+  observeEvent(input$run.subset,{
+   if (!is.na(sc_input_folder$path))
+     {
+       print(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
+       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number) # this is very slow
+       print("Done with subset, beginning prepSC")
+       prepsc.out <- prepSC(dat.subset$gc.seq.sub, dat.subset$cg.seq.sub,
+                            startPos = 105636488, endPos = 105636993)
+       print("Done with single cell processing")
+     }
+  })
+
+  ## seriation tab
     
   observe({
     if (!is.null(input$gch_seq_file) & !is.null(input$hcg_seq_file))

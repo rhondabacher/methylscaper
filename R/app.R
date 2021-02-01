@@ -4,6 +4,7 @@
 #' Runs the methylscaper Shiny app.
 #'
 #' @import shiny
+#' @importFrom shinyFiles shinyDirChoose shinyDirButton getVolumes
 #' @importFrom grDevices dev.off pdf png svg
 #' @importFrom utils write.csv
 #' @importFrom svglite svglite

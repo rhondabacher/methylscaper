@@ -87,3 +87,45 @@ mapSC <- function(IN.seq, startPos, endPos) {
   }
   return(editseq)
 }
+
+## this is the first function called
+## it takes a path to the datafiles and a chromosome number as arguments and returns the desired subset of the data
+## this code is taken straight from the vignette
+subsetSC <- function(path, chromosome)
+{
+  cur.dir <- getwd()
+  setwd(path)
+  cgfiles <- sort(grep("met", list.files(path), value = T))
+  gcfiles <- sort(grep("acc", list.files(path), value = T))
+
+  useChr <- chromosome
+
+  cg.seq <- list()
+  for(i in 1:length(cgfiles)) {
+    cg.seq[[i]] <- read.table(cgfiles[i], header=T, stringsAsFactors = F)
+  }
+
+  gc.seq <- list()
+  for(i in 1:length(gcfiles)) {
+    gc.seq[[i]] <- read.table(gcfiles[i], header=F, stringsAsFactors = F,
+                              colClasses = c("character", "numeric", "numeric"))
+    colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
+  }
+
+  cg.seq.sub <- lapply(cg.seq, function(x) {
+    QQ <- x[order(x$pos),]
+    QQ = subset(QQ, chr==useChr)
+    return(QQ)
+  })
+
+
+  gc.seq.sub <- lapply(gc.seq, function(x) {
+    QQ <- x[order(x$pos),]
+    QQ = subset(QQ, chr==useChr)
+    return(QQ)
+  })
+
+  setwd(cur.dir)
+
+  list(cg.seq.sub = cg.seq.sub, gc.seq.sub = gc.seq.sub)
+}
