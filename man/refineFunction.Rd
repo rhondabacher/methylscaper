@@ -7,9 +7,11 @@
 refineFunction(orderObject, refineStart, refineEnd, Method = "HC_average")
 }
 \arguments{
-\item{orderObject}{An object of class \code{orderObject}, generated with the \code{initialOrder} function.}
+\item{orderObject}{An object of class \code{orderObject}, generated 
+with the \code{initialOrder} function.}
 
-\item{refineStart}{The index of the first sample (row) used in the refinement.}
+\item{refineStart}{The index of the first sample (row) used 
+in the refinement.}
 
 \item{refineEnd}{The index of the last sample used in the refinement.}
 
@@ -20,4 +22,12 @@ The new complete ordering with the refinement applied.
 }
 \description{
 Reorders a subset of the methylation data.
+}
+\examples{
+ 
+data(day7)
+
+orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+# reorder first 50 cells/molecules (rows)
+orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 }

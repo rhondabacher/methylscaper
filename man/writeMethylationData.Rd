@@ -7,12 +7,24 @@
 writeMethylationData(dat, filepath, ...)
 }
 \arguments{
-\item{dat}{A methylation data matrix, output from the \code{runAlign} function.}
+\item{dat}{A methylation data matrix, output from the
+\code{runAlign} function.}
 
 \item{filepath}{A string of the file path.}
 
 \item{...}{Additional parameters passed to \code{write.table}.}
 }
+\value{
+This function writes the GCH and HCG matrices as a csv file
+ by default, although a tab separated file is also valid and can be 
+ specified as .txt or .tsv.
+}
 \description{
 Writing methylation data matrices
+}
+\examples{
+
+data(day7)
+# writeMethylationData(day7$gch, "GCH.csv")
+
 }
