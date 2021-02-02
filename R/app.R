@@ -8,6 +8,7 @@
 #' @importFrom grDevices dev.off pdf png svg
 #' @importFrom utils write.csv
 #' @importFrom svglite svglite
+#' @importFrom data.table fread
 #' @export
 methylscaper <- function() {
 

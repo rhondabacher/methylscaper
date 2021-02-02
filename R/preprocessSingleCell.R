@@ -91,10 +91,12 @@ mapSC <- function(IN.seq, startPos, endPos) {
 ## this is the first function called
 ## it takes a path to the datafiles and a chromosome number as arguments and returns the desired subset of the data
 ## this code is taken straight from the vignette
+#' @export
 subsetSC <- function(path, chromosome)
 {
+  browser()
   cur.dir <- getwd()
-  setwd(path)
+  setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
   cgfiles <- sort(grep("met", list.files(path), value = T))
   gcfiles <- sort(grep("acc", list.files(path), value = T))
 
@@ -102,12 +104,13 @@ subsetSC <- function(path, chromosome)
 
   cg.seq <- list()
   for(i in 1:length(cgfiles)) {
-    cg.seq[[i]] <- read.table(cgfiles[i], header=T, stringsAsFactors = F)
+    cg.seq[[i]] <- fread(cgfiles[i], header=F, stringsAsFactors = F)
+    colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
   }
 
   gc.seq <- list()
-  for(i in 1:length(gcfiles)) {
-    gc.seq[[i]] <- read.table(gcfiles[i], header=F, stringsAsFactors = F,
+  for(i in 1:length(gcfiles)) { ## this is where it breaks
+    gc.seq[[i]] <- fread(gcfiles[i], header=F, stringsAsFactors = F,
                               colClasses = c("character", "numeric", "numeric"))
     colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
   }
