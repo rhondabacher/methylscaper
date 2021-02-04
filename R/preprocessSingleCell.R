@@ -92,9 +92,9 @@ mapSC <- function(IN.seq, startPos, endPos) {
 ## it takes a path to the datafiles and a chromosome number as arguments and returns the desired subset of the data
 ## this code is taken straight from the vignette
 #' @export
-subsetSC <- function(path, chromosome)
+subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
 {
-  browser()
+  # browser()
   cur.dir <- getwd()
   setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
   cgfiles <- sort(grep("met", list.files(path), value = T))
@@ -106,29 +106,29 @@ subsetSC <- function(path, chromosome)
   for(i in 1:length(cgfiles)) {
     cg.seq[[i]] <- fread(cgfiles[i], header=F, stringsAsFactors = F)
     colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
+    cg.seq[[i]] <- cg.seq[[i]][order(cg.seq[[i]]$pos), ]
+
+    cg.seq[[i]] <- subset(cg.seq[[i]], chr==useChr)
+    if (!is.null(startPos) & !is.null(endPos))
+     {
+      cg.seq[[i]] <- subset(cg.seq[[i]], pos >= startPos & pos <= endPos)
+    }
   }
 
-  gc.seq <- list()
+  gc.seq<- list()
   for(i in 1:length(gcfiles)) { ## this is where it breaks
     gc.seq[[i]] <- fread(gcfiles[i], header=F, stringsAsFactors = F,
                               colClasses = c("character", "numeric", "numeric"))
     colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
+    gc.seq[[i]] <- gc.seq[[i]][order(gc.seq[[i]]$pos), ]
+    gc.seq[[i]] <- subset(gc.seq[[i]], chr==useChr)
+    if (!is.null(startPos) & !is.null(endPos))
+     {
+      gc.seq[[i]] <- subset(gc.seq[[i]], pos >= startPos & pos <= endPos)
+    }
   }
-
-  cg.seq.sub <- lapply(cg.seq, function(x) {
-    QQ <- x[order(x$pos),]
-    QQ = subset(QQ, chr==useChr)
-    return(QQ)
-  })
-
-
-  gc.seq.sub <- lapply(gc.seq, function(x) {
-    QQ <- x[order(x$pos),]
-    QQ = subset(QQ, chr==useChr)
-    return(QQ)
-  })
 
   setwd(cur.dir)
 
-  list(cg.seq.sub = cg.seq.sub, gc.seq.sub = gc.seq.sub)
+  list(cg.seq.sub = cg.seq, gc.seq.sub = gc.seq)
 }
