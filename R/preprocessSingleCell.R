@@ -94,13 +94,15 @@ mapSC <- function(IN.seq, startPos, endPos) {
 #' @export
 subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
 {
-  # browser()
+  browser()
   cur.dir <- getwd()
   setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
   cgfiles <- sort(grep("met", list.files(path), value = T))
   gcfiles <- sort(grep("acc", list.files(path), value = T))
 
   useChr <- chromosome
+
+  test<- subsetCGfiles(cgfiles)
 
   cg.seq <- list()
   for(i in 1:length(cgfiles)) {
