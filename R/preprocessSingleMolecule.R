@@ -1,20 +1,23 @@
-#' runAlign
+#' Align the single-molecule data
 #'
-#' Runs the preprocessing methods for single-molecule data on sequences.
+#' Runs the preprocessing methods for single-molecule data.
 #'
-#' @param ref A reference sequence
-#' @param fasta A list of sequences
-#' @param fasta.subset A vector of indices indicating which 
-#'      sequences to process.
-#' @param multicoreParam A MulticoreParam object, used to align 
+#' @param ref A reference sequence to align the reads to.
+#' @param fasta A list of reads/sequences from a single-molecule experiment (e.g. MAPit)
+#' @param fasta.subset (optional) A vector of indices indicating which 
+#'      sequences to process if a subset should be used. Leave this blank if
+#'      all sequences should be processed.
+#' @param multicoreParam (optional) A MulticoreParam object, used to align 
 #'      sequences in parallel.
-#' @param updateProgress Used to add a progress bar to the Shiny app. 
+#' @param updateProgress (optional) Used to add a progress bar to the Shiny app. 
 #'      Should not be used otherwise.
-#' @param log.file String indicating where to save a log of the 
-#'      alignment process. If left NULL, no log is saved.
-#' @return The output is a list containing the elements 'gch' and 'hcg.
+#' @param log.file (optional) String indicating where to save a log of the 
+#'      alignment process. If left NULL, no log is saved. We highly recommend
+#'      saving a log file.
+#' @return The output is a list containing the the matrices 'gch' and 'hcg.
 #'       Each is a dataframe with reads/cells on the rows and each column
-#'      is a base-pair. The matrix is coded as follows:
+#'      is a base-pair. The matrix represents the methylation state for cell
+#'      across all base pairs. The coding is as follows:
 #'          -2: unmethylated GCH or HCG site
 #'          -1: base pairs between two unmethylated GCH or HCG sites
 #'          0: base pairs between mismatching methylation states of 

@@ -1,4 +1,4 @@
-#' Refinement step
+#' Refinement
 #' 
 #' Reorders a subset of the methylation data. 
 #' 
@@ -6,10 +6,12 @@
 #'  with the \code{initialOrder} function.
 #' @param refineStart The index of the first sample (row) used 
 #'  in the refinement.
-#' @param refineEnd The index of the last sample used in the refinement.
+#' @param refineEnd The index of the last sample (row) used in the refinement.
 #' @param Method The seriation method used to perform the refinement.
 #' 
-#' @return The new complete ordering with the refinement applied.
+#' @return The refinement reorders the cells/molecules (rows) between the indicated
+#' start and end positions. The function returns the new complete ordering 
+#' with the refinement applied.
 #' @export
 #'
 #' @examples 
@@ -17,7 +19,7 @@
 #' data(day7)
 #' 
 #' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-#' # reorder first 50 cells/molecules (rows)
+#' # reordering the first 50 cells/molecules (rows)
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 
 refineFunction <- function(orderObject, refineStart, refineEnd, 

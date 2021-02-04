@@ -54,8 +54,8 @@ methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param color Indicates which data set to compute proportions for.
-#'      This should be RED for endogenous methylation or YELLOW for
-#'      accessibility.
+#'      This should be 'red' or 'hcg' for endogenous methylation; 'yellow' or
+#'      'gch' for accessibility. 
 #' @param makePlot Indicates whether to plot a histogram of the proportions 
 #'  across all reads.
 #' @param ... Additional parameters used by the \code{hist} function.
@@ -72,17 +72,18 @@ methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
 #' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
 #' methyl_proportion_cell(orderObj, plotHistogram = TRUE)
 
-methyl_proportion_cell <- function(orderObject, color = "YELLOW", 
+methyl_proportion_cell <- function(orderObject, color = "yellow", 
                                 makePlot=TRUE, ...){
-  color <- toupper(color)
-  color.indicator <- ifelse(color=="YELLOW", -1, 1)
+  color <- tolower(color)
+  if (color=="gch") color <- "yellow"
+  color.indicator <- ifelse(color=="yellow", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){
       sum(x == color.indicator * 3 | x == color.indicator * 4) / (length(x) / 2)
   })
   if (makePlot) {
     opar <- par(lwd=4)
     H = hist(Proportion, plot=FALSE, breaks = 15)
-    plot(H, xlim=c(0,1), border=ifelse(color == "YELLOW", "gold2", "brown1"),
+    plot(H, xlim=c(0,1), border=ifelse(color == "yellow", "gold2", "brown1"),
         col="gray75", main="Methylated Sites Per Cell/Molecule",
         lwd=2,...)
     par(opar)

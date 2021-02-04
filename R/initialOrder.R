@@ -1,21 +1,28 @@
-#' Ordering of methylation data
+#' Ordering the molecules/reads
 #'
-#' Orders methylation data using a given seriation method. This function can
-#' also perform a weighted seriation if the method is set to "PCA".
+#' This function performs the weighted seriation procedure
+#' described in the methylscaper manuscript if the method is set to "PCA".
+#' The data may also be ordered using a given seriation method from the
+#' seriation R package. The weighting is done between a designated start and end
+#' base pair chosen by the user, and the weight can be done on the 
+#' endogenous methylation or the accessibility.
 #'
-#' @param input.GCH The GCH input data.
-#' @param input.HCG The HCG input data.
+#' @param input.GCH The GCH input data (the data must have first been preprocessed).
+#' @param input.HCG The HCG input data (the data must have first been preprocessed).
 #' @param Method Indicates the seriation method to use. The default option
-#'  is "PCA", which orders the data using the first principal component. Any 
-#' seriation method provided in the \code{seriation} package is valid.
+#'  is "PCA", which orders the data using a weighted first principal component approach. Any 
+#'  seriation method provided in the \code{seriation} package is also valid input. 
 #' @param weightStart Index of the first column used in the weighted seriation.
 #' @param weightEnd Index of the last column used in the weighted seriation.
 #' @param weightFeature Indicates whether to weight the GCH or HCG data.
+#' Valid input to weight the GCH is 'gch' or 'yellow'. To weight the HCG, 
+#' valid input for this option is 'hcg' or 'red'.
 #' @param updateProgress A function to handle the progress bar for the 
 #' Shiny app. Should not be used when using the function independently.
 #'
 #' @return An object of class \code{orderObject}, which contains the generated
-#'  ordering and the cleaned data matrix.
+#'  ordering ($order1) and a clean data matrix ($toClust) 
+#'  to be passed into the plotting function plotSequence().
 #' @importFrom seriation seriate get_order
 #' @importFrom stats as.dist dist
 #' @importFrom Rfast Dist
@@ -24,7 +31,7 @@
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+#' orderObj <- initialOrder(day7$gch, day7$hcg)
 
 
 initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
@@ -44,6 +51,7 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
     input.GCH <- recoded$input.GCH
     input.HCG <- recoded$input.HCG
 
+    weightFeature <- tolower(weightFeature)
     ## Clustering:
     toClust <- cbind(input.GCH, input.HCG)
     weighted = FALSE
@@ -55,12 +63,12 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
             updateProgress(message = "Weighting selected columns", value = 0.2)
         }
         weighted = TRUE
-        if (weightFeature == "red") {
+        if (weightFeature == "red" | weightFeature == 'hcg') {
             FEATURE = 3
             weightVector <- apply(input.HCG[,weightStart:weightEnd], 
                                     1, function(x) sum(x==FEATURE))
         }
-        if (weightFeature == "yellow") {
+        if (weightFeature == "yellow" | weightFeature == 'gch') {
             FEATURE = -3
             weightVector <- apply(input.GCH[,weightStart:weightEnd], 
                                     1, function(x) sum(x==FEATURE))
