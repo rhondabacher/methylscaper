@@ -9,6 +9,14 @@ server <- function(input, output) {
   source("summaryPlots.R")
   source("preprocessSingleCell.R")
  
+  library(seriation)
+
+  library(seqinr)
+  library(Biostrings)
+  library(Rfast)
+  library(svglite)
+ 
+ 
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
