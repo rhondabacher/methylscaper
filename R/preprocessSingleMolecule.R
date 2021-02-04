@@ -62,6 +62,7 @@ runAlign <- function(ref, fasta, fasta.subset = (1:length(fasta)),
 
   if (!is.null(log.file))
   {
+      if (!grepl(".txt", log.file)) log.file <- paste0(log.file,".txt")
       writeLines(log.vector, con=log.file)
   }
 
