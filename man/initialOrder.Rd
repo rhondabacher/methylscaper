@@ -2,7 +2,7 @@
 % Please edit documentation in R/initialOrder.R
 \name{initialOrder}
 \alias{initialOrder}
-\title{Ordering of methylation data}
+\title{Ordering the molecules/reads}
 \usage{
 initialOrder(
   input.GCH,
@@ -15,34 +15,41 @@ initialOrder(
 )
 }
 \arguments{
-\item{input.GCH}{The GCH input data.}
+\item{input.GCH}{The GCH input data (the data must have first been preprocessed).}
 
-\item{input.HCG}{The HCG input data.}
+\item{input.HCG}{The HCG input data (the data must have first been preprocessed).}
 
 \item{Method}{Indicates the seriation method to use. The default option
- is "PCA", which orders the data using the first principal component. Any 
-seriation method provided in the \code{seriation} package is valid.}
+is "PCA", which orders the data using a weighted first principal component approach. Any 
+seriation method provided in the \code{seriation} package is also valid input.}
 
 \item{weightStart}{Index of the first column used in the weighted seriation.}
 
 \item{weightEnd}{Index of the last column used in the weighted seriation.}
 
-\item{weightFeature}{Indicates whether to weight the GCH or HCG data.}
+\item{weightFeature}{Indicates whether to weight the GCH or HCG data.
+Valid input to weight the GCH is 'gch' or 'yellow'. To weight the HCG, 
+valid input for this option is 'hcg' or 'red'.}
 
 \item{updateProgress}{A function to handle the progress bar for the 
 Shiny app. Should not be used when using the function independently.}
 }
 \value{
 An object of class \code{orderObject}, which contains the generated
- ordering and the cleaned data matrix.
+ ordering ($order1) and a clean data matrix ($toClust) 
+ to be passed into the plotting function plotSequence().
 }
 \description{
-Orders methylation data using a given seriation method. This function can
-also perform a weighted seriation if the method is set to "PCA".
+This function performs the weighted seriation procedure
+described in the methylscaper manuscript if the method is set to "PCA".
+The data may also be ordered using a given seriation method from the
+seriation R package. The weighting is done between a designated start and end
+base pair chosen by the user, and the weight can be done on the 
+endogenous methylation or the accessibility.
 }
 \examples{
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+orderObj <- initialOrder(day7$gch, day7$hcg)
 }

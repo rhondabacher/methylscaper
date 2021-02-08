@@ -31,6 +31,6 @@ Calculate the average methylation/accessibility status across all reads.
 data(day7)
 
 orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-average_status(orderObj, plotAverages = TRUE)
+methyl_average_status(orderObj, plotAverages = TRUE)
 
 }

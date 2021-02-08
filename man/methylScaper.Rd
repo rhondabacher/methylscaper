@@ -14,5 +14,5 @@ Runs the methylscaper Shiny app.
 }
 \examples{
 
-methylscaper()
+# methylscaper()
 }

@@ -112,7 +112,7 @@ methyl_proportion_cell <- function(orderObject, color = "yellow",
 #' data(day7)
 #' 
 #' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-#' average_status(orderObj, plotAverages = TRUE)
+#' methyl_average_status(orderObj, plotAverages = TRUE)
 #' 
 methyl_average_status <- function(orderObject, window_length = 20, 
                                 makePlot = TRUE, ...)

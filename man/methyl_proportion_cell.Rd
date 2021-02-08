@@ -4,14 +4,14 @@
 \alias{methyl_proportion_cell}
 \title{Calculate the proportion of methylated bases for each cell/molecule}
 \usage{
-methyl_proportion_cell(orderObject, color = "YELLOW", makePlot = TRUE, ...)
+methyl_proportion_cell(orderObject, color = "yellow", makePlot = TRUE, ...)
 }
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}}
 
 \item{color}{Indicates which data set to compute proportions for.
-This should be RED for endogenous methylation or YELLOW for
-accessibility.}
+This should be 'red' or 'hcg' for endogenous methylation; 'yellow' or
+'gch' for accessibility.}
 
 \item{makePlot}{Indicates whether to plot a histogram of the proportions 
 across all reads.}

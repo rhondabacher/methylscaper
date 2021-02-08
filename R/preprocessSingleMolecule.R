@@ -152,6 +152,7 @@ alignSequences <- function(fasta, ref.string, log.vector,
         SEQ2[which(SEQ2=="-")] <- toreplace
         SEQ2 <- SEQ2[which(SEQ1!="-")]
         if (maxAligns[i] == 1) SEQ2 <- s2c(paste(reverseComplement(DNAString(c2s(SEQ2)))))
+        return(SEQ2)
     })
     log.vector <- c(log.vector, paste("Throwing out",
                     length(useseqs) - length(good.alignment.idxs), "alignments"))

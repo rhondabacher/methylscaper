@@ -8,9 +8,9 @@
 An object of class \code{list} of length 61.
 }
 \usage{
-chr19_example_GCH
+data(chr19_example_GCH)
 }
 \description{
-This data XX
+This data is from GSE109262, and has been pre-processed by methylscaper
 }
 \keyword{datasets}

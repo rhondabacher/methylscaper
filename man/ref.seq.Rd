@@ -9,7 +9,7 @@ single-molecule experiment}
 An object of class \code{list} of length 1.
 }
 \usage{
-ref.seq
+data(ref.seq)
 }
 \description{
 This dataset was loaded into R using seqinr::read.fasta

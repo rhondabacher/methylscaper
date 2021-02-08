@@ -8,7 +8,7 @@
 An object of class \code{list} of length 2.
 }
 \usage{
-day7
+data(day7)
 }
 \description{
 This was made after running methylscaper::runAlign(fasta=reads.day7, 

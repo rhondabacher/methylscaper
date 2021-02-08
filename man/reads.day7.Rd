@@ -8,7 +8,7 @@
 An object of class \code{list} of length 293.
 }
 \usage{
-reads.day7
+data(reads.day7)
 }
 \description{
 This dataset was loaded into R using seqinr::read.fasta
