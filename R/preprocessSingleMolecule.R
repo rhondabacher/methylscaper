@@ -34,7 +34,7 @@
 #' data(reads.day7)
 #' data(ref.seq)
 #' # only process 200 here as an example using the fasta.subset.
-#' alignedseq <- runAlign(reads.day7, ref.seq, fasta.subset=1:200)
+#' alignedseq <- runAlign(reads.day7, ref.seq, fasta.subset=1:150)
 
 runAlign <- function(ref, fasta, fasta.subset = seq(1,length(fasta)),
                      multicoreParam = NULL, updateProgress = NULL, 
@@ -140,6 +140,8 @@ alignSequences <- function(fasta, ref.string, log.vector,
     score.cutoff <- sort(scores)[score.cutoff.idx]
 
     good.alignment.idxs <- which(scores > score.cutoff)
+
+    if(length(good.alignment.idxs) == 0) {stop("No good alignments were found. See methylscaper FAQ for more details.")}
 
     alignedseq <- lapply(good.alignment.idxs, function(i){
         SEQ1 = s2c(paste(alignedPattern(useseqs[[i]])))
