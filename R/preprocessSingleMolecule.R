@@ -94,9 +94,12 @@ runAlign <- function(ref, fasta, fasta.subset = seq(1,length(fasta)),
     saveGC <- cbind(rownames(saveGC), saveGC)
     if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
 
-    if (!is.null(log.file)) {
+
+  if (!is.null(log.file))
+  {
+      if (!grepl(".txt", log.file)) log.file <- paste0(log.file,".txt")
       writeLines(log.vector, con=log.file)
-    }
+   }
     return(list(hcg = saveCG, gch = saveGC))
 }
 
