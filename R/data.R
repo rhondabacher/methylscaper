@@ -1,4 +1,36 @@
-#' Example methylation data
+#' Example single-molecule GCH and HCG matrices
 #' 
-#' An example methylation dataset, which includes a GCH and an HCG matrix.
+#' @docType data
+#' @usage data(day7)
+#' This was made after running methylscaper::runAlign(fasta=reads.day7, 
+#' ref=ref.seq)
 "day7"
+
+#' Example reads from single-molecule experiment
+#' 
+#' @docType data
+#' @usage data(reads.day7)
+#' This dataset was loaded into R using seqinr::read.fasta
+"reads.day7"
+
+#' Example reference sequence to align reads to from a 
+#' single-molecule experiment
+#' 
+#' @docType data
+#' @usage data(ref.seq)
+#' This dataset was loaded into R using seqinr::read.fasta
+"ref.seq"
+
+#' Example GCH file for single-cell experiment
+#' 
+#' @docType data
+#' @usage data(chr19_example_GCH)
+#' This data is from GSE109262, and has been pre-processed by methylscaper
+"chr19_example_GCH"
+
+#' Example HCG file for single-cell experiment
+#' 
+#' @docType data
+#' @usage data(chr19_example_HCG)
+#' This data GSE109262, and has been pre-processed by methylscaper
+"chr19_example_HCG"

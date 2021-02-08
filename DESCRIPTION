@@ -1,9 +1,11 @@
 Package: methylscaper
+Type: Package
 Title: Visualization of Methylation Data
 Description: A shiny app for visualizing methylation data.
 Version: 0.0.5
-Authors@R: person("Parker", "Knight", email = "pknight24@ufl.edu", role = c("aut", "cre"))
-Depends: R (>= 3.6.0)
+Authors@R: c(person("Bacher", "Rhonda", email = "rbacher@ufl.edu", role = c("aut", "cre")), person("Parker", "Knight", email = "pknight24@ufl.edu", role = c("aut")))
+Maintainer: Rhonda Bacher <rbacher@ufl.edu>
+Depends: R (>= 4.0.0)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
@@ -14,7 +16,17 @@ Imports:
   seqinr,
   Biostrings,
   Rfast,
-  svglite
+  svglite,
+  grDevices, 
+  graphics, 
+  stats, 
+  utils
 RoxygenNote: 7.1.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
+biocViews: 
+	DNAMethylation,
+	Epigenetics,
+	PrincipalComponent,
+	Visualization,
+	SingleCell

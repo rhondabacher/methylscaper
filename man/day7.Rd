@@ -3,7 +3,7 @@
 \docType{data}
 \name{day7}
 \alias{day7}
-\title{Example methylation data}
+\title{Example single-molecule GCH and HCG matrices}
 \format{
 An object of class \code{list} of length 2.
 }
@@ -11,6 +11,7 @@ An object of class \code{list} of length 2.
 day7
 }
 \description{
-An example methylation dataset, which includes a GCH and an HCG matrix.
+This was made after running methylscaper::runAlign(fasta=reads.day7, 
+ref=ref.seq)
 }
 \keyword{datasets}

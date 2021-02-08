@@ -7,7 +7,7 @@
 runAlign(
   ref,
   fasta,
-  fasta.subset = (1:length(fasta)),
+  fasta.subset = seq(1, length(fasta)),
   multicoreParam = NULL,
   updateProgress = NULL,
   log.file = NULL
@@ -18,14 +18,36 @@ runAlign(
 
 \item{fasta}{A list of sequences}
 
-\item{fasta.subset}{A vector of indices indicating which sequences to process.}
+\item{fasta.subset}{A vector of indices indicating which 
+sequences to process.}
 
-\item{multicoreParam}{A MulticoreParam object, used to align sequences in parallel.}
+\item{multicoreParam}{A MulticoreParam object, used to align 
+sequences in parallel.}
 
-\item{updateProgress}{Used to add a progress bar to the Shiny app. Should not be used otherwise.}
+\item{updateProgress}{Used to add a progress bar to the Shiny app. 
+Should not be used otherwise.}
 
-\item{log.file}{String indicating where to save a log of the alignment process. If left NULL, no log is saved.}
+\item{log.file}{String indicating where to save a log of the 
+alignment process. If left NULL, no log is saved.}
+}
+\value{
+The output is a list containing the elements 'gch' and 'hcg.
+      Each is a dataframe with reads/cells on the rows and each column
+     is a base-pair. The matrix is coded as follows:
+         -2: unmethylated GCH or HCG site
+         -1: base pairs between two unmethylated GCH or HCG sites
+         0: base pairs between mismatching methylation states of 
+             two GCH or HCG sites
+         1: base pairs between two methylated GCH or HCG sites
+         2: methylated GCH or HCG site
 }
 \description{
 Runs the preprocessing methods for single-molecule data on sequences.
+}
+\examples{
+ 
+data(reads.day7)
+data(ref.seq)
+# only process 200 here as an example using the fasta.subset.
+alignedseq <- runAlign(reads.day7, ref.seq, fasta.subset=1:200)
 }
