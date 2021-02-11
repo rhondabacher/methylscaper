@@ -4,6 +4,7 @@ ui <- navbarPage("methylscaper",
                                    tabPanel("Preprocessing",
                                             # fileInput("fasta.file", label = "FASTA File"),
                                             shinyDirButton('folder', 'Select a folder', 'Please select a folder'),
+                                            verbatimTextOutput("sc_folder_name"), ## we want to display the path
                                             textInput("chromosome.number", "Chromosome number"),
                                             # textInput("gch.file.name", label = "GCH File Name"),
                                             # textInput("hcg.file.name", label = "HCG File Name"),

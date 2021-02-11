@@ -16,10 +16,7 @@ Imports:
     Biostrings,
     Rfast,
     svglite,
-    data.table,
-    Rcpp
+    data.table
 RoxygenNote: 7.1.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-LinkingTo: 
-    Rcpp

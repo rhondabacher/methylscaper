@@ -12,6 +12,7 @@
 prepSC <- function(gc_seq_data, cg_seq_data, startPos, endPos,
                    updateProgress = NULL)
 {
+
     if (is.function(updateProgress))
         updateProgress(message = "Filtering CG data", value = 0.1)
   cg_seq_sub <- lapply(cg_seq_data, function(x) {
@@ -44,13 +45,23 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos, endPos,
 
     if (is.function(updateProgress))
         updateProgress(message = "Mapping CG data", value = 0.75)
-  cg_outseq <- lapply(cg_seq_sub, function(x) mapSC(x, startPos, endPos))
+  print("Mapping CG data")
+  cg_outseq <- lapply(cg_seq_sub, function(x) {
+    if (nrow(x) == 0) NULL
+    else mapSC(x, startPos, endPos)
+    })
+  cg_outseq <- cg_outseq[!vapply(cg_outseq, is.null, logical(1))]
   hcg <- data.matrix(do.call(rbind, cg_outseq))
   rownames(hcg) <- as.character(1:nrow(hcg))
 
     if (is.function(updateProgress))
         updateProgress(message = "Mapping GC data", value = 0.9)
-  gc_outseq <- lapply(gc_seq_sub, function(x) mapSC(x, startPos, endPos))
+  print("Mapping GC data")
+  gc_outseq <- lapply(gc_seq_sub, function(x) {
+    if (nrow(x) == 0) NULL
+    else mapSC(x, startPos, endPos)
+    })
+  gc_outseq <- gc_outseq[!vapply(gc_outseq, is.null, logical(1))]
   gch <- data.matrix(do.call(rbind, gc_outseq))
   rownames(gch) <- as.character(1:nrow(gch))
 
@@ -59,7 +70,8 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos, endPos,
 }
 
 mapSC <- function(IN.seq, startPos, endPos) {
-  IN.seq$pos <- IN.seq$pos - startPos + 1
+  # print(IN.seq$pos)
+  IN.seq$pos <- as.numeric(IN.seq$pos) - startPos + 1
   fill.1 <- seq(startPos, endPos) - startPos + 1
   someMethyl <- which(IN.seq$rate > 0)
   noMethyl <- which(IN.seq$rate <= 0)
@@ -68,7 +80,9 @@ mapSC <- function(IN.seq, startPos, endPos) {
   fill.1[abs(fill.1) != 2] <- "."
   tail(sort(table(fill.1)))
 
-  sites = IN.seq$pos
+  sites = as.numeric(IN.seq$pos)
+  # print(sites)
+  sites <- sites[sites > 0]
   editseq = fill.1
   sites.temp <- c(0, sites, max(sites)+1)
 
@@ -92,9 +106,8 @@ mapSC <- function(IN.seq, startPos, endPos) {
 ## it takes a path to the datafiles and a chromosome number as arguments and returns the desired subset of the data
 ## this code is taken straight from the vignette
 #' @export
-subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
+subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updateProgress = NULL)
 {
-  browser()
   cur.dir <- getwd()
   setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
   cgfiles <- sort(grep("met", list.files(path), value = T))
@@ -102,12 +115,12 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
 
   useChr <- chromosome
 
-  test<- subsetCGfiles(cgfiles)
-
   cg.seq <- list()
   for(i in 1:length(cgfiles)) {
     cg.seq[[i]] <- fread(cgfiles[i], header=F, stringsAsFactors = F)
     colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
+    # cg.seq[[i]]$pos <- as.numeric(cg.seq[[i]]$pos)
+    # cg.seq[[i]]$rate <- as.numeric(cg.seq[[i]]$rate)
     cg.seq[[i]] <- cg.seq[[i]][order(cg.seq[[i]]$pos), ]
 
     cg.seq[[i]] <- subset(cg.seq[[i]], chr==useChr)
@@ -115,6 +128,9 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
      {
       cg.seq[[i]] <- subset(cg.seq[[i]], pos >= startPos & pos <= endPos)
     }
+
+    if (is.function(updateProgress))
+      updateProgress(message = "Reading CG files", value = i / length(cgfiles))
   }
 
   gc.seq<- list()
@@ -127,7 +143,10 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL)
     if (!is.null(startPos) & !is.null(endPos))
      {
       gc.seq[[i]] <- subset(gc.seq[[i]], pos >= startPos & pos <= endPos)
-    }
+     }
+
+    if (is.function(updateProgress))
+      updateProgress(message = "Reading GC files", value = i / length(gcfiles))
   }
 
   setwd(cur.dir)

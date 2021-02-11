@@ -9,8 +9,6 @@
 #' @importFrom utils write.csv
 #' @importFrom svglite svglite
 #' @importFrom data.table fread
-#' @importFrom Rcpp sourceCpp
-#' @useDynLib methylscaper, .registration = TRUE
 #' @export
 methylscaper <- function() {
 

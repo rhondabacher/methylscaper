@@ -23,15 +23,27 @@ server <- function(input, output) {
     if (!is.null(path.list)) sc_input_folder$path <- path
 
    })
+  
+  output$sc_folder_name <- renderText({
+    if (is.null(sc_input_folder$path)) "Choose an input folder."
+    else sc_input_folder$path
+    })
 
   observeEvent(input$run.subset,{
    if (!is.na(sc_input_folder$path))
      {
+       progress <- Progress$new()
+       progress$set(message = "Loading single cell data", value = 0)
+       on.exit(progress$close())
+
+       updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
+            progress$set(value = value, message = message, detail = detail)}
+
        print(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
-       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number) # this is very slow
+       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) # this is very slow
        print("Done with subset, beginning prepSC")
        prepsc.out <- prepSC(dat.subset$gc.seq.sub, dat.subset$cg.seq.sub,
-                            startPos = 105636488, endPos = 105636993)
+                            startPos = 105636488, endPos = 105636993, updateProgress = updateProgress)
        print("Done with single cell processing")
      }
   })
