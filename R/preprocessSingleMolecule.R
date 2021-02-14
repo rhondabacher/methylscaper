@@ -33,8 +33,7 @@
 #'  
 #' data(reads.day7)
 #' data(ref.seq)
-#' # only process 200 here as an example using the fasta.subset.
-#' alignedseq <- runAlign(reads.day7, ref.seq, fasta.subset=1:150)
+#' example.alignedseq <- runAlign(fasta=reads.day7, ref = ref.seq, fasta.subset = 1:150)
 
 runAlign <- function(ref, fasta, fasta.subset = seq(1,length(fasta)),
                      multicoreParam = NULL, updateProgress = NULL, 
