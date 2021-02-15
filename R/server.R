@@ -9,6 +9,7 @@ server <- function(input, output) {
   ####################
 
   sc_seq_data <- reactiveValues(gch = NULL, hcg = NULL) # for raw data
+  sc_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
 
   sc_input_folder <- reactiveValues(path = NULL)
@@ -43,29 +44,41 @@ server <- function(input, output) {
        print(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
        dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) # this is very slow
        print("Done with subset, beginning prepSC")
-       prepsc.out <- prepSC(dat.subset$gc.seq.sub, dat.subset$cg.seq.sub,
-                            startPos = 105636488, endPos = 105636993, updateProgress = updateProgress)
+       # prepsc.out <- prepSC(dat.subset$gc.seq.sub, dat.subset$cg.seq.sub,
+       #                      startPos = 105636488, endPos = 105636993, updateProgress = updateProgress)
        print("Done with single cell processing")
+       sc_raw_data$gch <- dat.subset$gc.seq.sub
+       sc_raw_data$hcg <- dat.subset$cg.seq.sub
+       rm(dat.subset)
+       print("Removed temporary raw data")
      }
   })
-
+output$sc_preprocessing_down <- downloadHandler(
+  filename = function(){
+      "singlecell.rds"
+    },
+    content = function(file){
+      print("Saving data")
+      saveRDS(list(gch = sc_raw_data$gch, hcg = sc_raw_data$hcg), file = file)
+      sc_raw_data$gch <- NULL
+      sc_raw_data$hcg <- NULL
+    }
+  )
   ## seriation tab
     
   observe({
-    if (!is.null(input$gch_seq_file) & !is.null(input$hcg_seq_file))
+    if (!is.null(input$sc_rds_file))
     {
       isolate({
         progress <- Progress$new()
-        progress$set(message = "Loading GC data", value = 0)
+        progress$set(message = "Loading data", value = 0)
         on.exit(progress$close())
-
-        sc_seq_data$gch <- readRDS(input$gch_seq_file$datapath)
-        progress$set(message = "Loading CG data", value = 0.5)
-        sc_seq_data$hcg <- readRDS(input$hcg_seq_file$datapath)
-        actionsLog$log <- c(actionsLog$log, paste("Loading GCH RDS file:", 
-                                                input$gch_seq_file$name))
-        actionsLog$log <- c(actionsLog$log, paste("Loading HCG RDS file:",
-                                                input$hcg_seq_file$name))
+        temp <- readRDS(input$sc_rds_file$datapath)
+        sc_seq_data$gch <- temp$gch
+        sc_seq_data$hcg <- temp$hcg
+        print(str(temp))
+        actionsLog$log <- c(actionsLog$log, paste("Loading data:",
+                                                input$sc_rds_file$name))
       })
     }
   })
@@ -387,6 +400,7 @@ server <- function(input, output) {
   # Single-molecule data #
   ########################
   sm_input_data <- reactiveValues(gch = NULL, hcg = NULL)
+  sm_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
 
   # alignment handling
   observeEvent(input$run.align, {
@@ -403,18 +417,25 @@ server <- function(input, output) {
     align.out <- runAlign(ref, fasta, updateProgress = updateProgress,
                           log.file = input$processing.log.name)
 
-    hcg.file.name <- input$hcg.file.name
-    gch.file.name <- input$gch.file.name
-
-    writeMethylationData(dat = align.out$hcg, filepath = hcg.file.name)
-    writeMethylationData(dat = align.out$gch, filepath = gch.file.name)
+    sm_raw_data$gch <- align.out$gch
+    sm_raw_data$hcg <- align.out$hcg
 
   })
 
-  observe({if (!is.null(input$sm_gch_file) & !is.null(input$sm_hcg_file))
+output$sm_preprocessing_down <- downloadHandler(
+  filename = function(){
+      "singlemolecule.rds"
+    },
+    content = function(file){
+      saveRDS(list(gch = sm_raw_data$gch, hcg = sm_raw_data$hcg), file = file)
+    }
+  )
+
+  observe({if (!is.null(input$sm_rds_file))
   {
-    temp.gch <- readMethylationData(filepath = input$sm_gch_file$datapath)
-    temp.hcg <- readMethylationData(filepath = input$sm_hcg_file$datapath)
+    temp <- readRDS(file = input$sm_rds_file$datapath)
+    temp.gch <- temp$gch
+    temp.hcg <- temp$hcg
     if (nrow(temp.gch) == nrow(temp.hcg))
     {
       sm_coordinatesObject$refine.start <- 0
@@ -427,10 +448,8 @@ server <- function(input, output) {
       isolate({
         actionsLog$log <- c(actionsLog$log, paste("Beginning 
             single-molecule data analysis"))
-        actionsLog$log <- c(actionsLog$log, paste("Loading GCH file:", 
-            input$gch.file$name))
-        actionsLog$log <- c(actionsLog$log, paste("Loading HCG file:", 
-            input$hcg.file$name))
+        actionsLog$log <- c(actionsLog$log, paste("Loading data:",
+            input$sm_rds_file$name))
       })
     }
 
