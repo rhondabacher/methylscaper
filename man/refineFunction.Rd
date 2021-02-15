@@ -2,22 +2,34 @@
 % Please edit documentation in R/refinement.R
 \name{refineFunction}
 \alias{refineFunction}
-\title{Refinement step}
+\title{Refinement}
 \usage{
 refineFunction(orderObject, refineStart, refineEnd, Method = "HC_average")
 }
 \arguments{
-\item{orderObject}{An object of class \code{orderObject}, generated with the \code{initialOrder} function.}
+\item{orderObject}{An object of class \code{orderObject}, generated 
+with the \code{initialOrder} function.}
 
-\item{refineStart}{The index of the first sample (row) used in the refinement.}
+\item{refineStart}{The index of the first sample (row) used 
+in the refinement.}
 
-\item{refineEnd}{The index of the last sample used in the refinement.}
+\item{refineEnd}{The index of the last sample (row) used in the refinement.}
 
 \item{Method}{The seriation method used to perform the refinement.}
 }
 \value{
-The new complete ordering with the refinement applied.
+The refinement reorders the cells/molecules (rows) between the indicated
+start and end positions. The function returns the new complete ordering 
+with the refinement applied.
 }
 \description{
 Reorders a subset of the methylation data.
+}
+\examples{
+ 
+data(day7)
+
+orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+# reordering the first 50 cells/molecules (rows)
+orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 }

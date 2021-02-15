@@ -11,6 +11,16 @@ readMethylationData(filepath, ...)
 
 \item{...}{Additional parameters passed to \code{read.table}.}
 }
+\value{
+This function reads in the GCH and HCG matrices if
+ they have been previously saved within the Shiny app, or
+ via the writeMethylationData function.
+}
 \description{
 Reading methylation data files
+}
+\examples{
+
+# my.gchdata <- readMethylationData("GCH.csv")
+# my.hcgdata <- readMethylationData("HCG.csv")
 }

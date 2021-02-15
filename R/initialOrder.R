@@ -1,62 +1,86 @@
-#' Ordering of methylation data
+#' Ordering the molecules/reads
 #'
-#' Orders methylation data using a given seriation method. This function can also perform a weighted seriation if the method is set to "PCA".
+#' This function performs the weighted seriation procedure
+#' described in the methylscaper manuscript if the method is set to "PCA".
+#' The data may also be ordered using a given seriation method from the
+#' seriation R package. The weighting is done between a designated start and end
+#' base pair chosen by the user, and the weight can be done on the 
+#' endogenous methylation or the accessibility.
 #'
-#' @param input.GCH The GCH input data.
-#' @param input.HCG The HCG input data.
-#' @param Method Indicates the seriation method to use. The default option is "PCA", which orders the data using the
-#' first principal component. Any seriation method provided in the \code{seriation} package is valid.
+#' @param input.GCH The GCH input data (the data must have first been preprocessed).
+#' @param input.HCG The HCG input data (the data must have first been preprocessed).
+#' @param Method Indicates the seriation method to use. The default option
+#'  is "PCA", which orders the data using a weighted first principal component approach. Any 
+#'  seriation method provided in the \code{seriation} package is also valid input. 
 #' @param weightStart Index of the first column used in the weighted seriation.
 #' @param weightEnd Index of the last column used in the weighted seriation.
 #' @param weightFeature Indicates whether to weight the GCH or HCG data.
-#' @param updateProgress A function to handle the progress bar for the Shiny app. Should not be used when using the function independently.
+#' Valid input to weight the GCH is 'gch' or 'yellow'. To weight the HCG, 
+#' valid input for this option is 'hcg' or 'red'.
+#' @param updateProgress A function to handle the progress bar for the 
+#' Shiny app. Should not be used when using the function independently.
 #'
-#' @return An object of class \code{orderObject}, which contains the generated ordering and the cleaned data matrix.
+#' @return An object of class \code{orderObject}, which contains the generated
+#'  ordering ($order1) and a clean data matrix ($toClust) 
+#'  to be passed into the plotting function plotSequence().
 #' @importFrom seriation seriate get_order
 #' @importFrom stats as.dist dist
 #' @importFrom Rfast Dist
 #' @export
-initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, weightEnd=NULL,
-                         weightFeature="red", updateProgress = NULL){
+#' @examples 
+#'  
+#' data(day7)
+#' 
+#' orderObj <- initialOrder(day7$gch, day7$hcg)
+
+
+initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
+                        weightEnd=NULL, weightFeature="red", 
+                        updateProgress = NULL){
 
     ## File checks:
-    if (nrow(input.HCG) != nrow(input.GCH)) {stop("Input files have different numbers of rows.")}
+    if (nrow(input.HCG) != nrow(input.GCH)) {
+        stop("Input files have different numbers of rows.")}
 
     if (all(rownames(input.GCH) == input.GCH[,1])) input.GCH <- input.GCH[,-1]
     if (all(rownames(input.HCG) == input.HCG[,1])) input.HCG <- input.HCG[,-1]
 
-
-    if (is.function(updateProgress)) updateProgress(message = "Recoding input data", value = 0.1)
+    if (is.function(updateProgress)) {
+        updateProgress(message = "Recoding input data", value = 0.1)}
     recoded <- recode(input.GCH, input.HCG)
     input.GCH <- recoded$input.GCH
     input.HCG <- recoded$input.HCG
 
-
+    weightFeature <- tolower(weightFeature)
     ## Clustering:
     toClust <- cbind(input.GCH, input.HCG)
     weighted = FALSE
 
-    # (Optional) Weighting: Adds a variable indicating the number of red or yellow patches at specific DNA location
+    # (Optional) Weighting: Adds a variable indicating the number 
+    # of red or yellow patches at specific DNA location
     if (!is.null(weightStart) & !is.null(weightEnd)) {
-        if (is.function(updateProgress)) updateProgress(message = "Weighting selected columns", value = 0.2)
-        weighted = TRUE
-        if (weightFeature == "red") {
-            FEATURE = 3
-            weightVector <- apply(input.HCG[,weightStart:weightEnd], 1, function(x) sum(x==FEATURE))
+        if (is.function(updateProgress)) {
+            updateProgress(message = "Weighting selected columns", value = 0.2)
         }
-        if (weightFeature == "yellow") {
+        weighted = TRUE
+        if (weightFeature == "red" | weightFeature == 'hcg') {
+            FEATURE = 3
+            weightVector <- apply(input.HCG[,weightStart:weightEnd], 
+                                    1, function(x) sum(x==FEATURE))
+        }
+        if (weightFeature == "yellow" | weightFeature == 'gch') {
             FEATURE = -3
-            weightVector <- apply(input.GCH[,weightStart:weightEnd], 1, function(x) sum(x==FEATURE))
+            weightVector <- apply(input.GCH[,weightStart:weightEnd], 
+                                    1, function(x) sum(x==FEATURE))
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
     }
 
-
-    if (is.function(updateProgress)) updateProgress(message = paste("Ordering with", Method), value = 0.35)
+    if (is.function(updateProgress)) {
+        updateProgress(message = paste("Ordering with", Method), value = 0.35)}
     ## PCA should be the default method:
     if (Method=="PCA") {
-        if (weighted)
-        {
+        if (weighted) {
             w <- weightVector / sum(weightVector)
             w.sqrt <- sqrt(w)
             toClust.weighted <- diag(w.sqrt) %*% toClust
@@ -64,28 +88,22 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
             col.centered <- apply(toClust.weighted, 2, function(x) x - mean(x))
             try1 <- svd(col.centered, nu = 1, nv = 0)
             order1 <- order(try1$u[,1])
-        }
-        else
-        {
+        } else {
             col.centered <- apply(toClust, 2, function(x) x - mean(x))
             try1 <- svd(col.centered, nu = 1, nv = 0)
             order1 <- order(try1$u[,1])
         }
-
     } else {
-
-        if (weighted)
-        {
+        if (weighted) {
             w <- weightVector / sum(weightVector)
             w.sqrt <- sqrt(w)
             toClust.weighted <- diag(w.sqrt) %*% toClust
 
-            distMat <- as.dist(Rfast::Dist(toClust.weighted,method = "euclidean"))
+            distMat <- as.dist(Rfast::Dist(toClust.weighted,
+                                    method = "euclidean"))
             order1 <- seriation::seriate(distMat, method=Method)
             order1 <- seriation::get_order(order1)
-        }
-        else
-        {
+        } else {
             distMat <- as.dist(Rfast::Dist(toClust,method = "euclidean"))
             order1 <- seriation::seriate(distMat, method=Method)
             order1 <- seriation::get_order(order1)
@@ -95,7 +113,8 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL, w
     orderObject <- list(toClust = toClust, order1 = order1)
     if (Method != "PCA") orderObject$distMat <- distMat
     if (weighted) orderObject$weights <- weightVector
-    if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
+    if (is.function(updateProgress)) {
+        updateProgress(message = "Done", value = 1)}
     return(orderObject)
 }
 
