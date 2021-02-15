@@ -58,15 +58,18 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
     if (is.function(updateProgress))
          updateProgress(message = "Filtering GC data", value = 0.5)
-     gc_seq_sub <- lapply(gc_seq_data, function(x) {
+    
+    gc_seq_sub <- lapply(gc_seq_data, function(x) {
          QQ <- x[order(x$pos),]
          QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
          return(QQ)
-      })
+    })
+    
     all_cg_sites <- unique(do.call(c, cg_seq_sub))
     all_gc_sites <- unique(do.call(c, gc_seq_sub))
     useseq <- intersect(which(vapply(cg_seq_sub, function(x) nrow(x), numeric(1)) > 1 ),
                       which(vapply(gc_seq_sub, function(x) nrow(x), numeric(1)) > 1 ))
+    
     if (length(useseq) == 0) return()
 
     cg_seq_sub <- cg_seq_sub[useseq]
@@ -74,23 +77,26 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
     if (is.function(updateProgress))
         updateProgress(message = "Mapping CG data", value = 0.75)
+    
     cg_outseq <- lapply(cg_seq_sub, function(x) {
       if (nrow(x) == 0) NULL
       else mapSC(x, startPos, endPos)
-      })
+    })
+    
     cg_outseq <- cg_outseq[!vapply(cg_outseq, is.null, logical(1))]
     hcg <- data.matrix(do.call(rbind, cg_outseq))
-    rownames(hcg) <- as.character(1:nrow(hcg))
+    rownames(hcg) <- as.character(seq(1,nrow(hcg)))
 
     if (is.function(updateProgress))
         updateProgress(message = "Mapping GC data", value = 0.9)
-          gc_outseq <- lapply(gc_seq_sub, function(x) {
-    if (nrow(x) == 0) NULL
-    else mapSC(x, startPos, endPos)
+    gc_outseq <- lapply(gc_seq_sub, function(x) {
+        if (nrow(x) == 0) NULL
+        else mapSC(x, startPos, endPos)
     })
-  gc_outseq <- gc_outseq[!vapply(gc_outseq, is.null, logical(1))]
-  gch <- data.matrix(do.call(rbind, gc_outseq))
-  rownames(gch) <- as.character(1:nrow(gch))
+    
+    gc_outseq <- gc_outseq[!vapply(gc_outseq, is.null, logical(1))]
+    gch <- data.matrix(do.call(rbind, gc_outseq))
+    rownames(gch) <- as.character(seq(1,nrow(gch)))
 
     return(list(gch = gch, hcg = hcg))
 
@@ -98,19 +104,19 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
 mapSC <- function(IN.seq, startPos, endPos) {
 
-  IN.seq$pos <- as.numeric(IN.seq$pos) - startPos + 1
-  fill.1 <- seq(startPos, endPos) - startPos + 1
-  someMethyl <- which(IN.seq$rate > 0)
-  noMethyl <- which(IN.seq$rate <= 0)
-  fill.1[fill.1 %in% IN.seq[someMethyl,]$pos] <- 2
-  fill.1[fill.1 %in% IN.seq[noMethyl,]$pos] <- -2
-  fill.1[abs(fill.1) != 2] <- "."
-  tail(sort(table(fill.1)))
+    IN.seq$pos <- as.numeric(IN.seq$pos) - startPos + 1
+    fill.1 <- seq(startPos, endPos) - startPos + 1
+    someMethyl <- which(IN.seq$rate > 0)
+    noMethyl <- which(IN.seq$rate <= 0)
+    fill.1[fill.1 %in% IN.seq[someMethyl,]$pos] <- 2
+    fill.1[fill.1 %in% IN.seq[noMethyl,]$pos] <- -2
+    fill.1[abs(fill.1) != 2] <- "."
+    tail(sort(table(fill.1)))
 
-  sites = as.numeric(IN.seq$pos)
-  sites <- sites[sites > 0]
-  editseq = fill.1
-  sites.temp <- c(0, sites, max(sites)+1)
+    sites = as.numeric(IN.seq$pos)
+    sites <- sites[sites > 0]
+    editseq = fill.1
+    sites.temp <- c(0, sites, max(sites)+1)
 
     for (j in seq(1,(length(sites.temp)-1))) {
     tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
@@ -154,46 +160,45 @@ mapSC <- function(IN.seq, startPos, endPos) {
 
 subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updateProgress = NULL)
 {
-  cur.dir <- getwd()
-  setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
-  cgfiles <- sort(grep("met", list.files(path), value = T))
-  gcfiles <- sort(grep("acc", list.files(path), value = T))
+    cur.dir <- getwd()
+    setwd(path) ### this is probably bad practice, but it seems like the easiest solution for now
+    cgfiles <- sort(grep("met", list.files(path), value = TRUE))
+    gcfiles <- sort(grep("acc", list.files(path), value = TRUE))
 
-  useChr <- chromosome
+    useChr <- chromosome
 
-  cg.seq <- list()
-  for(i in 1:length(cgfiles)) {
-    cg.seq[[i]] <- fread(cgfiles[i], header=F, stringsAsFactors = F)
-    colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
-    cg.seq[[i]] <- cg.seq[[i]][order(cg.seq[[i]]$pos), ]
+    cg.seq <- list()
+    for(i in seq(1,length(cgfiles))) {
+        cg.seq[[i]] <- fread(cgfiles[i], header=FALSE, stringsAsFactors = FALSE)
+        colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
+        cg.seq[[i]] <- cg.seq[[i]][order(cg.seq[[i]]$pos), ]
 
-    cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$chr==useChr)
-    if (!is.null(startPos) & !is.null(endPos))
-     {
-      cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$pos >= startPos & cg.seq[[i]]$pos <= endPos)
+        cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$chr==useChr)
+        if (!is.null(startPos) & !is.null(endPos)) {
+          cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$pos >= startPos & cg.seq[[i]]$pos <= endPos)
+        }
+
+        if (is.function(updateProgress))
+          updateProgress(message = "Reading CG files", value = i / length(cgfiles))
     }
 
-    if (is.function(updateProgress))
-      updateProgress(message = "Reading CG files", value = i / length(cgfiles))
-  }
+    gc.seq<- list()
+    for(i in seq(1,length(gcfiles))) { ## this is where it breaks
+        gc.seq[[i]] <- fread(gcfiles[i], header=FALSE, stringsAsFactors = FALSE,
+                                  colClasses = c("character", "numeric", "numeric"))
+        colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
+        gc.seq[[i]] <- gc.seq[[i]][order(gc.seq[[i]]$pos), ]
+        gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$chr==useChr)
 
-  gc.seq<- list()
-  for(i in 1:length(gcfiles)) { ## this is where it breaks
-    gc.seq[[i]] <- fread(gcfiles[i], header=F, stringsAsFactors = F,
-                              colClasses = c("character", "numeric", "numeric"))
-    colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
-    gc.seq[[i]] <- gc.seq[[i]][order(gc.seq[[i]]$pos), ]
-    gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$chr==useChr)
-    if (!is.null(startPos) & !is.null(endPos))
-     {
-      gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$pos >= startPos & gc.seq[[i]]$pos <= endPos)
-     }
+        if (!is.null(startPos) & !is.null(endPos)) {
+          gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$pos >= startPos & gc.seq[[i]]$pos <= endPos)
+         }
 
-    if (is.function(updateProgress))
-      updateProgress(message = "Reading GC files", value = i / length(gcfiles))
-  }
+        if (is.function(updateProgress))
+          updateProgress(message = "Reading GC files", value = i / length(gcfiles))
+    }
 
-  setwd(cur.dir)
+    setwd(cur.dir)
 
-  list(cg.seq.sub = cg.seq, gc.seq.sub = gc.seq)
+    list(cg.seq.sub = cg.seq, gc.seq.sub = gc.seq)
 }
