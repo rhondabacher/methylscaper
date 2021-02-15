@@ -1,24 +1,33 @@
 ui <- navbarPage("methylscaper",
+                 tabPanel("Single-cell",
+                          navbarPage("",
+                                   tabPanel("Preprocessing",
+                                            # fileInput("fasta.file", label = "FASTA File"),
+                                            shinyDirButton('folder', 'Select a folder', 'Please select a folder'),
+                                            verbatimTextOutput("sc_folder_name"), ## we want to display the path
+                                            textInput("chromosome.number", "Chromosome number"),
+                                            # textInput("gch.file.name", label = "GCH File Name"),
+                                            # textInput("hcg.file.name", label = "HCG File Name"),
+                                            actionButton("run.subset", label = "Run")),
+                                   
+                                     tabPanel("Seriation",
+                                              sidebarLayout(
+                                                sidebarPanel(
+                                                  fileInput("gch_seq_file", label = "GCH Sequence RDS file"),
+                                                  fileInput("hcg_seq_file", label = "HCG Sequence RDS file"),
+                                                  uiOutput("startPos"),
+                                                  uiOutput("endPos"),
+                                                  uiOutput("positionSlider"),
+                                                  selectInput("sc_ser_method", label = "Seriation Method:",
+                                                              choices = c("PCA", "ARSA")),
+                                                  selectInput("sc_refine_method", label = "Refinement Method:",
+                                                              choices = c("PCA", "HC_average")),
+                                                  radioButtons("sc_brush_choice", label = "Brushing for:",
+                                                               choices = c("Refinement", "Weighting"), selected = "Weighting"),
+                                                  actionButton("sc_force_reverse", label = "Force Reverse"),
+                                                  verbatimTextOutput("sc_info")
+                                                ),
 
-tabPanel("Single-cell",
-        navbarPage("",
-                   tabPanel("Seriation",
-                       sidebarLayout(
-                           sidebarPanel(
-                               fileInput("gch_seq_file", label = "GCH Sequence RDS file", accept=".RDS"),
-                               fileInput("hcg_seq_file", label = "HCG Sequence RDS file", accept=".RDS"),
-                                uiOutput("startPos"),
-                                uiOutput("endPos"),
-                                uiOutput("positionSlider"),
-                                selectInput("sc_ser_method", label = "Seriation Method:",
-                                            choices = c("PCA", "ARSA")),
-                                selectInput("sc_refine_method", label = "Refinement Method:",
-                                            choices = c("PCA", "HC_average")),
-                                radioButtons("sc_brush_choice", label = "Brushing for:",
-                                             choices = c("Refinement", "Weighting"), selected = "Weighting"),
-                                actionButton("sc_force_reverse", label = "Force Reverse"),
-                                verbatimTextOutput("sc_info")
-                              ),
 
                 mainPanel(
                     fluidRow(
