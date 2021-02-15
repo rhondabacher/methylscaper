@@ -76,7 +76,6 @@ output$sc_preprocessing_down <- downloadHandler(
         temp <- readRDS(input$sc_rds_file$datapath)
         sc_seq_data$gch <- temp$gch
         sc_seq_data$hcg <- temp$hcg
-        print(str(temp))
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
