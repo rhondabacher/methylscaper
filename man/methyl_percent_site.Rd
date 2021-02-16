@@ -30,5 +30,5 @@ Calculates the percentage of methylated cells/molecules per site
 data(day7)
 
 orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-methyl_percent_site(orderObj, plotPercents = TRUE)
+methyl_percent_site(orderObj, makePlot = TRUE)
 }

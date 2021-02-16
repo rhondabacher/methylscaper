@@ -21,7 +21,7 @@ server <- function(input, output) {
     shinyDirChoose(input, 'folder', roots=volumes())
     path.list <- input$folder["path"][[1]]
     path <- paste(unlist(path.list), collapse = "/")
-    print(path)
+    # print(path)
     if (!is.null(path.list)) sc_input_folder$path <- path
 
    })
@@ -42,20 +42,17 @@ server <- function(input, output) {
             progress$set(value = value, message = message, detail = detail)}
 
        print(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
-       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) # this is very slow
-       print("Done with subset, beginning prepSC")
-       # prepsc.out <- prepSC(dat.subset$gc.seq.sub, dat.subset$cg.seq.sub,
-       #                      startPos = 105636488, endPos = 105636993, updateProgress = updateProgress)
+       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) # this is slow
        print("Done with single cell processing")
        sc_raw_data$gch <- dat.subset$gc.seq.sub
        sc_raw_data$hcg <- dat.subset$cg.seq.sub
        rm(dat.subset)
-       print("Removed temporary raw data")
+       print("Removed temporary raw data; Click button to download now.")
      }
   })
 output$sc_preprocessing_down <- downloadHandler(
   filename = function(){
-      "singlecell.rds"
+      "methylscaper_singlecell_preprocessed.rds"
     },
     content = function(file){
       print("Saving data")
@@ -64,6 +61,7 @@ output$sc_preprocessing_down <- downloadHandler(
       sc_raw_data$hcg <- NULL
     }
   )
+ 
   ## seriation tab
     
   observe({
@@ -89,7 +87,7 @@ output$sc_preprocessing_down <- downloadHandler(
           cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
           gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
           gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-
+          
           start <- pmax(cg.min.pos, gc.min.pos)
           numericInput(inputId = "startPos", label = "Start Position", min = 0,
                       value = start)
@@ -104,8 +102,7 @@ output$sc_preprocessing_down <- downloadHandler(
           cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
           gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
           gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-
-          end <- pmax(cg.min.pos, gc.min.pos) + 1000
+          end <- pmax(cg.min.pos, gc.min.pos) + 5000
           numericInput(inputId = "endPos", label = "End Position", min = 0, 
                       value = end)
       }
@@ -130,6 +127,9 @@ output$sc_preprocessing_down <- downloadHandler(
                         length for stability.", type="warning")
             end <- start + 10000
         }
+        if (start > end) {
+            end <- start + 10000
+        }
         len <- end - start
         sliderInput(inputId = "positionSliderInput", 
                     label = "Position adjustment slider", 
@@ -150,17 +150,16 @@ output$sc_preprocessing_down <- downloadHandler(
             progress$set(value = value, message = message, detail = detail)}
 
         prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, 
-            input$positionSliderInput[1],
-                           input$positionSliderInput[2],
-                           updateProgress = updateProgress)
+                            input$positionSliderInput[1],
+                            input$positionSliderInput[2],
+                            updateProgress = updateProgress)
         if (!is.list(prep_out)) {
           showNotification("No valid sites in designated range. Try different 
                       start and end positions or a larger range.")
          } else {
          temp.gch <- prep_out$gch
          temp.hcg <- prep_out$hcg
-          if (nrow(temp.gch) == nrow(temp.hcg))
-          {
+         if (nrow(temp.gch) == nrow(temp.hcg)) {
             sc_coordinatesObject$refine.start <- 0
             sc_coordinatesObject$refine.stop <- 0
             sc_coordinatesObject$weight.start <- 0
@@ -176,13 +175,11 @@ output$sc_preprocessing_down <- downloadHandler(
             })
           }
          }
-
-
     }
 
   })
 
-  # this object keeps track of the coordinates for refinement and weighting
+# this object keeps track of the coordinates for refinement and weighting
   sc_coordinatesObject <- reactiveValues(refine.start = 0, refine.stop = 0,
                                          weight.start = 0, weight.stop = 0, 
                                          weight.color = "red")
@@ -289,14 +286,14 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_plot_down <- downloadHandler(
     filename = function(){
-      if (input$sc_filetype == "PNG") return("plot.png")
-      if (input$sc_filetype == "SVG") return("plot.svg")
-      if (input$sc_filetype == "PDF") return("plot.pdf")
+      if (input$sc_plot_filetype == "PNG") return("methylscaper_heatmap.png")
+      if (input$sc_plot_filetype == "SVG") return("methylscaper_heatmap.svg")
+      if (input$sc_plot_filetype == "PDF") return("methylscaper_heatmap.pdf")
     },
     content = function(file){
-      if (input$sc_filetype == "PNG") png(file)
-      if (input$sc_filetype == "SVG") svglite::svglite(file)
-      if (input$sc_filetype == "PDF") pdf(file)
+      if (input$sc_plot_filetype == "PNG") png(file)
+      if (input$sc_plot_filetype == "SVG") svglite::svglite(file)
+      if (input$sc_plot_filetype == "PDF") pdf(file)
 
       makePlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFAST = FALSE)
@@ -306,7 +303,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_log_down <- downloadHandler(
     filename = function(){
-      "changes.txt"
+      "methylscaper_heatmap_log.txt"
     },
     content = function(file){
       fileConn <- file(file)
@@ -333,23 +330,18 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_proportion_hist_download <- downloadHandler(
     filename = function(){
-      if (input$filetype == "PNG") return("hist.png")
-      if (input$filetype == "SVG") return("hist.svg")
-      if (input$filetype == "PDF") return("hist.pdf")
+        paste0("cell_methylation_histogram", "_", input$sc_proportion_choice, ".pdf")
     },
     content = function(file){
-      if (input$filetype == "PNG") png(file)
-      if (input$filetype == "SVG") svglite::svglite(file)
-      if (input$filetype == "PDF") pdf(file)
-
-      methyl_proportion_cell(sc_orderObject, makePlot = TRUE,
-                       color = input$sc_proportion_choice)
+                  pdf(file)
+                  methyl_proportion_cell(sc_orderObject, makePlot = TRUE,
+                                   color = input$sc_proportion_choice)
       dev.off()
     }
   )
   output$sc_proportion_data_download <- downloadHandler(
     filename = function(){
-      return("proportion_data.csv")
+      return(paste0("cell_methylation_proportion", "_", input$sc_proportion_choice, ".csv"))
     },
     content = function(file){
       dat <-  methyl_proportion_cell(sc_orderObject, makePlot = FALSE,
@@ -368,14 +360,10 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_plot_download <- downloadHandler(
     filename = function(){
-      if (input$filetype == "PNG") return("percentC.png")
-      if (input$filetype == "SVG") return("percentC.svg")
-      if (input$filetype == "PDF") return("percentC.pdf")
+        return(paste0("site_percent_methylation", ".pdf"))
     },
     content = function(file){
-      if (input$filetype == "PNG") png(file)
-      if (input$filetype == "SVG") svglite::svglite(file)
-      if (input$filetype == "PDF") pdf(file)
+        pdf(file)
 
       methyl_percent_site(sc_orderObject, makePlot = TRUE)
       dev.off()
@@ -384,11 +372,11 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_data_download <- downloadHandler(
     filename = function(){
-      return("proportion_data.RData")
+      return("site_percent_methylation_data.txt")
     },
     content = function(file){
       dat <-  methyl_percent_site(sc_orderObject, makePlot = FALSE)
-      save(dat, file = file)
+      capture.output(dat, file = file)
     }
   )
 
@@ -418,6 +406,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
     sm_raw_data$gch <- align.out$gch
     sm_raw_data$hcg <- align.out$hcg
+    sm_raw_data$log_vector  <- align.out$logs
 
   })
 
@@ -430,6 +419,15 @@ output$sm_preprocessing_down <- downloadHandler(
     }
   )
 
+  output$processing_log <- downloadHandler(
+    filename = function(){
+        "methylscaper_preprocess_log.txt"
+      },
+      content = function(file){
+        writeLines(sm_raw_data$log_vector, con=file)
+      }
+    )
+    
   observe({if (!is.null(input$sm_rds_file))
   {
     temp <- readRDS(file = input$sm_rds_file$datapath)

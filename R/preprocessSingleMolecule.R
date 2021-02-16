@@ -94,19 +94,19 @@ runAlign <- function(ref, fasta, fasta.subset = seq(1,length(fasta)),
     if (is.function(updateProgress)) updateProgress(message = "Done", value = 1)
 
 
-  if (!is.null(log.file))
-  {
-      if (!grepl(".txt", log.file)) log.file <- paste0(log.file,".txt")
-      writeLines(log.vector, con=log.file)
-   }
-    return(list(hcg = saveCG, gch = saveGC))
+  # if (!is.null(log.file))
+  # {
+  #     if (!grepl(".txt", log.file)) log.file <- paste0(log.file,".txt")
+  #     writeLines(log.vector, con=log.file)
+  #  }
+    return(list(hcg = saveCG, gch = saveGC, logs=log.vector))
 }
 
 
-    # this handles the alignment of ALL the sequences, and returns the
-    # alignedseq object used in the runAlign function
-    # this needs the log.vector, multicoreParam, and updateProgress
-    # so that we can continue keeping track of these things
+# this handles the alignment of ALL the sequences, and returns the
+# alignedseq object used in the runAlign function
+# this needs the log.vector, multicoreParam, and updateProgress
+# so that we can continue keeping track of these things
 alignSequences <- function(fasta, ref.string, log.vector,
                         multicoreParam = NULL, updateProgress = NULL)
 {
@@ -161,8 +161,9 @@ alignSequences <- function(fasta, ref.string, log.vector,
     names(alignedseq) <- names(fasta)[good.alignment.idxs]
     return(list(alignedseq = alignedseq, log.vector = log.vector))
 }
-    # aligns a single read to the reference, returns the useseq string.
-    # Alignment is finished in the alignSequences fn
+
+# aligns a single read to the reference, returns the useseq string.
+# Alignment is finished in the alignSequences fn
 seqalign <- function(read, ref.string, substitutionMatrix) {
 
     fasta.string <- DNAString(toupper(c2s(read)))
@@ -235,9 +236,9 @@ mapseq <- function(i, sites) {
 }
 
 
-    ## we want to be able to get all contiguous substrings of a certain string...
-    # in particular one of the editseq strings used above
-    ## i want to return a table
+## we want to be able to get all contiguous substrings of a certain string...
+# in particular one of the editseq strings used above
+## i want to return a table
 get_contig_substrings <- function(s) {
     ## we want some sort of table to keep track of the substrings
     substring.table <- data.frame(char = "a", count = 0)

@@ -169,31 +169,44 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
 
     cg.seq <- list()
     for(i in seq(1,length(cgfiles))) {
-        cg.seq[[i]] <- fread(cgfiles[i], header=FALSE, stringsAsFactors = FALSE)
-        colnames(cg.seq[[i]]) <- c("chr", "pos", "rate")
-        cg.seq[[i]] <- cg.seq[[i]][order(cg.seq[[i]]$pos), ]
-
-        cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$chr==useChr)
-        if (!is.null(startPos) & !is.null(endPos)) {
-          cg.seq[[i]] <- subset(cg.seq[[i]], cg.seq[[i]]$pos >= startPos & cg.seq[[i]]$pos <= endPos)
+        
+        in_cg_seq <- fread(cgfiles[i], header=FALSE, stringsAsFactors = FALSE)
+        if (in_cg_seq[1,1] == "chr") {
+          in_cg_seq <- in_cg_seq[-1,]
         }
+        colnames(in_cg_seq) <- c("chr", "pos", "rate")
+        in_cg_seq$pos <- as.numeric(in_cg_seq$pos)
+        in_cg_seq$rate <- as.numeric(in_cg_seq$rate)
+        in_cg_seq <- in_cg_seq[order(in_cg_seq$pos), ]
 
+        in_cg_seq <- subset(in_cg_seq, in_cg_seq$chr==useChr)
+        if (!is.null(startPos) & !is.null(endPos)) {
+         in_cg_seq <- subset(in_cg_seq, in_cg_seq$pos >= startPos & in_cg_seq$pos <= endPos)
+        }
+        
+        cg.seq[[i]] <- in_cg_seq
         if (is.function(updateProgress))
           updateProgress(message = "Reading CG files", value = i / length(cgfiles))
     }
 
     gc.seq<- list()
     for(i in seq(1,length(gcfiles))) { ## this is where it breaks
-        gc.seq[[i]] <- fread(gcfiles[i], header=FALSE, stringsAsFactors = FALSE,
-                                  colClasses = c("character", "numeric", "numeric"))
-        colnames(gc.seq[[i]]) <- c("chr", "pos", "rate")
-        gc.seq[[i]] <- gc.seq[[i]][order(gc.seq[[i]]$pos), ]
-        gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$chr==useChr)
+        in_gc_seq <- fread(gcfiles[i], header=FALSE, stringsAsFactors = FALSE)
+        colnames(in_gc_seq) <- c("chr", "pos", "rate")
+        if (in_gc_seq[1,1] == "chr") {
+          in_gc_seq <- in_gc_seq[-1,]
+        }
+        colnames(in_gc_seq) <- c("chr", "pos", "rate")
+        in_gc_seq$pos <- as.numeric(in_gc_seq$pos)
+        in_gc_seq$rate <- as.numeric(in_gc_seq$rate)
+        in_gc_seq <- in_gc_seq[order(in_gc_seq$pos), ]
+        in_gc_seq <- subset(in_gc_seq, in_gc_seq$chr==useChr)
 
         if (!is.null(startPos) & !is.null(endPos)) {
-          gc.seq[[i]] <- subset(gc.seq[[i]], gc.seq[[i]]$pos >= startPos & gc.seq[[i]]$pos <= endPos)
+          in_gc_seq <- subset(in_gc_seq, in_gc_seq$pos >= startPos & in_gc_seq$pos <= endPos)
          }
-
+         
+        gc.seq[[i]] <- in_gc_seq
         if (is.function(updateProgress))
           updateProgress(message = "Reading GC files", value = i / length(gcfiles))
     }
