@@ -412,7 +412,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
 output$sm_preprocessing_down <- downloadHandler(
   filename = function(){
-      "singlemolecule.rds"
+            "methylscaper_singlemolecule_preprocessed.rds"
     },
     content = function(file){
       saveRDS(list(gch = sm_raw_data$gch, hcg = sm_raw_data$hcg), file = file)
@@ -557,9 +557,9 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_plot_down <- downloadHandler(
     filename = function(){
-      if (input$sm_filetype == "PNG") return("plot.png")
-      if (input$sm_filetype == "SVG") return("plot.svg")
-      if (input$sm_filetype == "PDF") return("plot.pdf")
+      if (input$sm_filetype == "PNG") return("methylscaper_heatmap.png")
+      if (input$sm_filetype == "SVG") return("methylscaper_heatmap.svg")
+      if (input$sm_filetype == "PDF") return("methylscaper_heatmap.pdf")
     },
     content = function(file){
       if (input$sm_filetype == "PNG") png(file)
@@ -574,7 +574,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_log_down <- downloadHandler(
     filename = function(){
-      "changes.txt"
+      "methylscaper_heatmap_log.txt"
     },
     content = function(file){
       fileConn <- file(file)
@@ -601,23 +601,18 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_proportion_hist_download <- downloadHandler(
     filename = function(){
-      if (input$filetype == "PNG") return("hist.png")
-      if (input$filetype == "SVG") return("hist.svg")
-      if (input$filetype == "PDF") return("hist.pdf")
+       paste0("molecule_methylation_histogram", "_", input$sm_proportion_choice, ".pdf")
     },
     content = function(file){
-      if (input$filetype == "PNG") png(file)
-      if (input$filetype == "SVG") svglite::svglite(file)
-      if (input$filetype == "PDF") pdf(file)
-
-      methyl_proportion_cell(sm_orderObject, makePlot = TRUE,
+       pdf(file)
+       methyl_proportion_cell(sm_orderObject, makePlot = TRUE,
                        color = input$sm_proportion_choice)
       dev.off()
     }
   )
   output$sm_proportion_data_download <- downloadHandler(
     filename = function(){
-      return("proportion_data.csv")
+      return(paste0("cell_methylation_proportion", "_", input$sm_proportion_choice, ".csv"))
     },
     content = function(file){
       dat <-  methyl_proportion_cell(sm_orderObject, makePlot = FALSE,
@@ -636,27 +631,22 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_percentC_plot_download <- downloadHandler(
     filename = function(){
-      if (input$filetype == "PNG") return("percentC.png")
-      if (input$filetype == "SVG") return("percentC.svg")
-      if (input$filetype == "PDF") return("percentC.pdf")
+            return(paste0("site_percent_methylation", ".pdf"))
     },
     content = function(file){
-      if (input$filetype == "PNG") png(file)
-      if (input$filetype == "SVG") svglite::svglite(file)
-      if (input$filetype == "PDF") pdf(file)
-
-      methyl_percent_site(sm_orderObject, makePlot = TRUE)
+        pdf(file)
+        methyl_percent_site(sm_orderObject, makePlot = TRUE)
       dev.off()
     }
   )
 
   output$sm_percentC_data_download <- downloadHandler(
     filename = function(){
-      return("proportion_data.RData")
+        return("site_percent_methylation_data.txt")
     },
     content = function(file){
       dat <-  methyl_percent_site(sm_orderObject, makePlot = FALSE)
-      save(dat, file = file)
+      capture.output(dat, file = file)
     }
   )
 }
