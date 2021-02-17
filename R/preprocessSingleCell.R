@@ -119,17 +119,20 @@ mapSC <- function(IN.seq, startPos, endPos) {
     sites.temp <- c(0, sites, max(sites)+1)
 
     for (j in seq(1,(length(sites.temp)-1))) {
-    tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
-    s1 <- editseq[pmax(1, sites.temp[j])]
-    s2 <- editseq[pmin(length(editseq), sites.temp[j+1])]
+        if (sites.temp[j+1] == 1) { # skip 
+        } else {
+            tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
+            s1 <- editseq[pmax(1, sites.temp[j])]
+            s2 <- editseq[pmin(length(editseq), sites.temp[j+1])]
 
-    if (s1 == "2" & s2 == "2") {
-        fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
-        fillvec <- 0} else if (s1 == "-2" & s2 == "2") {
-        fillvec <- 0} else if (s1 == "-2" & s2 == "-2") {
-        fillvec <- -1} else {fillvec <- 0}
-        fillvec <- rep(fillvec, length(tofill))
-        editseq[tofill] <- fillvec
+            if (s1 == "2" & s2 == "2") {
+                fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
+                fillvec <- 0} else if (s1 == "-2" & s2 == "2") {
+                fillvec <- 0} else if (s1 == "-2" & s2 == "-2") {
+                fillvec <- -1} else {fillvec <- 0}
+                fillvec <- rep(fillvec, length(tofill))
+                editseq[tofill] <- fillvec
+            }
     }
     return(editseq)
 }
