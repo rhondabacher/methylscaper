@@ -17,7 +17,7 @@ refineOrderShiny <- function(orderObject, refine.method, coordinatesObject)
                     coordinatesObject$refine.stop, Method=refine.method)
 }
 
-makePlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
+drawPlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
 {
     plotSequence(orderObject, ...)
     # draw the horizontal lines

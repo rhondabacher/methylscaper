@@ -34,3 +34,35 @@
 #' @docType data
 #' @usage data(chr19_example_HCG)
 "chr19_example_HCG"
+
+#' Human gene symbols and positions
+#'
+#' library(biomaRt) #v2.44.4
+#' ensembl <- useMart("ensembl")
+#' ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
+#' my_chr <- c(1:22, 'M', 'X', 'Y')
+#' hum.bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
+#'             filters = 'chromosome_name',
+#'             values = my_chr,
+#'             mart=ensembl)
+#' 
+#' @docType data
+#' @usage data(hum.bm)
+"hum.bm"
+
+
+#' Mouse gene symbols and positions
+#'
+#' library(biomaRt) #v2.44.4
+#' ensembl <- useMart("ensembl")
+#' ensembl <- useDataset("mmusculus_gene_ensembl",mart=ensembl)
+#' my_chr <- c(1:19, 'M', 'X', 'Y')
+#' mouse.bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'mgi_symbol'),
+#'             filters = 'chromosome_name',
+#'             values = my_chr,
+#'             mart=ensembl)
+#' 
+#' @docType data
+#' @usage data(mouse.bm)
+"mouse.bm"
+

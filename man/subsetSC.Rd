@@ -36,5 +36,11 @@ This function loads the single-cell files. It takes a path to the datafiles
 and a chromosome number as arguments and returns the desired subset of the 
 data. The files should be tab separated with three columns.
 The first column is the chromosome, the second is the position (basepair), and the third
-is the methylation indicator/rate.
+is the methylation indicator/rate. The folder should contain two subfolders titled
+met and acc, with the endogenous methylation and accessibility methylation files,
+respectively.
+}
+\examples{
+# example not run since needs directory input from user
+#subsc.out <- subsetSC("filepath", chromosome=19)
 }

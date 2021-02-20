@@ -7,7 +7,7 @@
 #' @import shiny
 #' @importFrom shinyFiles shinyDirChoose shinyDirButton getVolumes
 #' @importFrom grDevices dev.off pdf png svg
-#' @importFrom utils write.csv capture.output
+#' @importFrom utils write.csv capture.output data
 #' @importFrom svglite svglite
 #' @importFrom data.table fread
 #' @export

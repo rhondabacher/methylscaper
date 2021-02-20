@@ -1,4 +1,4 @@
-server <- function(input, output) {
+server <- function(input, output, session) {
 
     # logs the actions taken wrt the plot
   actionsLog <- reactiveValues(log = c("")) 
@@ -11,19 +11,16 @@ server <- function(input, output) {
   sc_seq_data <- reactiveValues(gch = NULL, hcg = NULL) # for raw data
   sc_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
-
   sc_input_folder <- reactiveValues(path = NULL)
   
 
   ## preprocessing tab
   observe({
-   volumes = getVolumes()
+    volumes = getVolumes()
     shinyDirChoose(input, 'folder', roots=volumes())
     path.list <- input$folder["path"][[1]]
     path <- paste(unlist(path.list), collapse = "/")
-    # print(path)
     if (!is.null(path.list)) sc_input_folder$path <- path
-
    })
   
   output$sc_folder_name <- renderText({
@@ -41,13 +38,13 @@ server <- function(input, output) {
        updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-       print(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
-       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) # this is slow
-       print("Done with single cell processing")
+       showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
+       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) 
+       showNotification("Done with single cell processing")
        sc_raw_data$gch <- dat.subset$gc.seq.sub
        sc_raw_data$hcg <- dat.subset$cg.seq.sub
        rm(dat.subset)
-       print("Removed temporary raw data; Click button to download now.")
+       showNotification("Removed temporary raw data; Click button to download now.")
      }
   })
 output$sc_preprocessing_down <- downloadHandler(
@@ -64,6 +61,7 @@ output$sc_preprocessing_down <- downloadHandler(
  
   ## seriation tab
     
+ 
   observe({
     if (!is.null(input$sc_rds_file))
     {
@@ -80,8 +78,30 @@ output$sc_preprocessing_down <- downloadHandler(
     }
   })
 
+  # Genes <- reactiveValues()
+  observeEvent(input$organism_choice, {
+      if(!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
+        if (input$organism_choice == "Human") {
+            hum.bm <- methylscaper::hum.bm
+            getchr <- sc_seq_data$gch[[1]]$chr[1]
+            hum.bm.sub <- subset(hum.bm, hum.bm$chromosome_name == getchr)
+             Genes <- sort(unique(hum.bm.sub$hgnc_symbol))
+        } else if (input$organism_choice == "Mouse") {
+            mouse.bm <- methylscaper::mouse.bm
+            getchr <- sc_seq_data$gch[[1]]$chr[1]
+            mouse.bm.sub <- subset(mouse.bm, mouse.bm$chromosome_name == getchr)
+            Genes <- sort(unique(mouse.bm.sub$mgi_symbol))
+        }
+     updateSelectizeInput(session, "geneList",
+                               choices = Genes,
+                               server = TRUE, selected = 'T')
+     }
+   })
+   
+   
+   
   output$startPos <- renderUI({
-      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
       {
           cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
           cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
@@ -91,18 +111,40 @@ output$sc_preprocessing_down <- downloadHandler(
           start <- pmax(cg.min.pos, gc.min.pos)
           numericInput(inputId = "startPos", label = "Start Position", min = 0,
                       value = start)
+      } else if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
+          
+          if (input$organism_choice == "Mouse") {
+              gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
+          }
+          if (input$organism_choice == "Human") {
+              gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
+          }
+          start <- gene.select$start_position
+          numericInput(inputId = "startPos", label = "Start Position", min = 0,
+                      value = start)
       }
 
   })
   
   output$endPos <- renderUI({
-      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg))
+      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
       {
           cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
           cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
           gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
           gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
           end <- pmax(cg.min.pos, gc.min.pos) + 5000
+          numericInput(inputId = "endPos", label = "End Position", min = 0, 
+                      value = end)
+        } else if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
+
+          if (input$organism_choice == "Mouse") {
+              gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
+          }
+          if (input$organism_choice == "Human") {
+              gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
+          }
+          end <- gene.select$end_position
           numericInput(inputId = "endPos", label = "End Position", min = 0, 
                       value = end)
       }
@@ -154,8 +196,8 @@ output$sc_preprocessing_down <- downloadHandler(
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
-          showNotification("No valid sites in designated range. Try different 
-                      start and end positions or a larger range.")
+          showNotification("No valid sites in designated range. Choose a gene or adjust  
+                      start and end positions with a larger range.")
          } else {
          temp.gch <- prep_out$gch
          temp.hcg <- prep_out$hcg
@@ -281,7 +323,7 @@ output$sc_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
                                 files to generate the plot.", 
                                 type="message");NULL}
-    else makePlot(obj,isolate(sc_coordinatesObject))
+    else drawPlot(obj,isolate(sc_coordinatesObject))
   }, height=600, width=600)
 
   output$sc_plot_down <- downloadHandler(
@@ -295,7 +337,7 @@ output$sc_preprocessing_down <- downloadHandler(
       if (input$sc_plot_filetype == "SVG") svglite::svglite(file)
       if (input$sc_plot_filetype == "PDF") pdf(file)
 
-      makePlot(sc_orderObject, sc_coordinatesObject, 
+      drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFAST = FALSE)
       dev.off()
     }
@@ -324,58 +366,56 @@ output$sc_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate 
             the plot.", type="message");NULL}
-    else methyl_proportion_cell(obj, makePlot = TRUE,   
-            color = input$sc_proportion_choice)
+    else methyl_proportion(obj, makePlot = TRUE,   
+            type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
   })
 
   output$sc_proportion_hist_download <- downloadHandler(
     filename = function(){
-        paste0("cell_methylation_histogram", "_", input$sc_proportion_choice, ".pdf")
+        paste0("histogram_proportion_cell_methylated", "_", tolower(input$sc_proportion_choice), ".pdf")
     },
     content = function(file){
                   pdf(file)
-                  methyl_proportion_cell(sc_orderObject, makePlot = TRUE,
-                                   color = input$sc_proportion_choice)
+                  methyl_proportion(sc_orderObject, makePlot = TRUE,
+                                   type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
       dev.off()
     }
   )
   output$sc_proportion_data_download <- downloadHandler(
     filename = function(){
-      return(paste0("cell_methylation_proportion", "_", input$sc_proportion_choice, ".csv"))
+        return(paste0("proportion_cell_methylated", "_", tolower(input$sc_proportion_choice), ".csv"))
     },
     content = function(file){
-      dat <-  methyl_proportion_cell(sc_orderObject, makePlot = FALSE,
-                               color = input$sc_proportion_choice)
+        dat <-  methyl_proportion(sc_orderObject, makePlot = FALSE,
+                               type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
       write.csv(dat, file = file)
     }
   )
 
   output$sc_percent_C <- renderPlot({
-    obj <- sc_orderObject
-    if (sum(obj$toClust) == 0)
+    if (sum(sc_orderObject$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.",
              type="message");NULL}
-    else methyl_percent_site(obj, makePlot=TRUE)
+    else methyl_percent_bases(sc_orderObject, makePlot=TRUE)
   })
 
   output$sc_percentC_plot_download <- downloadHandler(
     filename = function(){
-        return(paste0("site_percent_methylation", ".pdf"))
+        return(paste0("percent_bases_methylated", ".pdf"))
     },
     content = function(file){
         pdf(file)
-
-      methyl_percent_site(sc_orderObject, makePlot = TRUE)
+        methyl_percent_bases(sc_orderObject, makePlot = TRUE)
       dev.off()
     }
   )
 
   output$sc_percentC_data_download <- downloadHandler(
     filename = function(){
-      return("site_percent_methylation_data.txt")
+      return("percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_percent_site(sc_orderObject, makePlot = FALSE)
+      dat <-  methyl_percent_bases(sc_orderObject, makePlot = FALSE)
       capture.output(dat, file = file)
     }
   )
@@ -552,7 +592,7 @@ output$sm_preprocessing_down <- downloadHandler(
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
                     files to generate the plot.", type="message");NULL}
-    else makePlot(obj,isolate(sm_coordinatesObject))
+    else drawPlot(obj,isolate(sm_coordinatesObject))
   }, height=600, width=600)
 
   output$sm_plot_down <- downloadHandler(
@@ -566,7 +606,7 @@ output$sm_preprocessing_down <- downloadHandler(
       if (input$sm_filetype == "SVG") svglite::svglite(file)
       if (input$sm_filetype == "PDF") pdf(file)
 
-      makePlot(sm_orderObject, sm_coordinatesObject, 
+      drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFAST = FALSE)
       dev.off()
     }
@@ -595,57 +635,57 @@ output$sm_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.",
              type="message");NULL}
-    else methyl_proportion_cell(obj, makePlot = TRUE, 
-                color = input$sm_proportion_choice)
+    else methyl_proportion(obj, makePlot = TRUE, 
+                type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
   })
 
   output$sm_proportion_hist_download <- downloadHandler(
     filename = function(){
-       paste0("molecule_methylation_histogram", "_", input$sm_proportion_choice, ".pdf")
+       paste0("histogram_proportion_molecule_methylated", "_", tolower(input$sm_proportion_choice), ".pdf")
     },
     content = function(file){
        pdf(file)
-       methyl_proportion_cell(sm_orderObject, makePlot = TRUE,
-                       color = input$sm_proportion_choice)
+       methyl_proportion(sm_orderObject, makePlot = TRUE,
+                       type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
       dev.off()
     }
   )
   output$sm_proportion_data_download <- downloadHandler(
     filename = function(){
-      return(paste0("cell_methylation_proportion", "_", input$sm_proportion_choice, ".csv"))
+      return(paste0("proportion_molecule_methylated", "_", tolower(input$sm_proportion_choice), ".csv"))
     },
     content = function(file){
-      dat <-  methyl_proportion_cell(sm_orderObject, makePlot = FALSE,
-                               color = input$sm_proportion_choice)
+      dat <-  methyl_proportion(sm_orderObject, makePlot = FALSE,
+                               type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
       write.csv(dat, file = file)
     }
   )
 
   output$sm_percent_C <- renderPlot({
     obj <- sm_orderObject
-    if (sum(obj$toClust) == 0)
-    {showNotification("Select methylation data files to generate the plot.", 
+    if (sum(obj$toClust) == 0){
+        showNotification("Select methylation data files to generate the plot.", 
                 type="message");NULL}
-    else methyl_percent_site(obj, makePlot=TRUE)
+    else methyl_percent_bases(obj, makePlot=TRUE)
   })
 
   output$sm_percentC_plot_download <- downloadHandler(
     filename = function(){
-            return(paste0("site_percent_methylation", ".pdf"))
+            return(paste0("percent_bases_methylated", ".pdf"))
     },
     content = function(file){
         pdf(file)
-        methyl_percent_site(sm_orderObject, makePlot = TRUE)
+        methyl_percent_bases(sm_orderObject, makePlot = TRUE)
       dev.off()
     }
   )
 
   output$sm_percentC_data_download <- downloadHandler(
     filename = function(){
-        return("site_percent_methylation_data.txt")
+        return("percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_percent_site(sm_orderObject, makePlot = FALSE)
+      dat <-  methyl_percent_bases(sm_orderObject, makePlot = FALSE)
       capture.output(dat, file = file)
     }
   )

@@ -17,9 +17,9 @@
 #' data(day7)
 #' 
 #' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-#' methyl_percent_site(orderObj, makePlot = TRUE)
+#' methyl_percent_bases(orderObj, makePlot = TRUE)
 
-methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
+methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
     dat <- orderObject$toClust
     red.sites <- which(dat[1,seq(1,ncol(dat))] == 4 |
                           dat[1,seq(1,ncol(dat))] == 1)
@@ -34,9 +34,9 @@ methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
         plot(x = red.sites - ncol(dat)/2, y = c.red,
             col="brown1", pch=19, ylim=c(0,1), 
             xlab = "Region (Base Pair)", ylab="%Methylated",
-            bty='n', cex.lab=1.3, xaxt='n', yaxt='n',...)
-        axis(side = 1, lwd = 2, cex.axis=1.2)
-        axis(side = 2, lwd = 2, cex.axis=1.2)
+            bty='n', cex.lab=1.3,...)
+        # axis(side = 1, lwd = 2, cex.axis=1.2)
+        # axis(side = 2, lwd = 2, cex.axis=1.2)
         lines(x = red.sites - ncol(dat)/2, y = c.red, col="brown1")
         points(x = yellow.sites, y = c.yellow, col="gold2", pch=19)
         lines(x = yellow.sites, y = c.yellow, col="gold2")
@@ -53,9 +53,9 @@ methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
 #' Calculate the proportion of methylated bases for each cell/molecule
 #'
 #' @param orderObject An object of class \code{orderObject}
-#' @param color Indicates which data set to compute proportions for.
-#'      This should be 'red' or 'hcg' for endogenous methylation; 'yellow' or
-#'      'gch' for accessibility. 
+#' @param type Indicates which data set to compute proportions for.
+#'      This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
+#'      'gch' or 'yellow' for accessibility. 
 #' @param makePlot Indicates whether to plot a histogram of the proportions 
 #'  across all reads.
 #' @param ... Additional parameters used by the \code{hist} function.
@@ -70,21 +70,22 @@ methyl_percent_site <- function(orderObject, makePlot = TRUE, ...){
 #' data(day7)
 #' 
 #' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
-#' methyl_proportion_cell(orderObj, makePlot = TRUE)
+#' methyl_proportion(orderObj, makePlot = TRUE)
 
-methyl_proportion_cell <- function(orderObject, color = "yellow", 
+methyl_proportion <- function(orderObject, type = "yellow", 
                                 makePlot=TRUE, ...){
-  color <- tolower(color)
-  if (color=="gch") color <- "yellow"
-  color.indicator <- ifelse(color=="yellow", -1, 1)
+  type <- tolower(type)
+  if (type=="gch") type <- "yellow"
+  if (type=="accessibility methylation") type <- "yellow"
+  color.indicator <- ifelse(type=="yellow", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){
       sum(x == color.indicator * 3 | x == color.indicator * 4) / (length(x) / 2)
   })
   if (makePlot) {
     opar <- par(lwd=4)
     H = hist(Proportion, plot=FALSE, breaks = 15)
-    plot(H, xlim=c(0,1), border=ifelse(color == "yellow", "gold2", "brown1"),
-        col="gray75", main="Methylated Sites Per Cell/Molecule",
+    plot(H, xlim=c(0,1), border=ifelse(type == "yellow", "gold2", "brown1"),
+        col="gray75",
         lwd=2,...)
     par(opar)
   }
