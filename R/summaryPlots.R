@@ -21,11 +21,12 @@
 
 methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
     dat <- orderObject$toClust
-    red.sites <- which(dat[1,seq(1,ncol(dat))] == 4 |
-                          dat[1,seq(1,ncol(dat))] == 1)
-
-    yellow.sites <- which(dat[1,seq(1,ncol(dat))] == -4 |
-                          dat[1,seq(1,ncol(dat))] == -1)
+    
+    red.sites <- c(which(dat == 4, arr.ind = TRUE)[,2], which(dat == 1, arr.ind = TRUE)[,2])
+    red.sites <- sort(unique(red.sites))
+    yellow.sites <- c(which(dat == -4, arr.ind = TRUE)[,2], which(dat == -1, arr.ind = TRUE)[,2])
+    yellow.sites <- sort(unique(yellow.sites))
+    
     c.red <- vapply(red.sites, function(i) {
         sum(dat[, i] == 4) / nrow(dat)}, numeric(1))
     c.yellow <- vapply(yellow.sites, function(i) {
