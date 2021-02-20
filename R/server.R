@@ -91,6 +91,8 @@ output$sc_preprocessing_down <- downloadHandler(
             getchr <- sc_seq_data$gch[[1]]$chr[1]
             mouse.bm.sub <- subset(mouse.bm, mouse.bm$chromosome_name == getchr)
             Genes <- sort(unique(mouse.bm.sub$mgi_symbol))
+        } else if (input$organism_choice == "Other") {
+            Genes = "Click here to begin manual start and end selection."
         }
      updateSelectizeInput(session, "geneList",
                                choices = Genes,
@@ -120,6 +122,15 @@ output$sc_preprocessing_down <- downloadHandler(
           if (input$organism_choice == "Human") {
               gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
           }
+          if (input$organism_choice == "Other") {
+            cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+            cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+            gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+            gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+
+            start <- pmax(cg.min.pos, gc.min.pos)
+            gene.select <- data.frame(start_position = start)
+          }
           start <- gene.select$start_position
           numericInput(inputId = "startPos", label = "Start Position", min = 0,
                       value = start)
@@ -146,6 +157,15 @@ output$sc_preprocessing_down <- downloadHandler(
           if (input$organism_choice == "Human") {
               gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
           }
+          if (input$organism_choice == "Other") {
+            cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+            cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+            gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+            gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+
+            end <- pmax(cg.min.pos, gc.min.pos) + 5000
+            gene.select <- data.frame(end_position = end)
+         }
           end <- gene.select$end_position
           numericInput(inputId = "endPos", label = "End Position", min = 0, 
                       value = end)
@@ -166,9 +186,13 @@ output$sc_preprocessing_down <- downloadHandler(
                         starting and end position to generate the plot.", type="error")
             return(NULL)
         }
+        if (end -  start > 50000) {
+            showNotification("Selected range is longer than 50k bp, plot may take a few 
+                        seconds to render")
+        }
         if (end -  start > 100000) {
-            showNotification("Selected range is longer than 10k bp, reducing 
-                        length for stability.", type="warning")
+            showNotification("Selected range is longer than 100k bp, this is not optimal for 
+                        visualization, reducing to 100k bp.")
             end <- start + 100000
         }
         if (start > end) {
