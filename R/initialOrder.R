@@ -34,26 +34,26 @@
 #' orderObj <- initialOrder(day7$gch, day7$hcg)
 
 
-initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
+initialOrder <- function(input_GCH, input_HCG, Method="PCA", weightStart=NULL,
                         weightEnd=NULL, weightFeature="red", 
                         updateProgress = NULL){
 
     ## File checks:
-    if (nrow(input.HCG) != nrow(input.GCH)) {
+    if (nrow(input_HCG) != nrow(input_GCH)) {
         stop("Input files have different numbers of rows.")}
 
-    if (all(rownames(input.GCH) == input.GCH[,1])) input.GCH <- input.GCH[,-1]
-    if (all(rownames(input.HCG) == input.HCG[,1])) input.HCG <- input.HCG[,-1]
+    if (all(rownames(input_GCH) == input_GCH[,1])) input_GCH <- input_GCH[,-1]
+    if (all(rownames(input_HCG) == input_HCG[,1])) input_HCG <- input_HCG[,-1]
 
     if (is.function(updateProgress)) {
         updateProgress(message = "Recoding input data", value = 0.1)}
-    recoded <- recode(input.GCH, input.HCG)
-    input.GCH <- recoded$input.GCH
-    input.HCG <- recoded$input.HCG
+    recoded <- recode(input_GCH, input_HCG)
+    input_GCH <- recoded$input_GCH
+    input_HCG <- recoded$input_HCG
 
     weightFeature <- tolower(weightFeature)
     ## Clustering:
-    toClust <- cbind(input.GCH, input.HCG)
+    toClust <- cbind(input_GCH, input_HCG)
     weighted = FALSE
 
     # (Optional) Weighting: Adds a variable indicating the number 
@@ -65,12 +65,12 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
         weighted = TRUE
         if (weightFeature == "red" | weightFeature == 'hcg') {
             FEATURE = 3
-            weightVector <- apply(input.HCG[,weightStart:weightEnd], 
+            weightVector <- apply(input_HCG[,weightStart:weightEnd], 
                                     1, function(x) sum(x==FEATURE))
         }
         if (weightFeature == "yellow" | weightFeature == 'gch') {
             FEATURE = -3
-            weightVector <- apply(input.GCH[,weightStart:weightEnd], 
+            weightVector <- apply(input_GCH[,weightStart:weightEnd], 
                                     1, function(x) sum(x==FEATURE))
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
@@ -82,24 +82,24 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
     if (Method=="PCA") {
         if (weighted) {
             w <- weightVector / sum(weightVector)
-            w.sqrt <- sqrt(w)
-            toClust.weighted <- diag(w.sqrt) %*% toClust
+            w_sqrt <- sqrt(w)
+            toClust_weighted <- diag(w_sqrt) %*% toClust
 
-            col.centered <- apply(toClust.weighted, 2, function(x) x - mean(x))
-            try1 <- svd(col.centered, nu = 1, nv = 0)
+            col_centered <- apply(toClust_weighted, 2, function(x) x - mean(x))
+            try1 <- svd(col_centered, nu = 1, nv = 0)
             order1 <- order(try1$u[,1])
         } else {
-            col.centered <- apply(toClust, 2, function(x) x - mean(x))
-            try1 <- svd(col.centered, nu = 1, nv = 0)
+            col_centered <- apply(toClust, 2, function(x) x - mean(x))
+            try1 <- svd(col_centered, nu = 1, nv = 0)
             order1 <- order(try1$u[,1])
         }
     } else {
         if (weighted) {
             w <- weightVector / sum(weightVector)
-            w.sqrt <- sqrt(w)
-            toClust.weighted <- diag(w.sqrt) %*% toClust
+            w_sqrt <- sqrt(w)
+            toClust_weighted <- diag(w_sqrt) %*% toClust
 
-            distMat <- as.dist(Rfast::Dist(toClust.weighted,
+            distMat <- as.dist(Rfast::Dist(toClust_weighted,
                                     method = "euclidean"))
             order1 <- seriation::seriate(distMat, method=Method)
             order1 <- seriation::get_order(order1)
@@ -119,27 +119,27 @@ initialOrder <- function(input.GCH, input.HCG, Method="PCA", weightStart=NULL,
 }
 
 
-recode <- function(input.GCH, input.HCG)
+recode <- function(input_GCH, input_HCG)
 {
-    input.GCH[input.GCH=="."] <- 99
-    input.GCH <- apply(input.GCH, 2, as.numeric)
-    input.GCH[input.GCH==2] <- -4
-    input.GCH[input.GCH==1] <- -3
-    input.GCH[input.GCH==0] <- -2.5
-    input.GCH[input.GCH==-1] <- -99
-    input.GCH[input.GCH==-2] <- -1
-    input.GCH[input.GCH==-99] <- -2
-    input.GCH[input.GCH==99] <- 0
+    input_GCH[input_GCH=="."] <- 99
+    input_GCH <- apply(input_GCH, 2, as.numeric)
+    input_GCH[input_GCH==2] <- -4
+    input_GCH[input_GCH==1] <- -3
+    input_GCH[input_GCH==0] <- -2.5
+    input_GCH[input_GCH==-1] <- -99
+    input_GCH[input_GCH==-2] <- -1
+    input_GCH[input_GCH==-99] <- -2
+    input_GCH[input_GCH==99] <- 0
 
-    input.HCG[input.HCG=="."] <- 99
-    input.HCG <- apply(input.HCG, 2, as.numeric)
-    input.HCG[input.HCG==2] <- 4
-    input.HCG[input.HCG==1] <- 3
-    input.HCG[input.HCG==0] <- 2.5
-    input.HCG[input.HCG==-1] <- 2
-    input.HCG[input.HCG==-2] <- 1
-    input.HCG[input.HCG==99] <- 0
+    input_HCG[input_HCG=="."] <- 99
+    input_HCG <- apply(input_HCG, 2, as.numeric)
+    input_HCG[input_HCG==2] <- 4
+    input_HCG[input_HCG==1] <- 3
+    input_HCG[input_HCG==0] <- 2.5
+    input_HCG[input_HCG==-1] <- 2
+    input_HCG[input_HCG==-2] <- 1
+    input_HCG[input_HCG==99] <- 0
 
-    return(list(input.GCH = input.GCH, input.HCG = input.HCG))
+    return(list(input_GCH = input_GCH, input_HCG = input_HCG))
 
 }

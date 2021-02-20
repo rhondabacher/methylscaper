@@ -7,10 +7,10 @@
 runAlign(
   ref,
   fasta,
-  fasta.subset = seq(1, length(fasta)),
+  fasta_subset = seq(1, length(fasta)),
   multicoreParam = NULL,
   updateProgress = NULL,
-  log.file = NULL
+  log_file = NULL
 )
 }
 \arguments{
@@ -18,15 +18,15 @@ runAlign(
 
 \item{fasta}{A list of reads/sequences from a single-molecule experiment (e.g. MAPit)}
 
-\item{fasta.subset}{(optional) A vector of indices indicating which 
-sequences to process if a subset should be used. Leave this blank if
-all sequences should be processed.}
-
 \item{multicoreParam}{(optional) A MulticoreParam object, used to align 
 sequences in parallel.}
 
 \item{updateProgress}{(optional) Used to add a progress bar to the Shiny app. 
 Should not be used otherwise.}
+
+\item{fasta.subset}{(optional) A vector of indices indicating which 
+sequences to process if a subset should be used. Leave this blank if
+all sequences should be processed.}
 
 \item{log.file}{(optional) String indicating where to save a log of the 
 alignment process. If left NULL, no log is saved. We highly recommend
@@ -49,7 +49,7 @@ Runs the preprocessing methods for single-molecule data.
 }
 \examples{
  
-data(reads.day7)
-data(ref.seq)
-example.alignedseq <- runAlign(fasta=reads.day7, ref = ref.seq, fasta.subset = 1:150)
+data(reads_day7)
+data(ref_seq)
+example_alignedseq <- runAlign(fasta=reads_day7, ref = ref_seq, fasta_subset = 1:150)
 }

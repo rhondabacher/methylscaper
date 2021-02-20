@@ -40,15 +40,7 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
     if (is.function(updateProgress)) 
         updateProgress(message = "Filtering CG data", value = 0.1)
-    # if (is.null(startPos) & is.null(endPos)) {
-#         cg.max.pos <- max(vapply(cg_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
-#         cg.min.pos <- min(vapply(cg_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
-#         gc.max.pos <- max(vapply(gc_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
-#         gc.min.pos <- min(vapply(gc_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
-#
-#         startPos <- pmax(cg.min.pos, gc.min.pos)
-#         endPos <- startPos + 3000
-#     }
+
     cg_seq_sub <- lapply(cg_seq_data, function(x) {
         QQ <- x[order(x$pos),]
         QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
@@ -102,28 +94,28 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
 }
 
-mapSC <- function(IN.seq, startPos, endPos) {
+mapSC <- function(IN_seq, startPos, endPos) {
 
-    IN.seq$pos <- as.numeric(IN.seq$pos) - startPos + 1
-    fill.1 <- seq(startPos, endPos) - startPos + 1
-    someMethyl <- which(IN.seq$rate > 0)
-    noMethyl <- which(IN.seq$rate <= 0)
-    fill.1[fill.1 %in% IN.seq[someMethyl,]$pos] <- 2
-    fill.1[fill.1 %in% IN.seq[noMethyl,]$pos] <- -2
-    fill.1[abs(fill.1) != 2] <- "."
-    tail(sort(table(fill.1)))
+    IN_seq$pos <- as.numeric(IN_seq$pos) - startPos + 1
+    fill_1 <- seq(startPos, endPos) - startPos + 1
+    someMethyl <- which(IN_seq$rate > 0)
+    noMethyl <- which(IN_seq$rate <= 0)
+    fill_1[fill_1 %in% IN_seq[someMethyl,]$pos] <- 2
+    fill_1[fill_1 %in% IN_seq[noMethyl,]$pos] <- -2
+    fill_1[abs(fill_1) != 2] <- "."
+    tail(sort(table(fill_1)))
 
-    sites = as.numeric(IN.seq$pos)
+    sites = as.numeric(IN_seq$pos)
     sites <- sites[sites > 0]
-    editseq = fill.1
-    sites.temp <- c(0, sites, max(sites)+1)
+    editseq = fill_1
+    sites_temp <- c(0, sites, max(sites)+1)
 
-    for (j in seq(1,(length(sites.temp)-1))) {
-        if (sites.temp[j+1] == 1) { # skip 
+    for (j in seq(1,(length(sites_temp)-1))) {
+        if (sites_temp[j+1] == 1) { # skip 
         } else {
-            tofill <- seq(sites.temp[j]+1,(sites.temp[j+1]-1))
-            s1 <- editseq[pmax(1, sites.temp[j])]
-            s2 <- editseq[pmin(length(editseq), sites.temp[j+1])]
+            tofill <- seq(sites_temp[j]+1,(sites_temp[j+1]-1))
+            s1 <- editseq[pmax(1, sites_temp[j])]
+            s2 <- editseq[pmin(length(editseq), sites_temp[j+1])]
 
             if (s1 == "2" & s2 == "2") {
                 fillvec <- 1 } else if (s1 == "2" & s2 == "-2") {
@@ -169,14 +161,14 @@ mapSC <- function(IN.seq, startPos, endPos) {
 
 subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updateProgress = NULL)
 {
-    cur.dir <- getwd()
+    cur_dir <- getwd()
 
     cgfiles <- sort(grep("met", list.files(paste0(path,"/met")), value = TRUE))
     gcfiles <- sort(grep("acc", list.files(paste0(path,"/acc")), value = TRUE))
 
     useChr <- chromosome
 
-    cg.seq <- list()
+    cg_seq <- list()
     for(i in seq(1,length(cgfiles))) {
         in_cg_seq <- fread(paste0(path,"/","met/",cgfiles[i]), header=FALSE, stringsAsFactors = FALSE)
         if (in_cg_seq[1,1] == "chr") {
@@ -192,12 +184,12 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
             in_cg_seq <- subset(in_cg_seq, in_cg_seq$pos >= startPos & in_cg_seq$pos <= endPos)
         }
         
-        cg.seq[[i]] <- in_cg_seq
+        cg_seq[[i]] <- in_cg_seq
         if (is.function(updateProgress))
             updateProgress(message = "Reading CG files", value = i / length(cgfiles))
     }
 
-    gc.seq<- list()
+    gc_seq<- list()
     for(i in seq(1,length(gcfiles))) { 
         in_gc_seq <- fread(paste0(path,"/","acc/",gcfiles[i]), header=FALSE, stringsAsFactors = FALSE)
         colnames(in_gc_seq) <- c("chr", "pos", "rate")
@@ -214,12 +206,12 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
             in_gc_seq <- subset(in_gc_seq, in_gc_seq$pos >= startPos & in_gc_seq$pos <= endPos)
          }
          
-        gc.seq[[i]] <- in_gc_seq
+        gc_seq[[i]] <- in_gc_seq
         if (is.function(updateProgress))
             updateProgress(message = "Reading GC files", value = i / length(gcfiles))
     }
 
-    setwd(cur.dir)
+    setwd(cur_dir)
 
-    list(cg.seq.sub = cg.seq, gc.seq.sub = gc.seq)
+    list(cg_seq_sub = cg_seq, gc_seq_sub = gc_seq)
 }

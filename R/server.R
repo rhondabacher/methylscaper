@@ -18,8 +18,8 @@ server <- function(input, output, session) {
   observe({
     volumes = getVolumes()
     shinyDirChoose(input, 'folder', roots=volumes())
-    path.list <- input$folder["path"][[1]]
-    path <- paste(unlist(path.list), collapse = "/")
+    path_list <- input$folder["path"][[1]]
+    path <- paste(unlist(path_list), collapse = "/")
     if (!is.null(path.list)) sc_input_folder$path <- path
    })
   
@@ -28,7 +28,7 @@ server <- function(input, output, session) {
     else sc_input_folder$path
     })
 
-  observeEvent(input$run.subset,{
+  observeEvent(input$run_subset,{
    if (!is.na(sc_input_folder$path))
      {
        progress <- Progress$new()
@@ -38,12 +38,12 @@ server <- function(input, output, session) {
        updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-       showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome.number))
-       dat.subset <- subsetSC(sc_input_folder$path, input$chromosome.number, updateProgress = updateProgress) 
+       showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome_number))
+       dat_subset <- subsetSC(sc_input_folder$path, input$chromosome_number, updateProgress = updateProgress) 
        showNotification("Done with single cell processing")
-       sc_raw_data$gch <- dat.subset$gc.seq.sub
-       sc_raw_data$hcg <- dat.subset$cg.seq.sub
-       rm(dat.subset)
+       sc_raw_data$gch <- dat_subset$gc_seq_sub
+       sc_raw_data$hcg <- dat_subset$cg_seq_sub
+       rm(dat_subset)
        showNotification("Removed temporary raw data; Click button to download now.")
      }
   })
@@ -82,15 +82,15 @@ output$sc_preprocessing_down <- downloadHandler(
   observeEvent(input$organism_choice, {
       if(!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
         if (input$organism_choice == "Human") {
-            hum.bm <- methylscaper::hum.bm
+            hum_bm <- methylscaper::hum_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            hum.bm.sub <- subset(hum.bm, hum.bm$chromosome_name == getchr)
-             Genes <- sort(unique(hum.bm.sub$hgnc_symbol))
+            hum_bm_sub <- subset(hum_bm, hum_bm$chromosome_name == getchr)
+             Genes <- sort(unique(hum_bm_sub$hgnc_symbol))
         } else if (input$organism_choice == "Mouse") {
-            mouse.bm <- methylscaper::mouse.bm
+            mouse_bm <- methylscaper::mouse_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            mouse.bm.sub <- subset(mouse.bm, mouse.bm$chromosome_name == getchr)
-            Genes <- sort(unique(mouse.bm.sub$mgi_symbol))
+            mouse_bm_sub <- subset(mouse_bm, mouse_bm$chromosome_name == getchr)
+            Genes <- sort(unique(mouse_bm$mgi_symbol))
         } else if (input$organism_choice == "Other") {
             Genes = "Click here to begin manual start and end selection."
         }
@@ -103,35 +103,25 @@ output$sc_preprocessing_down <- downloadHandler(
    
    
   output$startPos <- renderUI({
-      # if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
-      # {
-      #     cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-      #     cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-      #     gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-      #     gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-      #
-      #     start <- pmax(cg.min.pos, gc.min.pos)
-      #     numericInput(inputId = "startPos", label = "Start Position", min = 0,
-      #                 value = start)
-      # } else
+     
       if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
           
           if (input$organism_choice == "Mouse") {
-              gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
+              gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-              gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
+              gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
 
-            start <- pmax(cg.min.pos, gc.min.pos)
-            gene.select <- data.frame(start_position = start)
+            start <- pmax(cg_min_pos, gc_min_pos)
+            gene_select <- data.frame(start_position = start)
           }
-          start <- gene.select$start_position
+          start <- gene_select$start_position
           numericInput(inputId = "startPos", label = "Start Position", min = 0,
                       value = start)
       }
@@ -139,34 +129,25 @@ output$sc_preprocessing_down <- downloadHandler(
   })
   
   output$endPos <- renderUI({
-      # if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
-      # {
-      #     cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-      #     cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-      #     gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-      #     gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-      #     end <- pmax(cg.min.pos, gc.min.pos) + 5000
-      #     numericInput(inputId = "endPos", label = "End Position", min = 0,
-      #                 value = end)
-      #   } else
+    
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
 
           if (input$organism_choice == "Mouse") {
-              gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
+              gene_select <- subset(mou_se_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-              gene.select <- subset(hum.bm, hum.bm$hgnc_symbol == input$geneList)
+              gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
 
-            end <- pmax(cg.min.pos, gc.min.pos) + 5000
-            gene.select <- data.frame(end_position = end)
+            end <- pmax(cg_min_pos, gc_min_pos) + 5000
+            gene_select <- data.frame(end_position = end)
          }
-          end <- gene.select$end_position
+          end <- gene_select$end_position
           numericInput(inputId = "endPos", label = "End Position", min = 0, 
                       value = end)
       }
@@ -174,14 +155,14 @@ output$sc_preprocessing_down <- downloadHandler(
   })
     output$positionSlider <- renderUI({
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
-            cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
         start <- input$startPos
         end <- input$endPos
             
-        if (start < cg.min.pos | start < gc.min.pos | end > cg.max.pos | end > gc.max.pos) {
+        if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
             showNotification("Selected range is out of bounds. Please choose a valid 
                         starting and end position to generate the plot.", type="error")
             return(NULL)
@@ -225,15 +206,15 @@ output$sc_preprocessing_down <- downloadHandler(
           showNotification("No valid sites in designated range. Choose a gene or adjust  
                       start and end positions with a larger range.")
          } else {
-         temp.gch <- prep_out$gch
-         temp.hcg <- prep_out$hcg
-         if (nrow(temp.gch) == nrow(temp.hcg)) {
-            sc_coordinatesObject$refine.start <- 0
-            sc_coordinatesObject$refine.stop <- 0
-            sc_coordinatesObject$weight.start <- 0
-            sc_coordinatesObject$weight.stop <- 0
-            sc_input_data$gch <- temp.gch
-            sc_input_data$hcg <- temp.hcg
+         temp_gch <- prep_out$gch
+         temp_hcg <- prep_out$hcg
+         if (nrow(temp_gch) == nrow(temp_hcg)) {
+            sc_coordinatesObject$refine_start <- 0
+            sc_coordinatesObject$refine_stop <- 0
+            sc_coordinatesObject$weight_start <- 0
+            sc_coordinatesObject$weight_stop <- 0
+            sc_input_data$gch <- temp_gch
+            sc_input_data$hcg <- temp_hcg
             isolate({
               actionsLog$log <- c(actionsLog$log, paste("Beginning 
                               single-cell data analysis"))
@@ -248,9 +229,9 @@ output$sc_preprocessing_down <- downloadHandler(
   })
 
 # this object keeps track of the coordinates for refinement and weighting
-  sc_coordinatesObject <- reactiveValues(refine.start = 0, refine.stop = 0,
-                                         weight.start = 0, weight.stop = 0, 
-                                         weight.color = "red")
+  sc_coordinatesObject <- reactiveValues(refine_start = 0, refine_stop = 0,
+                                         weight_start = 0, weight_stop = 0, 
+                                         weight_color = "red")
   # now construct the sc_orderObject
   sc_orderObject <- reactiveValues(toClust = 0, order1 = 0)
   observe({ if (!is.null(sc_input_data$gch) & !is.null(sc_input_data$hcg))
@@ -279,39 +260,39 @@ output$sc_preprocessing_down <- downloadHandler(
   observeEvent(input$sc_plot_brush, {
     n <- nrow(sc_input_data$gch)
     m <- ncol(sc_input_data$hcg)
-    processed.brush <- handleBrushCoordinates(input$sc_plot_brush, n, m)
+    processed_brush <- handleBrushCoordinates(input$sc_plot_brush, n, m)
 
     if (isolate(input$sc_brush_choice) == "Weighting")
     {
-      sc_coordinatesObject$refine.start <- 0
-      sc_coordinatesObject$refine.stop <- 0
-      sc_coordinatesObject$weight.start <- processed.brush$first.col
-      sc_coordinatesObject$weight.stop <- processed.brush$last.col
-      sc_coordinatesObject$weight.color <- processed.brush$weight.color
+      sc_coordinatesObject$refine_start <- 0
+      sc_coordinatesObject$refine_stop <- 0
+      sc_coordinatesObject$weight_start <- processed_brush$first_col
+      sc_coordinatesObject$weight_stop <- processed_brush$last_col
+      sc_coordinatesObject$weight_color <- processed_brush$weight_color
       isolate({
         actionsLog$log <- c(actionsLog$log,
-                            paste("Weighting", processed.brush$weight.color,
+                            paste("Weighting", processed_brush$weight_color,
                                   "columns",
-                                  processed.brush$first.col, "to",
-                                  processed.brush$last.col))
+                                  processed_brush$first_col, "to",
+                                  processed_brush$last_col))
       })
     }
     if (isolate(input$sc_brush_choice) == "Refinement")
     {
-      s <- processed.brush$first.row
-      f <- processed.brush$last.row
+      s <- processed_brush$first_row
+      f <- processed_brush$last_row
       if (s != f)
       {
-        sc_coordinatesObject$refine.start <- s
-        sc_coordinatesObject$refine.stop <- f
+        sc_coordinatesObject$refine_start <- s
+        sc_coordinatesObject$refine_stop <- f
         sc_orderObject$order1 <- refineOrderShiny(isolate(sc_orderObject),
-                                        refine.method = isolate(input$sc_refine_method),
+                                        refine_method = isolate(input$sc_refine_method),
                                         sc_coordinatesObject)
         isolate({
           actionsLog$log <- c(actionsLog$log,
                               paste("Refining rows",
-                                    processed.brush$first.row, "to",
-                                    processed.brush$last.row))
+                                    processed_brush$first_row, "to",
+                                    processed_brush$last_row))
           actionsLog$log <- c(actionsLog$log,
                               paste("Applying refinement with", 
                               input$sc_refine_method))
@@ -324,7 +305,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   observeEvent( input$sc_force_reverse, {
     isolate({
-      if (sc_coordinatesObject$refine.start == sc_coordinatesObject$refine.stop)
+      if (sc_coordinatesObject$refine_start == sc_coordinatesObject$refine_stop)
       {
         sc_orderObject$order1 <- rev(sc_orderObject$order1)
         actionsLog$log <- c(actionsLog$log, paste("Reversing rows 1 to", 
@@ -332,11 +313,11 @@ output$sc_preprocessing_down <- downloadHandler(
       }
       else
       {
-        sc_orderObject$order1[sc_coordinatesObject$refine.start : sc_coordinatesObject$refine.stop] <-
-          sc_orderObject$order1[sc_coordinatesObject$refine.stop : sc_coordinatesObject$refine.start]
+        sc_orderObject$order1[sc_coordinatesObject$refine_start : sc_coordinatesObject$refine_stop] <-
+          sc_orderObject$order1[sc_coordinatesObject$refine_stop : sc_coordinatesObject$refine_start]
         actionsLog$log <- c(actionsLog$log,
-                            paste("Reversing rows", sc_coordinatesObject$refine.start,
-                                  "to", sc_coordinatesObject$refine.stop))
+                            paste("Reversing rows", sc_coordinatesObject$refine_start,
+                                  "to", sc_coordinatesObject$refine_stop))
 
       }
     })
@@ -381,10 +362,10 @@ output$sc_preprocessing_down <- downloadHandler(
   )
 
   output$sc_info <- renderText({
-    paste0("Refinement selection: ", sc_coordinatesObject$refine.start, 
-                                " ", sc_coordinatesObject$refine.stop, "\n",
-           "Weighting selection: ", sc_coordinatesObject$weight.start,
-                                " ", sc_coordinatesObject$weight.stop)
+    paste0("Refinement selection: ", sc_coordinatesObject$refine_start, 
+                                " ", sc_coordinatesObject$refine_stop, "\n",
+           "Weighting selection: ", sc_coordinatesObject$weight_start,
+                                " ", sc_coordinatesObject$weight_stop)
   })
 
   output$sc_proportion_color_histogram <- renderPlot({
@@ -442,7 +423,7 @@ output$sc_preprocessing_down <- downloadHandler(
     },
     content = function(file){
       dat <-  methyl_percent_bases(sc_orderObject, makePlot = FALSE)
-      capture.output(dat, file = file)
+      capture_output(dat, file = file)
     }
   )
 
@@ -456,9 +437,9 @@ output$sc_preprocessing_down <- downloadHandler(
   sm_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
 
   # alignment handling
-  observeEvent(input$run.align, {
-    ref <- read.fasta(input$ref.file$datapath)
-    fasta <- read.fasta(input$fasta.file$datapath)
+  observeEvent(input$run_align, {
+    ref <- read.fasta(input$ref_file$datapath)
+    fasta <- read.fasta(input$fasta_file$datapath)
 
     progress <- Progress$new()
     progress$set(message = "Beginning alignment", value = 0)
@@ -467,12 +448,12 @@ output$sc_preprocessing_down <- downloadHandler(
     updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
       progress$set(value = value, message = message, detail = detail)}
 
-    align.out <- runAlign(ref, fasta, updateProgress = updateProgress,
-                          log.file = input$processing.log.name)
+    align_out <- runAlign(ref, fasta, updateProgress = updateProgress,
+                          log_file = input$processing_log_name)
 
-    sm_raw_data$gch <- align.out$gch
-    sm_raw_data$hcg <- align.out$hcg
-    sm_raw_data$log_vector  <- align.out$logs
+    sm_raw_data$gch <- align_out$gch
+    sm_raw_data$hcg <- align_out$hcg
+    sm_raw_data$log_vector  <- align_out$logs
 
   })
 
@@ -497,16 +478,16 @@ output$sm_preprocessing_down <- downloadHandler(
   observe({if (!is.null(input$sm_rds_file))
   {
     temp <- readRDS(file = input$sm_rds_file$datapath)
-    temp.gch <- temp$gch
-    temp.hcg <- temp$hcg
-    if (nrow(temp.gch) == nrow(temp.hcg))
+    temp_gch <- temp$gch
+    temp_hcg <- temp$hcg
+    if (nrow(temp_gch) == nrow(temp_hcg))
     {
-      sm_coordinatesObject$refine.start <- 0
-      sm_coordinatesObject$refine.stop <- 0
-      sm_coordinatesObject$weight.start <- 0
-      sm_coordinatesObject$weight.stop <- 0
-      sm_input_data$gch <- temp.gch
-      sm_input_data$hcg <- temp.hcg
+      sm_coordinatesObject$refine_start <- 0
+      sm_coordinatesObject$refine_stop <- 0
+      sm_coordinatesObject$weight_start <- 0
+      sm_coordinatesObject$weight_stop <- 0
+      sm_input_data$gch <- temp_gch
+      sm_input_data$hcg <- temp_hcg
       sm_input_data$datatype <- "sm"
       isolate({
         actionsLog$log <- c(actionsLog$log, paste("Beginning 
@@ -519,9 +500,9 @@ output$sm_preprocessing_down <- downloadHandler(
   }})
 
   # this object keeps track of the coordinates for refinement and weighting
-  sm_coordinatesObject <- reactiveValues(refine.start = 0, refine.stop = 0,
-                                      weight.start = 0, weight.stop = 0, 
-                                      weight.color = "red")
+  sm_coordinatesObject <- reactiveValues(refine_start = 0, refine_stop = 0,
+                                      weight_start = 0, weight_stop = 0, 
+                                      weight_color = "red")
   # now construct the sm_orderObject
   sm_orderObject <- reactiveValues(toClust = 0, order1 = 0)
   observe({ if (!is.null(sm_input_data$gch) & !is.null(sm_input_data$hcg))
@@ -549,39 +530,39 @@ output$sm_preprocessing_down <- downloadHandler(
   observeEvent(input$sm_plot_brush, {
     n <- nrow(sm_input_data$gch)
     m <- ncol(sm_input_data$hcg)
-    processed.brush <- handleBrushCoordinates(input$sm_plot_brush, n, m)
+    processed_brush <- handleBrushCoordinates(input$sm_plot_brush, n, m)
 
     if (isolate(input$sm_brush_choice) == "Weighting")
     {
-      sm_coordinatesObject$refine.start <- 0
-      sm_coordinatesObject$refine.stop <- 0
-      sm_coordinatesObject$weight.start <- processed.brush$first.col
-      sm_coordinatesObject$weight.stop <- processed.brush$last.col
-      sm_coordinatesObject$weight.color <- processed.brush$weight.color
+      sm_coordinatesObject$refine_start <- 0
+      sm_coordinatesObject$refine_stop <- 0
+      sm_coordinatesObject$weight_start <- processed_brush$first_col
+      sm_coordinatesObject$weight_stop <- processed_brush$last_col
+      sm_coordinatesObject$weight_color <- processed_brush$weight_color
       isolate({
         actionsLog$log <- c(actionsLog$log,
                             paste("Weighting", 
-                                    processed.brush$weight.color, "columns",
-                                  processed.brush$first.col, "to",
-                                  processed.brush$last.col))
+                                    processed_brush$weight_color, "columns",
+                                  processed_brush$first_col, "to",
+                                  processed_brush$last_col))
       })
     }
     if (isolate(input$sm_brush_choice) == "Refinement")
     {
-      s <- processed.brush$first.row
-      f <- processed.brush$last.row
+      s <- processed_brush$first_row
+      f <- processed_brush$last_row
       if (s != f)
       {
-        sm_coordinatesObject$refine.start <- s
-        sm_coordinatesObject$refine.stop <- f
+        sm_coordinatesObject$refine_start <- s
+        sm_coordinatesObject$refine_stop <- f
         sm_orderObject$order1 <- refineOrderShiny(isolate(sm_orderObject),
-                                    refine.method = isolate(input$sm_refine_method),
+                                    refine_method = isolate(input$sm_refine_method),
                                     sm_coordinatesObject)
         isolate({
           actionsLog$log <- c(actionsLog$log,
                               paste("Refining rows",
-                                    processed.brush$first.row, "to",
-                                    processed.brush$last.row))
+                                    processed_brush$first_row, "to",
+                                    processed_brush$last_row))
           actionsLog$log <- c(actionsLog$log,
                               paste("Applying refinement with", 
                                       input$sm_refine_method))
@@ -594,7 +575,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   observeEvent( input$sm_force_reverse, {
     isolate({
-      if (sm_coordinatesObject$refine.start == sm_coordinatesObject$refine.stop)
+      if (sm_coordinatesObject$refine_start == sm_coordinatesObject$refine_stop)
       {
         sm_orderObject$order1 <- rev(sm_orderObject$order1)
         actionsLog$log <- c(actionsLog$log, paste("Reversing rows 1 to", 
@@ -602,11 +583,11 @@ output$sm_preprocessing_down <- downloadHandler(
       }
       else
       {
-        sm_orderObject$order1[sm_coordinatesObject$refine.start : sm_coordinatesObject$refine.stop] <-
-          sm_orderObject$order1[sm_coordinatesObject$refine.stop : sm_coordinatesObject$refine.start]
+        sm_orderObject$order1[sm_coordinatesObject$refine_start : sm_coordinatesObject$refine_stop] <-
+          sm_orderObject$order1[sm_coordinatesObject$refine_stop : sm_coordinatesObject$refine_start]
         actionsLog$log <- c(actionsLog$log,
-                            paste("Reversing rows", sm_coordinatesObject$refine.start,
-                                  "to", sm_coordinatesObject$refine.stop))
+                            paste("Reversing rows", sm_coordinatesObject$refine_start,
+                                  "to", sm_coordinatesObject$refine_stop))
 
       }
     })
@@ -650,10 +631,10 @@ output$sm_preprocessing_down <- downloadHandler(
   )
 
   output$sm_info <- renderText({
-    paste0("Refinement selection: ", sm_coordinatesObject$refine.start, " ",
-                 sm_coordinatesObject$refine.stop, "\n",
-           "Weighting selection: ", sm_coordinatesObject$weight.start, " ",
-                    sm_coordinatesObject$weight.stop)
+    paste0("Refinement selection: ", sm_coordinatesObject$refine_start, " ",
+                 sm_coordinatesObject$refine_stop, "\n",
+           "Weighting selection: ", sm_coordinatesObject$weight_start, " ",
+                    sm_coordinatesObject$weight_stop)
   })
 
   output$sm_proportion_color_histogram <- renderPlot({

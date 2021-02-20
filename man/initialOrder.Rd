@@ -5,8 +5,8 @@
 \title{Ordering the molecules/reads}
 \usage{
 initialOrder(
-  input.GCH,
-  input.HCG,
+  input_GCH,
+  input_HCG,
   Method = "PCA",
   weightStart = NULL,
   weightEnd = NULL,
@@ -15,10 +15,6 @@ initialOrder(
 )
 }
 \arguments{
-\item{input.GCH}{The GCH input data (the data must have first been preprocessed).}
-
-\item{input.HCG}{The HCG input data (the data must have first been preprocessed).}
-
 \item{Method}{Indicates the seriation method to use. The default option
 is "PCA", which orders the data using a weighted first principal component approach. Any 
 seriation method provided in the \code{seriation} package is also valid input.}
@@ -33,6 +29,10 @@ valid input for this option is 'hcg' or 'red'.}
 
 \item{updateProgress}{A function to handle the progress bar for the 
 Shiny app. Should not be used when using the function independently.}
+
+\item{input.GCH}{The GCH input data (the data must have first been preprocessed).}
+
+\item{input.HCG}{The HCG input data (the data must have first been preprocessed).}
 }
 \value{
 An object of class \code{orderObject}, which contains the generated

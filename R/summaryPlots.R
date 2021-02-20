@@ -22,31 +22,29 @@
 methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
     dat <- orderObject$toClust
     
-    red.sites <- c(which(dat == 4, arr.ind = TRUE)[,2], which(dat == 1, arr.ind = TRUE)[,2])
-    red.sites <- sort(unique(red.sites))
-    yellow.sites <- c(which(dat == -4, arr.ind = TRUE)[,2], which(dat == -1, arr.ind = TRUE)[,2])
-    yellow.sites <- sort(unique(yellow.sites))
+    red_sites <- c(which(dat == 4, arr.ind = TRUE)[,2], which(dat == 1, arr.ind = TRUE)[,2])
+    red_sites <- sort(unique(red_sites))
+    yellow_sites <- c(which(dat == -4, arr.ind = TRUE)[,2], which(dat == -1, arr.ind = TRUE)[,2])
+    yellow_sites <- sort(unique(yellow_sites))
     
-    c.red <- vapply(red.sites, function(i) {
+    c_red <- vapply(red_sites, function(i) {
         sum(dat[, i] == 4) / nrow(dat)}, numeric(1))
-    c.yellow <- vapply(yellow.sites, function(i) {
+    c_yellow <- vapply(yellow_sites, function(i) {
         sum(dat[, i] == -4) / nrow(dat)}, numeric(1))
     if (makePlot) {
-        plot(x = red.sites - ncol(dat)/2, y = c.red,
+        plot(x = red_sites - ncol(dat)/2, y = c_red,
             col="brown1", pch=19, ylim=c(0,1), 
             xlab = "Region (Base Pair)", ylab="%Methylated",
             bty='n', cex.lab=1.3,...)
-        # axis(side = 1, lwd = 2, cex.axis=1.2)
-        # axis(side = 2, lwd = 2, cex.axis=1.2)
-        lines(x = red.sites - ncol(dat)/2, y = c.red, col="brown1")
-        points(x = yellow.sites, y = c.yellow, col="gold2", pch=19)
-        lines(x = yellow.sites, y = c.yellow, col="gold2")
+        lines(x = red_sites - ncol(dat)/2, y = c_red, col="brown1")
+        points(x = yellow_sites, y = c_yellow, col="gold2", pch=19)
+        lines(x = yellow_sites, y = c_yellow, col="gold2")
         legend("topright", c("Endogenous", "Accessibility"), pch=16, 
                 col=c("brown1", "gold2"), bty='n', title="Methylation Type")
-        n.sites <- length(union(red.sites, yellow.sites))
-        labs <- union(red.sites, yellow.sites)[seq(1, n.sites, by=n.sites/12)]
+        n_sites <- length(union(red_sites, yellow_sites))
+        labs <- union(red_sites, yellow_sites)[seq(1, n_sites, by=n_sites/12)]
     }
-    final <- list(c.red, c.yellow)
+    final <- list(c_red, c_yellow)
     names(final) = c("meth", "acc")
     return(final)
 }
@@ -78,9 +76,9 @@ methyl_proportion <- function(orderObject, type = "yellow",
   type <- tolower(type)
   if (type=="gch") type <- "yellow"
   if (type=="accessibility methylation") type <- "yellow"
-  color.indicator <- ifelse(type=="yellow", -1, 1)
+  color_indicator <- ifelse(type=="yellow", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){
-      sum(x == color.indicator * 3 | x == color.indicator * 4) / (length(x) / 2)
+      sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)
   })
   if (makePlot) {
     opar <- par(lwd=4)
@@ -121,27 +119,27 @@ methyl_average_status <- function(orderObject, window_length = 20,
                                 makePlot = TRUE, ...)
 {
     colLength <- ncol(orderObject$toClust)
-    gch.num <- orderObject$toClust[,seq(1,(colLength / 2))]
-    hcg.num <- orderObject$toClust[,seq((colLength / 2 + 1),colLength)]
+    gch_num <- orderObject$toClust[,seq(1,(colLength / 2))]
+    hcg_num <- orderObject$toClust[,seq((colLength / 2 + 1),colLength)]
 
-    acc.sum <- colSums(gch.num == -3)
-    meth.sum <- colSums(hcg.num == 3)
-    acc.denom <- colSums(gch.num != 0)
-    meth.denom <- colSums(hcg.num != 0)
-    acc.avg <- acc.sum / acc.denom
-    meth.avg <- meth.sum / meth.denom
+    acc_sum <- colSums(gch_num == -3)
+    meth_sum <- colSums(hcg_num == 3)
+    acc_denom <- colSums(gch_num != 0)
+    meth_denom <- colSums(hcg_num != 0)
+    acc_avg <- acc_sum / acc_denom
+    meth_avg <- meth_sum / meth_denom
 
     width <- window_length
-    moving.acc.avg <- filter(x = acc.avg, filter = rep(1, width)) / width
-    moving.meth.avg <- filter(x = meth.avg, filter = rep(1, width)) / width
+    moving_acc_avg <- filter(x = acc_avg, filter = rep(1, width)) / width
+    moving_meth_avg <- filter(x = meth_avg, filter = rep(1, width)) / width
 
     if (makePlot) {
-        plot(moving.acc.avg, type = "l", col="gold2",
+        plot(moving_acc_avg, type = "l", col="gold2",
             xlab="Position along read", 
             ylab="Population-averaged status", ylim = c(0,1))
-        lines(moving.meth.avg, col="brown1")
+        lines(moving_meth_avg, col="brown1")
         legend("topright", legend=c("Methylation", "Accessibility"),
             fill=c("brown1", "gold2"))
     }
-    return(list(meth_avg = moving.meth.avg, acc_avg = moving.acc.avg))
+    return(list(meth_avg = moving_meth_avg, acc_avg = moving_acc_avg))
 }

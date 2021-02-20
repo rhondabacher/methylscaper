@@ -11,7 +11,7 @@ An object of class \code{list} of length 2.
 data(day7)
 }
 \description{
-This was made after running methylscaper::runAlign(fasta=reads.day7, 
-ref=ref.seq)
+This was made after running methylscaper::runAlign(fasta=reads_day7, 
+ref=ref_seq)
 }
 \keyword{datasets}

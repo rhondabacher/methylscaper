@@ -27,33 +27,33 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
   
   toClust <- orderObject$toClust
   order1 <- orderObject$order1
-  toRefine.order <- order1[refineStart:refineEnd]
+  toRefine_order <- order1[refineStart:refineEnd]
   
   
-  toRefine.clust <- toClust[toRefine.order,]
+  toRefine_clust <- toClust[toRefine_order,]
   
   if (Method=="PCA") {
-    col.centered <- apply(toRefine.clust, 2, function(x) x - mean(x))
-    try1 <- svd(col.centered, nu = 1, nv = 0)
-    order.new <- order(try1$u[,1])
+    col_centered <- apply(toRefine_clust, 2, function(x) x - mean(x))
+    try1 <- svd(col_centered, nu = 1, nv = 0)
+    order_new <- order(try1$u[,1])
   } else { # Methods available for refining are: ARSA, HC_complete, 
       ## HC_average, HC_ward.
-    if (is.null(orderObject$distMat)) distMat <- dist(toRefine.clust,
+    if (is.null(orderObject$distMat)) distMat <- dist(toRefine_clust,
                                                     method = "euclidean")
     else {
-        distMat <- as.dist(as.matrix(orderObject$distMat)[toRefine.order,toRefine.order])
+        distMat <- as.dist(as.matrix(orderObject$distMat)[toRefine_order,toRefine_order])
     }
-    order.new <- seriation::seriate(distMat, method=Method, verbose=FALSE)
-    order.new <- seriation::get_order(order.new)
+    order_new <- seriation::seriate(distMat, method=Method, verbose=FALSE)
+    order_new <- seriation::get_order(order_new)
   }
   
   
   # New order:
-  order.new <- order1[seq(refineStart,refineEnd)][order.new]
-  order.final <- order1
-  order.final[refineStart:refineEnd] <- order.new
+  order_new <- order1[seq(refineStart,refineEnd)][order_new]
+  order_final <- order1
+  order_final[refineStart:refineEnd] <- order_new
   
-  return(order.final)
+  return(order_final)
 }
 
 #' Force reversal of a subset of the ordering
