@@ -40,16 +40,15 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 
     if (is.function(updateProgress)) 
         updateProgress(message = "Filtering CG data", value = 0.1)
-    
-    if (is.null(startPos) & is.null(endPos)) {
-        cg.max.pos <- max(vapply(cg_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
-        cg.min.pos <- min(vapply(cg_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
-        gc.max.pos <- max(vapply(gc_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
-        gc.min.pos <- min(vapply(gc_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
-        
-        startPos <- pmax(cg.min.pos, gc.min.pos)
-        endPos <- startPos + 3000
-    }
+    # if (is.null(startPos) & is.null(endPos)) {
+#         cg.max.pos <- max(vapply(cg_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
+#         cg.min.pos <- min(vapply(cg_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
+#         gc.max.pos <- max(vapply(gc_seq_data, FUN=function(x) {max(x$pos)}, numeric(1)))
+#         gc.min.pos <- min(vapply(gc_seq_data, FUN=function(x) {min(x$pos)}, numeric(1)))
+#
+#         startPos <- pmax(cg.min.pos, gc.min.pos)
+#         endPos <- startPos + 3000
+#     }
     cg_seq_sub <- lapply(cg_seq_data, function(x) {
         QQ <- x[order(x$pos),]
         QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)

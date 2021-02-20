@@ -101,17 +101,18 @@ output$sc_preprocessing_down <- downloadHandler(
    
    
   output$startPos <- renderUI({
-      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
-      {
-          cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-          cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-          gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-          gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-          
-          start <- pmax(cg.min.pos, gc.min.pos)
-          numericInput(inputId = "startPos", label = "Start Position", min = 0,
-                      value = start)
-      } else if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
+      # if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
+      # {
+      #     cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+      #     cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+      #     gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+      #     gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+      #
+      #     start <- pmax(cg.min.pos, gc.min.pos)
+      #     numericInput(inputId = "startPos", label = "Start Position", min = 0,
+      #                 value = start)
+      # } else
+      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
           
           if (input$organism_choice == "Mouse") {
               gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
@@ -127,16 +128,17 @@ output$sc_preprocessing_down <- downloadHandler(
   })
   
   output$endPos <- renderUI({
-      if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
-      {
-          cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-          cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-          gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-          gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
-          end <- pmax(cg.min.pos, gc.min.pos) + 5000
-          numericInput(inputId = "endPos", label = "End Position", min = 0, 
-                      value = end)
-        } else if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
+      # if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList == "")
+      # {
+      #     cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
+      #     cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
+      #     gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
+      #     gc.min.pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+      #     end <- pmax(cg.min.pos, gc.min.pos) + 5000
+      #     numericInput(inputId = "endPos", label = "End Position", min = 0,
+      #                 value = end)
+      #   } else
+        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
 
           if (input$organism_choice == "Mouse") {
               gene.select <- subset(mouse.bm, mouse.bm$mgi_symbol == input$geneList)
@@ -151,7 +153,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   })
     output$positionSlider <- renderUI({
-        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
+        if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
             cg.max.pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
             cg.min.pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
             gc.max.pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
@@ -164,13 +166,13 @@ output$sc_preprocessing_down <- downloadHandler(
                         starting and end position to generate the plot.", type="error")
             return(NULL)
         }
-        if (end -  start > 10000) {
+        if (end -  start > 100000) {
             showNotification("Selected range is longer than 10k bp, reducing 
                         length for stability.", type="warning")
-            end <- start + 10000
+            end <- start + 100000
         }
         if (start > end) {
-            end <- start + 10000
+            end <- start + 100000
         }
         len <- end - start
         sliderInput(inputId = "positionSliderInput", 
