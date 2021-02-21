@@ -20,7 +20,7 @@ server <- function(input, output, session) {
     shinyDirChoose(input, 'folder', roots=volumes())
     path_list <- input$folder["path"][[1]]
     path <- paste(unlist(path_list), collapse = "/")
-    if (!is.null(path.list)) sc_input_folder$path <- path
+    if (!is.null(path_list)) sc_input_folder$path <- path
    })
   
   output$sc_folder_name <- renderText({
@@ -133,7 +133,7 @@ output$sc_preprocessing_down <- downloadHandler(
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
 
           if (input$organism_choice == "Mouse") {
-              gene_select <- subset(mou_se_bm, mouse_bm$mgi_symbol == input$geneList)
+              gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
               gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
@@ -177,7 +177,7 @@ output$sc_preprocessing_down <- downloadHandler(
             end <- start + 100000
         }
         if (start > end) {
-            end <- start + 100000
+            end <- start + 2000
         }
         len <- end - start
         sliderInput(inputId = "positionSliderInput", 
@@ -423,7 +423,7 @@ output$sc_preprocessing_down <- downloadHandler(
     },
     content = function(file){
       dat <-  methyl_percent_bases(sc_orderObject, makePlot = FALSE)
-      capture_output(dat, file = file)
+      capture.output(dat, file = file)
     }
   )
 

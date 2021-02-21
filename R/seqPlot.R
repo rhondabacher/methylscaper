@@ -77,7 +77,7 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
         main=Title, useRaster=plotFAST, ylim=c(0,1.028))
     axis(3, at = sites_scale, labels = rep("", length(sites_scale)),
         tick=TRUE, line = .1, col="white", cex=1, lwd=1,
-        col_ticks = "black", tck = .02)
+        col.ticks = "black", tck = .02)
     # Where to put the axes:
     # convert these back to the site number so we can do refinement
     plot1 <- round(ncol(input_HCG_fix)/ncol(toPlot_fix), 2) 

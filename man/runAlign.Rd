@@ -18,17 +18,17 @@ runAlign(
 
 \item{fasta}{A list of reads/sequences from a single-molecule experiment (e.g. MAPit)}
 
+\item{fasta_subset}{(optional) A vector of indices indicating which 
+sequences to process if a subset should be used. Leave this blank if
+all sequences should be processed.}
+
 \item{multicoreParam}{(optional) A MulticoreParam object, used to align 
 sequences in parallel.}
 
 \item{updateProgress}{(optional) Used to add a progress bar to the Shiny app. 
 Should not be used otherwise.}
 
-\item{fasta.subset}{(optional) A vector of indices indicating which 
-sequences to process if a subset should be used. Leave this blank if
-all sequences should be processed.}
-
-\item{log.file}{(optional) String indicating where to save a log of the 
+\item{log_file}{(optional) String indicating where to save a log of the 
 alignment process. If left NULL, no log is saved. We highly recommend
 saving a log file.}
 }

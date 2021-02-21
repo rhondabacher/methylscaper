@@ -48,8 +48,7 @@ This function generates representation methylation-state matrices from
 }
 \examples{
  
-data(chr19_example_HCG)
-data(chr19_example_GCH)
-prepsc.out <- prepSC(chr19_example_GCH, chr19_example_HCG, 
+data(singlecell_subset)
+prepsc.out <- prepSC(singlecell_subset$gc_seq_sub, singlecell_subset$cg_seq_sub, 
                  startPos = 105636488, endPos = 105636993)
 }

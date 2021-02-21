@@ -8,7 +8,7 @@
 An object of class \code{data.frame} with 60573 rows and 4 columns.
 }
 \usage{
-data(hum_bm.bm)
+data(hum_bm)
 }
 \description{
 library(biomaRt) #v2.44.4

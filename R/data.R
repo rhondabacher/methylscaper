@@ -42,7 +42,7 @@
 #'             mart=ensembl)
 #' 
 #' @docType data
-#' @usage data(hum_bm.bm)
+#' @usage data(hum_bm)
 "hum_bm"
 
 

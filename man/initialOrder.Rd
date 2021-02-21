@@ -15,6 +15,10 @@ initialOrder(
 )
 }
 \arguments{
+\item{input_GCH}{The GCH input data (the data must have first been preprocessed).}
+
+\item{input_HCG}{The HCG input data (the data must have first been preprocessed).}
+
 \item{Method}{Indicates the seriation method to use. The default option
 is "PCA", which orders the data using a weighted first principal component approach. Any 
 seriation method provided in the \code{seriation} package is also valid input.}
@@ -29,10 +33,6 @@ valid input for this option is 'hcg' or 'red'.}
 
 \item{updateProgress}{A function to handle the progress bar for the 
 Shiny app. Should not be used when using the function independently.}
-
-\item{input.GCH}{The GCH input data (the data must have first been preprocessed).}
-
-\item{input.HCG}{The HCG input data (the data must have first been preprocessed).}
 }
 \value{
 An object of class \code{orderObject}, which contains the generated

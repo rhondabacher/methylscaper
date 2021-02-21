@@ -7,8 +7,8 @@
 #' base pair chosen by the user, and the weight can be done on the 
 #' endogenous methylation or the accessibility.
 #'
-#' @param input.GCH The GCH input data (the data must have first been preprocessed).
-#' @param input.HCG The HCG input data (the data must have first been preprocessed).
+#' @param input_GCH The GCH input data (the data must have first been preprocessed).
+#' @param input_HCG The HCG input data (the data must have first been preprocessed).
 #' @param Method Indicates the seriation method to use. The default option
 #'  is "PCA", which orders the data using a weighted first principal component approach. Any 
 #'  seriation method provided in the \code{seriation} package is also valid input. 

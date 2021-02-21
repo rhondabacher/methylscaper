@@ -29,9 +29,8 @@
 #' @export
 #' @examples 
 #'  
-#' data(chr19_example_HCG)
-#' data(chr19_example_GCH)
-#' prepsc.out <- prepSC(chr19_example_GCH, chr19_example_HCG, 
+#' data(singlecell_subset)
+#' prepsc.out <- prepSC(singlecell_subset$gc_seq_sub, singlecell_subset$cg_seq_sub, 
 #'                  startPos = 105636488, endPos = 105636993)
 
 prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
@@ -39,7 +38,7 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
 {
 
     if (is.function(updateProgress)) 
-        updateProgress(message = "Filtering CG data", value = 0.1)
+        updateProgress(message = "Filtering HCG site data", value = 0.1)
 
     cg_seq_sub <- lapply(cg_seq_data, function(x) {
         QQ <- x[order(x$pos),]
@@ -48,7 +47,7 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
     })
 
     if (is.function(updateProgress))
-         updateProgress(message = "Filtering GC data", value = 0.5)
+         updateProgress(message = "Filtering GCH site data", value = 0.5)
     
     gc_seq_sub <- lapply(gc_seq_data, function(x) {
          QQ <- x[order(x$pos),]
@@ -67,7 +66,7 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
     gc_seq_sub <- gc_seq_sub[useseq]
 
     if (is.function(updateProgress))
-        updateProgress(message = "Mapping CG data", value = 0.75)
+        updateProgress(message = "Mapping HCG site data", value = 0.75)
     
     cg_outseq <- lapply(cg_seq_sub, function(x) {
         if (nrow(x) == 0) NULL
@@ -79,7 +78,7 @@ prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
     rownames(hcg) <- as.character(seq(1,nrow(hcg)))
 
     if (is.function(updateProgress))
-        updateProgress(message = "Mapping GC data", value = 0.9)
+        updateProgress(message = "Mapping GCH site data", value = 0.9)
     
     gc_outseq <- lapply(gc_seq_sub, function(x) {
         if (nrow(x) == 0) NULL
@@ -186,7 +185,7 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
         
         cg_seq[[i]] <- in_cg_seq
         if (is.function(updateProgress))
-            updateProgress(message = "Reading CG files", value = i / length(cgfiles))
+            updateProgress(message = "Reading HCG site files", value = i / length(cgfiles))
     }
 
     gc_seq<- list()
@@ -208,7 +207,7 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
          
         gc_seq[[i]] <- in_gc_seq
         if (is.function(updateProgress))
-            updateProgress(message = "Reading GC files", value = i / length(gcfiles))
+            updateProgress(message = "Reading GCH site files", value = i / length(gcfiles))
     }
 
     setwd(cur_dir)

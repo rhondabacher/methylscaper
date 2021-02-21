@@ -4,14 +4,14 @@
 #'
 #' @param ref A reference sequence to align the reads to.
 #' @param fasta A list of reads/sequences from a single-molecule experiment (e.g. MAPit)
-#' @param fasta.subset (optional) A vector of indices indicating which 
+#' @param fasta_subset (optional) A vector of indices indicating which 
 #'      sequences to process if a subset should be used. Leave this blank if
 #'      all sequences should be processed.
 #' @param multicoreParam (optional) A MulticoreParam object, used to align 
 #'      sequences in parallel.
 #' @param updateProgress (optional) Used to add a progress bar to the Shiny app. 
 #'      Should not be used otherwise.
-#' @param log.file (optional) String indicating where to save a log of the 
+#' @param log_file (optional) String indicating where to save a log of the 
 #'      alignment process. If left NULL, no log is saved. We highly recommend
 #'      saving a log file.
 #' @return The output is a list containing the the matrices 'gch' and 'hcg.
