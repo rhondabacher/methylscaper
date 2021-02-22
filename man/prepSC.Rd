@@ -4,20 +4,10 @@
 \alias{prepSC}
 \title{Process single-cell data}
 \usage{
-prepSC(
-  gc_seq_data,
-  cg_seq_data,
-  startPos = NULL,
-  endPos = NULL,
-  updateProgress = NULL
-)
+prepSC(dataIn, startPos = NULL, endPos = NULL, updateProgress = NULL)
 }
 \arguments{
-\item{gc_seq_data}{GC accessibility data, in the form of a list of 
-dataframes.}
-
-\item{cg_seq_data}{CG methylation data, in the form of a list of 
-dataframes.}
+\item{dataIn}{A list object containing two elements labelled gch and hcg (already pre-processed.)}
 
 \item{startPos}{The index of the first position to include 
 in the visualization. If using this within the R console it is 
@@ -49,6 +39,6 @@ This function generates representation methylation-state matrices from
 \examples{
  
 data(singlecell_subset)
-prepsc.out <- prepSC(singlecell_subset$gc_seq_sub, singlecell_subset$cg_seq_sub, 
+prepsc.out <- prepSC(singlecell_subset, 
                  startPos = 105636488, endPos = 105636993)
 }

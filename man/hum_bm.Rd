@@ -5,7 +5,7 @@
 \alias{hum_bm}
 \title{Human gene symbols and positions}
 \format{
-An object of class \code{data.frame} with 60573 rows and 4 columns.
+An object of class \code{data.frame} with 60580 rows and 4 columns.
 }
 \usage{
 data(hum_bm)

@@ -5,7 +5,7 @@
 \alias{mouse_bm}
 \title{Mouse gene symbols and positions}
 \format{
-An object of class \code{data.frame} with 53610 rows and 4 columns.
+An object of class \code{data.frame} with 55365 rows and 4 columns.
 }
 \usage{
 data(mouse_bm)

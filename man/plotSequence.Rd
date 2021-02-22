@@ -6,7 +6,7 @@
 \usage{
 plotSequence(
   orderObject,
-  plotFAST = TRUE,
+  plotFast = TRUE,
   blankWidth = 75,
   Title = "",
   drawLine = TRUE,
@@ -17,7 +17,7 @@ plotSequence(
 \item{orderObject}{An object of class \code{orderObject} that contains 
 the processed data and the ordering.}
 
-\item{plotFAST}{Logical, setting to FALSE will generate a higher 
+\item{plotFast}{Logical, setting to FALSE will generate a higher 
 quality plot. TRUE generates a lower resolution file, useful to improve
 speed while testing. For publication quality use plotFAST=TRUE.}
 
@@ -54,6 +54,6 @@ Generates an ordered sequence plot of methylation data.
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+orderObj <- initialOrder(day7, Method = "PCA")
 plotSequence(orderObj)
 }

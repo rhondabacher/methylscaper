@@ -30,6 +30,6 @@ Calculate the proportion of methylated bases for each cell/molecule
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+orderObj <- initialOrder(day7, Method = "PCA")
 methyl_proportion(orderObj, makePlot = TRUE)
 }

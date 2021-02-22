@@ -29,7 +29,7 @@ Reorders a subset of the methylation data.
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+orderObj <- initialOrder(day7, Method = "PCA")
 # reordering the first 50 cells/molecules (rows)
 orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 }

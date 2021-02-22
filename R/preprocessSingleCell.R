@@ -5,10 +5,7 @@
 #'  software program). See the vignette for a more thorough explanation 
 #'  of each parameter.
 #'
-#' @param gc_seq_data GC accessibility data, in the form of a list of 
-#'  dataframes.
-#' @param cg_seq_data CG methylation data, in the form of a list of 
-#'  dataframes.
+#' @param dataIn A list object containing two elements labelled gch and hcg (already pre-processed.)
 #' @param startPos The index of the first position to include 
 #'  in the visualization. If using this within the R console it is 
 #'  recomended to specify the start and end directly.
@@ -30,7 +27,7 @@
 #' @examples 
 #'  
 #' data(singlecell_subset)
-#' prepsc.out <- prepSC(singlecell_subset$gc_seq_sub, singlecell_subset$cg_seq_sub, 
+#' prepsc.out <- prepSC(singlecell_subset, 
 #'                  startPos = 105636488, endPos = 105636993)
 
 prepSC <- function(dataIn, startPos=NULL, endPos=NULL,

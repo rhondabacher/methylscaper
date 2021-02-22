@@ -63,6 +63,11 @@ output$sc_preprocessing_down <- downloadHandler(
     
  
   observe({
+      if (is.null(input$sc_rds_file))
+      {
+        showNotification("Select RDS file to begin", 
+                                        type="message", duration=10)
+      }
     if (!is.null(input$sc_rds_file))
     {
       isolate({
@@ -70,7 +75,8 @@ output$sc_preprocessing_down <- downloadHandler(
         progress$set(message = "Loading data", value = 0)
         on.exit(progress$close())
         temp <- readRDS(input$sc_rds_file$datapath)
-        sc_seq_data <- temp
+        sc_seq_data$gch <- temp$gch
+        sc_seq_data$hcg <- temp$hcg
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
@@ -81,7 +87,9 @@ output$sc_preprocessing_down <- downloadHandler(
 
   # Genes <- reactiveValues()
   observeEvent(input$organism_choice, {
+      
       if(!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
+      
         if (input$organism_choice == "Human") {
             hum_bm <- methylscaper::hum_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
@@ -97,7 +105,7 @@ output$sc_preprocessing_down <- downloadHandler(
         }
      updateSelectizeInput(session, "geneList",
                                choices = Genes,
-                               server = TRUE, selected = 'T')
+                               server = TRUE, selected = ' ')
      }
    })
    

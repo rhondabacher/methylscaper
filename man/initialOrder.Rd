@@ -5,8 +5,7 @@
 \title{Ordering the molecules/reads}
 \usage{
 initialOrder(
-  input_GCH,
-  input_HCG,
+  dataIn,
   Method = "PCA",
   weightStart = NULL,
   weightEnd = NULL,
@@ -15,9 +14,7 @@ initialOrder(
 )
 }
 \arguments{
-\item{input_GCH}{The GCH input data (the data must have first been preprocessed).}
-
-\item{input_HCG}{The HCG input data (the data must have first been preprocessed).}
+\item{dataIn}{A list object containing two elements labelled gch and hcg (already pre-processed.)}
 
 \item{Method}{Indicates the seriation method to use. The default option
 is "PCA", which orders the data using a weighted first principal component approach. Any 
@@ -28,8 +25,8 @@ seriation method provided in the \code{seriation} package is also valid input.}
 \item{weightEnd}{Index of the last column used in the weighted seriation.}
 
 \item{weightFeature}{Indicates whether to weight the GCH or HCG data.
-Valid input to weight the GCH is 'gch' or 'yellow'. To weight the HCG, 
-valid input for this option is 'hcg' or 'red'.}
+Valid input to weight the GCH is 'gch', 'acc', or 'yellow'. To weight the HCG, 
+valid input for this option is 'hcg', 'met', or 'red'.}
 
 \item{updateProgress}{A function to handle the progress bar for the 
 Shiny app. Should not be used when using the function independently.}
@@ -51,5 +48,5 @@ endogenous methylation or the accessibility.
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg)
+orderObj <- initialOrder(day7)
 }

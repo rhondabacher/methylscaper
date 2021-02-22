@@ -23,7 +23,7 @@ Imports:
   shinyFiles,
   data.table
 RoxygenNote: 7.1.1
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, devtools
 VignetteBuilder: knitr
 biocViews: 
 	DNAMethylation,
