@@ -4,7 +4,7 @@
 #'
 #' @param orderObject An object of class \code{orderObject} that contains 
 #'    the processed data and the ordering.
-#' @param plotFAST Logical, setting to FALSE will generate a higher 
+#' @param plotFast Logical, setting to FALSE will generate a higher 
 #'    quality plot. TRUE generates a lower resolution file, useful to improve
 #'    speed while testing. For publication quality use plotFAST=TRUE.
 #' @param blankWidth Indicates the amount of space to leave between
@@ -35,10 +35,10 @@
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+#' orderObj <- initialOrder(day7, Method = "PCA")
 #' plotSequence(orderObj)
 
-plotSequence <- function(orderObject, plotFAST=TRUE,
+plotSequence <- function(orderObject, plotFast=TRUE,
                            blankWidth=75, Title="",
                            drawLine=TRUE, drawKey=TRUE) {
     # Start with yellow at top as the default:
@@ -74,7 +74,7 @@ plotSequence <- function(orderObject, plotFAST=TRUE,
     # Plotting:
     par(xpd = FALSE, mar=c(2,2,2,1), mgp = c(0,0.5,0))
     image(t(toPlot_fix), col=mycols, axes=FALSE, breaks=VALS,
-        main=Title, useRaster=plotFAST, ylim=c(0,1.028))
+        main=Title, useRaster=plotFast, ylim=c(0,1.028))
     axis(3, at = sites_scale, labels = rep("", length(sites_scale)),
         tick=TRUE, line = .1, col="white", cex=1, lwd=1,
         col.ticks = "black", tck = .02)

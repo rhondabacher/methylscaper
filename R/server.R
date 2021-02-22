@@ -41,8 +41,8 @@ server <- function(input, output, session) {
        showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome_number))
        dat_subset <- subsetSC(sc_input_folder$path, input$chromosome_number, updateProgress = updateProgress) 
        showNotification("Done with single cell processing")
-       sc_raw_data$gch <- dat_subset$gc_seq_sub
-       sc_raw_data$hcg <- dat_subset$cg_seq_sub
+       sc_raw_data$gch <- dat_subset$gch
+       sc_raw_data$hcg <- dat_subset$hcg
        rm(dat_subset)
        showNotification("Removed temporary raw data; Click button to download now.")
      }
@@ -70,11 +70,12 @@ output$sc_preprocessing_down <- downloadHandler(
         progress$set(message = "Loading data", value = 0)
         on.exit(progress$close())
         temp <- readRDS(input$sc_rds_file$datapath)
-        sc_seq_data$gch <- temp$gch
-        sc_seq_data$hcg <- temp$hcg
+        sc_seq_data <- temp
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
+      showNotification("Now select Organism", 
+                                      type="message", duration=10)
     }
   })
 
@@ -164,8 +165,7 @@ output$sc_preprocessing_down <- downloadHandler(
             
         if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
             showNotification("Selected range is out of bounds. Please choose a valid 
-                        starting and end position to generate the plot.", type="error")
-            return(NULL)
+                        starting and end position to generate the plot.", duration=NULL, type="error")
         }
         if (end -  start > 50000) {
             showNotification("Selected range is longer than 50k bp, plot may take a few 
@@ -198,7 +198,7 @@ output$sc_preprocessing_down <- downloadHandler(
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-        prep_out <- prepSC(sc_seq_data$gch, sc_seq_data$hcg, 
+        prep_out <- prepSC(sc_seq_data, 
                             input$positionSliderInput[1],
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
@@ -243,7 +243,7 @@ output$sc_preprocessing_down <- downloadHandler(
     updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
       progress$set(value = value, message = message, detail = detail)}
 
-    tempObj <- buildOrderObjectShiny(sc_input_data$gch, sc_input_data$hcg,
+    tempObj <- buildOrderObjectShiny(sc_input_data,
                          input$sc_ser_method, sc_coordinatesObject, 
                          updateProgress)
     sc_orderObject$order1 <- tempObj$order1
@@ -345,7 +345,7 @@ output$sc_preprocessing_down <- downloadHandler(
       if (input$sc_plot_filetype == "PDF") pdf(file)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
-                  drawLines = FALSE, plotFAST = FALSE)
+                  drawLines = FALSE, plotFast = FALSE)
       dev.off()
     }
   )
@@ -514,7 +514,7 @@ output$sm_preprocessing_down <- downloadHandler(
     updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
       progress$set(value = value, message = message, detail = detail)}
 
-    tempObj <- buildOrderObjectShiny(sm_input_data$gch, sm_input_data$hcg, 
+    tempObj <- buildOrderObjectShiny(sm_input_data, 
                         input$sm_ser_method, sm_coordinatesObject, updateProgress)
     sm_orderObject$order1 <- tempObj$order1
     sm_orderObject$toClust <- tempObj$toClust

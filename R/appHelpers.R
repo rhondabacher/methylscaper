@@ -1,9 +1,9 @@
-buildOrderObjectShiny <- function(gch, hcg, method,
+buildOrderObjectShiny <- function(dataIn, method,
                         coordinatesObject, updateProgress)
 {
     if (coordinatesObject$weight_start == 0 | coordinatesObject$weight_stop == 0) {
-        orderObject <- initialOrder(gch, hcg, Method = method)
-    } else orderObject <- initialOrder(gch, hcg, Method = method,
+        orderObject <- initialOrder(dataIn, Method = method)
+    } else orderObject <- initialOrder(dataIn, Method = method,
                     weightStart = coordinatesObject$weight_start,
                     weightEnd = coordinatesObject$weight_stop,
                     weightFeature = coordinatesObject$weight_color,

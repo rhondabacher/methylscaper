@@ -7,16 +7,15 @@
 #' base pair chosen by the user, and the weight can be done on the 
 #' endogenous methylation or the accessibility.
 #'
-#' @param input_GCH The GCH input data (the data must have first been preprocessed).
-#' @param input_HCG The HCG input data (the data must have first been preprocessed).
+#' @param dataIN A list object containing two elements labelled gch and hcg (already pre-processed.)
 #' @param Method Indicates the seriation method to use. The default option
 #'  is "PCA", which orders the data using a weighted first principal component approach. Any 
 #'  seriation method provided in the \code{seriation} package is also valid input. 
 #' @param weightStart Index of the first column used in the weighted seriation.
 #' @param weightEnd Index of the last column used in the weighted seriation.
 #' @param weightFeature Indicates whether to weight the GCH or HCG data.
-#' Valid input to weight the GCH is 'gch' or 'yellow'. To weight the HCG, 
-#' valid input for this option is 'hcg' or 'red'.
+#' Valid input to weight the GCH is 'gch', 'acc', or 'yellow'. To weight the HCG, 
+#' valid input for this option is 'hcg', 'met', or 'red'.
 #' @param updateProgress A function to handle the progress bar for the 
 #' Shiny app. Should not be used when using the function independently.
 #'
@@ -31,13 +30,16 @@
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg)
+#' orderObj <- initialOrder(day7)
 
 
-initialOrder <- function(input_GCH, input_HCG, Method="PCA", weightStart=NULL,
+initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
                         weightEnd=NULL, weightFeature="red", 
                         updateProgress = NULL){
 
+    input_GCH <- dataIn$gch 
+    input_HCG <- dataIn$hcg
+    
     ## File checks:
     if (nrow(input_HCG) != nrow(input_GCH)) {
         stop("Input files have different numbers of rows.")}
@@ -63,14 +65,14 @@ initialOrder <- function(input_GCH, input_HCG, Method="PCA", weightStart=NULL,
             updateProgress(message = "Weighting selected columns", value = 0.2)
         }
         weighted = TRUE
-        if (weightFeature == "red" | weightFeature == 'hcg') {
+        if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
             FEATURE = 3
-            weightVector <- apply(input_HCG[,weightStart:weightEnd], 
+            weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
         }
-        if (weightFeature == "yellow" | weightFeature == 'gch') {
+        if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
             FEATURE = -3
-            weightVector <- apply(input_GCH[,weightStart:weightEnd], 
+            weightVector <- apply(input_GCH[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
