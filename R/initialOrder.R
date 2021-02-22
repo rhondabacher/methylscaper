@@ -7,7 +7,7 @@
 #' base pair chosen by the user, and the weight can be done on the 
 #' endogenous methylation or the accessibility.
 #'
-#' @param dataIN A list object containing two elements labelled gch and hcg (already pre-processed.)
+#' @param dataIn A list object containing two elements labelled gch and hcg (already pre-processed.)
 #' @param Method Indicates the seriation method to use. The default option
 #'  is "PCA", which orders the data using a weighted first principal component approach. Any 
 #'  seriation method provided in the \code{seriation} package is also valid input. 
@@ -54,7 +54,8 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
     input_HCG <- recoded$input_HCG
 
     weightFeature <- tolower(weightFeature)
-    ## Clustering:
+    
+    
     toClust <- cbind(input_GCH, input_HCG)
     weighted = FALSE
 

@@ -29,7 +29,7 @@ By default, the entire ordering is reversed.
  
 data(day7)
 
-orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+orderObj <- initialOrder(day7, Method = "PCA")
 # reorder first 50 cells/molecules (rows)
 orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 orderObj$order1 <- forceReverse(orderObj, 1, 50) 

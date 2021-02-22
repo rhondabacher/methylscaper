@@ -21,13 +21,17 @@
 #' @usage data(ref_seq)
 "ref_seq"
 
-# #' Example preprocessed single-cell experiment subset
-# #'
-# #' This data is from GSE109262, and has been pre-processed by methylscaper
-# #' It contains a small subaet of chromosome 19 region from 8957041bp - 8977041bp.
-# #' @docType data
-# #' @usage data(singlecell_subset)
-# "singlecell_subset"
+#' Example preprocessed single-cell experiment subset
+#'
+#' This data is from GSE109262, and has been pre-processed by methylscaper
+#' It contains a small subset of chromosome 19 region from 8947041bp - 8987041bp.
+#' The RDS in ext data was made specifically with the two commands:
+#' singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19", 
+#'    startPos = 8967041-20000, endPos = 8967041+20000, updateProgress = NULL)
+#' saveRDS(singlecell_subset, file="methylscaper/inst/ext/singlecell_subset.rds", compress = 'xz')
+#' @docType data
+#' @usage data(singlecell_subset)
+"singlecell_subset"
 
 
 #' Human gene symbols and positions

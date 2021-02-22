@@ -16,7 +16,7 @@
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+#' orderObj <- initialOrder(day7, Method = "PCA")
 #' methyl_percent_bases(orderObj, makePlot = TRUE)
 
 methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
@@ -68,7 +68,7 @@ methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+#' orderObj <- initialOrder(day7, Method = "PCA")
 #' methyl_proportion(orderObj, makePlot = TRUE)
 
 methyl_proportion <- function(orderObject, type = "yellow", 
@@ -76,6 +76,7 @@ methyl_proportion <- function(orderObject, type = "yellow",
   type <- tolower(type)
   if (type=="gch") type <- "yellow"
   if (type=="accessibility methylation") type <- "yellow"
+  if (type=="acc") type <- "yellow"
   color_indicator <- ifelse(type=="yellow", -1, 1)
   Proportion <- apply(orderObject$toClust, 1, function(x){
       sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)
@@ -112,7 +113,7 @@ methyl_proportion <- function(orderObject, type = "yellow",
 #'  
 #' data(day7)
 #' 
-#' orderObj <- initialOrder(day7$gch, day7$hcg, Method = "PCA")
+#' orderObj <- initialOrder(day7, Method = "PCA")
 #' methyl_average_status(orderObj, makePlot = TRUE)
 #' 
 methyl_average_status <- function(orderObject, window_length = 20, 
