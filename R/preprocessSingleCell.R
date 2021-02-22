@@ -33,10 +33,11 @@
 #' prepsc.out <- prepSC(singlecell_subset$gc_seq_sub, singlecell_subset$cg_seq_sub, 
 #'                  startPos = 105636488, endPos = 105636993)
 
-prepSC <- function(gc_seq_data, cg_seq_data, startPos=NULL, endPos=NULL,
+prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
                      updateProgress = NULL)
 {
-
+    gc_seq_data <- dataIn$gch
+    cg_seq_data <- dataIn$hcg
     if (is.function(updateProgress)) 
         updateProgress(message = "Filtering HCG site data", value = 0.1)
 
@@ -160,8 +161,6 @@ mapSC <- function(IN_seq, startPos, endPos) {
 
 subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updateProgress = NULL)
 {
-    cur_dir <- getwd()
-
     cgfiles <- sort(grep("met", list.files(paste0(path,"/met")), value = TRUE))
     gcfiles <- sort(grep("acc", list.files(paste0(path,"/acc")), value = TRUE))
 
@@ -210,7 +209,5 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
             updateProgress(message = "Reading GCH site files", value = i / length(gcfiles))
     }
 
-    setwd(cur_dir)
-
-    list(cg_seq_sub = cg_seq, gc_seq_sub = gc_seq)
+    list(hcg = cg_seq, gch = gc_seq)
 }

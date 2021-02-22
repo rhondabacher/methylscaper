@@ -21,13 +21,13 @@
 #' @usage data(ref_seq)
 "ref_seq"
 
-#' Example preprocessed single-cell experiment subset
-#' 
-#' This data is from GSE109262, and has been pre-processed by methylscaper
-#' It contains a small subaet of chromosome 19 region from 8956841bp - 8976841bp.
-#' @docType data
-#' @usage data(singlecell_subset)
-"singlecell_subset"
+# #' Example preprocessed single-cell experiment subset
+# #'
+# #' This data is from GSE109262, and has been pre-processed by methylscaper
+# #' It contains a small subaet of chromosome 19 region from 8957041bp - 8977041bp.
+# #' @docType data
+# #' @usage data(singlecell_subset)
+# "singlecell_subset"
 
 
 #' Human gene symbols and positions
