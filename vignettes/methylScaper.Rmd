@@ -144,7 +144,7 @@ which reorders a subset of the reads with a given method. The
 code below reorders the first 20 cells and generates a new sequence plot.
 
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
-orderObj$order1 <- refineFunction(orderObj, refineStart = 40, refineEnd = 27)
+orderObj$order1 <- refineFunction(orderObj, refineStart = 30, refineEnd = 15)
 plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
 ```
 

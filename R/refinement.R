@@ -23,10 +23,24 @@
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 
 refineFunction <- function(orderObject, refineStart, refineEnd, 
-                                    Method="HC_average") {
+                                    Method="PCA") {
   
   toClust <- orderObject$toClust
   order1 <- orderObject$order1
+  
+  if (refineEnd > max(order1) | refineStart > max(order1)) {
+     message(paste0("Refine parameters are out of bounds. The maximum has been set to ", refineEnd))
+     if (refineEnd > max(order1)) refineEnd <- max(order1)
+     if (refineStart > max(order1)) refineStart <- max(order1)  
+  }
+  if (refineEnd < min(order1) | refineStart < min(order1)) {
+     message(paste0("Refine parameters are out of bounds. The maximum has been set to ", refineEnd))
+     if (refineEnd < min(order1)) refineEnd <- min(order1)
+     if (refineStart < min(order1)) refineStart <- min(order1)  
+  }
+  
+ 
+  
   toRefine_order <- order1[refineStart:refineEnd]
   
   
