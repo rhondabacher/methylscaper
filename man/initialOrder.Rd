@@ -46,7 +46,7 @@ endogenous methylation or the accessibility.
 }
 \examples{
  
-data(day7)
+data(singlemolecule_example)
 
-orderObj <- initialOrder(day7)
+orderObj <- initialOrder(singlemolecule_example)
 }

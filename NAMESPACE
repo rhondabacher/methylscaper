@@ -3,7 +3,7 @@
 export(forceReverse)
 export(initialOrder)
 export(methyl_average_status)
-export(methyl_percent_bases)
+export(methyl_percent_sites)
 export(methyl_proportion)
 export(methylscaper)
 export(plotSequence)

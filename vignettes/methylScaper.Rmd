@@ -258,7 +258,7 @@ Both single-cell and single-molecule data can be additionally summarized using m
 
 * The methyl_proportion function calculates for each base in the genomic region, the proportion of cells or molecules that are methylated or estimated to be methylated. It should be indicated using the type parameter whether to calculate this over the endogenous methylation profile or the accessibillity.
 
-* The methyl_percent_bases function calculates for each cell or molecule, the percent of GpC (yellow; accessibility) or CpG (red; endogenous methylation) sites that are methylated.
+* The methyl_percent_sites function calculates for each cell or molecule, the percent of GpC (yellow; accessibility) or CpG (red; endogenous methylation) sites that are methylated.
 
 
 * The methyl_average_status function calculates the average methylation status across all cells or molecules using basepairs within a specified window.

@@ -52,8 +52,8 @@ Generates an ordered sequence plot of methylation data.
 }
 \examples{
  
-data(day7)
+data(singlemolecule_example)
 
-orderObj <- initialOrder(day7, Method = "PCA")
+orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 plotSequence(orderObj)
 }
