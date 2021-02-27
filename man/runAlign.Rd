@@ -2,30 +2,54 @@
 % Please edit documentation in R/preprocessSingleMolecule.R
 \name{runAlign}
 \alias{runAlign}
-\title{runAlign}
+\title{Align the single-molecule data}
 \usage{
 runAlign(
   ref,
   fasta,
-  fasta.subset = (1:length(fasta)),
+  fasta_subset = seq(1, length(fasta)),
   multicoreParam = NULL,
   updateProgress = NULL,
-  log.file = NULL
+  log_file = NULL
 )
 }
 \arguments{
-\item{ref}{A reference sequence}
+\item{ref}{A reference sequence to align the reads to.}
 
-\item{fasta}{A list of sequences}
+\item{fasta}{A list of reads/sequences from a single-molecule experiment (e.g. MAPit)}
 
-\item{fasta.subset}{A vector of indices indicating which sequences to process.}
+\item{fasta_subset}{(optional) A vector of indices indicating which 
+sequences to process if a subset should be used. Leave this blank if
+all sequences should be processed.}
 
-\item{multicoreParam}{A MulticoreParam object, used to align sequences in parallel.}
+\item{multicoreParam}{(optional) A MulticoreParam object, used to align 
+sequences in parallel.}
 
-\item{updateProgress}{Used to add a progress bar to the Shiny app. Should not be used otherwise.}
+\item{updateProgress}{(optional) Used to add a progress bar to the Shiny app. 
+Should not be used otherwise.}
 
-\item{log.file}{String indicating where to save a log of the alignment process. If left NULL, no log is saved.}
+\item{log_file}{(optional) String indicating where to save a log of the 
+alignment process. If left NULL, no log is saved. We highly recommend
+saving a log file.}
+}
+\value{
+The output is a list containing the the matrices 'gch' and 'hcg.
+      Each is a dataframe with reads/cells on the rows and each column
+     is a base-pair. The matrix represents the methylation state for cell
+     across all base pairs. The coding is as follows:
+         -2: unmethylated GCH or HCG site
+         -1: base pairs between two unmethylated GCH or HCG sites
+         0: base pairs between mismatching methylation states of 
+             two GCH or HCG sites
+         1: base pairs between two methylated GCH or HCG sites
+         2: methylated GCH or HCG site
 }
 \description{
-Runs the preprocessing methods for single-molecule data on sequences.
+Runs the preprocessing methods for single-molecule data.
+}
+\examples{
+ 
+data(reads_sm)
+data(ref_seq)
+example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq, fasta_subset = 1:150)
 }

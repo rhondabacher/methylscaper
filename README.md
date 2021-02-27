@@ -19,3 +19,5 @@ browseVignettes('methylscaper')
 ```
 
 The package also provides functions for ordering and plotting methylation data without needing to run the app.
+
+A preprint of the methylscaper manuscript is now available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.11.13.382465v1).

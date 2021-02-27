@@ -11,7 +11,8 @@ forceReverse(
 )
 }
 \arguments{
-\item{orderObject}{An object of class \code{orderObject}, generated with the \code{initialOrder} function.}
+\item{orderObject}{An object of class \code{orderObject}, 
+generated with the \code{initialOrder} function.}
 
 \item{reverseStart}{The first index to be included in the reversal.}
 
@@ -21,5 +22,15 @@ forceReverse(
 The new complete ordering, with the reversal applied.
 }
 \description{
-This reverses a subset of the ordering, as determined by the user. By default, the entire ordering is reversed.
+This reverses a subset of the ordering, as determined by the user. 
+By default, the entire ordering is reversed.
+}
+\examples{
+ 
+data(singlemolecule_example)
+
+orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
+# reorder first 50 cells/molecules (rows)
+orderObj$order1 <- refineFunction(orderObj, 1, 50) 
+orderObj$order1 <- forceReverse(orderObj, 1, 50) 
 }

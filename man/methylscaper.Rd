@@ -6,6 +6,13 @@
 \usage{
 methylscaper()
 }
+\value{
+This starts up the shiny app interface for methylscaper.
+}
 \description{
 Runs the methylscaper Shiny app.
+}
+\examples{
+
+# methylscaper()
 }
