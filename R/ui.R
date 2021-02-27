@@ -1,4 +1,7 @@
+library(shinyFiles)
+
 ui <- navbarPage("methylscaper",
+
     tabPanel("Single-cell",
           navbarPage("",
                    tabPanel("Preprocessing",
@@ -177,7 +180,6 @@ ui <- navbarPage("methylscaper",
                                          selectInput("sm_filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
                                          downloadButton("sm_plot_down", label = "Download Heatmap"),
                                          downloadButton("sm_log_down", label = "Download Ordering Log"))
-
                          )
                        )
                      ))),
@@ -201,4 +203,3 @@ ui <- navbarPage("methylscaper",
                     splitLayout(cellWidths = c("50%", "50%"),
                       downloadButton("sm_proportion_data_download", label = "Download Proportion Data"),
                       downloadButton("sm_percentC_data_download", label = "Download Percentage Data")))))))
-
