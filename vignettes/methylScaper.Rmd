@@ -171,8 +171,10 @@ accessibility-state matrices. For very large datasets, the align function may be
 ```{r, eval = TRUE}
 seq_file <- system.file("extdata", "seq_file.fasta", package = "methylscaper")
 ref_file <- system.file("extdata", "ref.Pacbio.fa", package = "methylscaper")
-fasta <- read.fasta(seq_file)
-ref <- read.fasta(ref_file)
+if (!requireNamespace("seqinr", quietly=TRUE))
+    install.packages("seqinr")
+fasta <- seqinr::read.fasta(seq_file)
+ref <- seqinr::read.fasta(ref_file)
 # For the vignette we will only run a subset of the molecules
 align.out <- runAlign(fasta = fasta, ref = ref, fasta_subset = 1:150)
 # saveRDS(align.out, file="~/methylscaper_singlemolecule_preprocessed.rds")
