@@ -28,9 +28,9 @@
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7)
+#' orderObj <- initialOrder(singlemolecule_example)
 
 
 initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
@@ -55,7 +55,7 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
     weightFeature <- tolower(weightFeature)
     
-    
+    singlemolecule_example
     toClust <- cbind(input_GCH, input_HCG)
     weighted = FALSE
 

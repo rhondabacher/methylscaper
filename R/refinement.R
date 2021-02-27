@@ -16,9 +16,9 @@
 #'
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' # reordering the first 50 cells/molecules (rows)
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 
@@ -36,7 +36,7 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
   if (refineEnd < min(order1) | refineStart < min(order1)) {
      message(paste0("Refine parameters are out of bounds. The maximum has been set to ", refineEnd))
      if (refineEnd < min(order1)) refineEnd <- min(order1)
-     if (refineStart < min(order1)) refineStart <- min(order1)  
+     if (refineStart < min(order1)) refineStart <- minsinglemolecule_example(order1)  
   }
   
  
@@ -84,9 +84,9 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' # reorder first 50 cells/molecules (rows)
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 #' orderObj$order1 <- forceReverse(orderObj, 1, 50) 

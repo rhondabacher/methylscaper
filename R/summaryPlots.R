@@ -3,7 +3,7 @@
 #' @param orderObject An object of class \code{orderObject}
 #' @param makePlot Logical, indicates whether to generate the percentage plot
 #' @param ... Additional parameters used by the \code{plot} function.
-#' @return The percent of reads or cells methylated (endogenous (yellow) 
+#' @return The percent of molecules or cells methylated (endogenous (yellow) 
 #'      or accessible) at each site. Output is a list with names "red" 
 #'      and "yellow". Red represents the endogenous methylation and 
 #'      yellow represents the accessibility. Within each list object is a 
@@ -14,12 +14,12 @@
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
-#' methyl_percent_bases(orderObj, makePlot = TRUE)
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
+#' methyl_percent_sites(orderObj, makePlot = TRUE)
 
-methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
+methyl_percent_sites <- function(orderObject, makePlot = TRUE, ...){
     dat <- orderObject$toClust
     
     red_sites <- c(which(dat == 4, arr.ind = TRUE)[,2], which(dat == 1, arr.ind = TRUE)[,2])
@@ -56,7 +56,7 @@ methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
 #'      This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
 #'      'gch' or 'yellow' for accessibility. 
 #' @param makePlot Indicates whether to plot a histogram of the proportions 
-#'  across all reads.
+#'  across all cells/molcules.
 #' @param ... Additional parameters used by the \code{hist} function.
 #'
 #' @return The proportion of methylated (endogenous (yellow) 
@@ -66,9 +66,9 @@ methyl_percent_bases <- function(orderObject, makePlot = TRUE, ...){
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' methyl_proportion(orderObj, makePlot = TRUE)
 
 methyl_proportion <- function(orderObject, type = "yellow", 
@@ -93,7 +93,7 @@ methyl_proportion <- function(orderObject, type = "yellow",
   return(Proportion)
 }
 
-#' Calculate the average methylation/accessibility status across all reads.
+#' Calculate the average methylation/accessibility status across all cells/molecules.
 #'
 #' @param orderObject An object of class \code{orderObject}
 #' @param window_length Length of the window to be used to compute a 
@@ -111,9 +111,9 @@ methyl_proportion <- function(orderObject, type = "yellow",
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' methyl_average_status(orderObj, makePlot = TRUE)
 #' 
 methyl_average_status <- function(orderObject, window_length = 20, 
@@ -123,8 +123,8 @@ methyl_average_status <- function(orderObject, window_length = 20,
     gch_num <- orderObject$toClust[,seq(1,(colLength / 2))]
     hcg_num <- orderObject$toClust[,seq((colLength / 2 + 1),colLength)]
 
-    acc_sum <- colSums(gch_num == -3)
-    meth_sum <- colSums(hcg_num == 3)
+    acc_sum <- colSums(gch_num <= -3)
+    meth_sum <- colSums(hcg_num >= 3)
     acc_denom <- colSums(gch_num != 0)
     meth_denom <- colSums(hcg_num != 0)
     acc_avg <- acc_sum / acc_denom
@@ -135,12 +135,12 @@ methyl_average_status <- function(orderObject, window_length = 20,
     moving_meth_avg <- filter(x = meth_avg, filter = rep(1, width)) / width
 
     if (makePlot) {
-        plot(moving_acc_avg, type = "l", col="gold2",
-            xlab="Position along read", 
+        plot(moving_acc_avg, type = "l", col="gold2", lwd=2,
+            xlab="Position along the specified genomic location", 
             ylab="Population-averaged status", ylim = c(0,1))
-        lines(moving_meth_avg, col="brown1")
-        legend("topright", legend=c("Methylation", "Accessibility"),
-            fill=c("brown1", "gold2"))
+        lines(moving_meth_avg, col="brown1", lwd=2singlemolecule_example)
+        legend("topright", c("Endogenous", "Accessibility"), lwd=2, 
+                col=c("brown1", "gold2"), bty='n', title="Methylation Type")
     }
     return(list(meth_avg = moving_meth_avg, acc_avg = moving_acc_avg))
 }
