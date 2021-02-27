@@ -69,8 +69,7 @@ In the screenshot below, the data from GSE10926 data on chromosome 19 is process
 
 ![Preprocessing of the GSE10926 data on chromosome 19](process_sc.png){#id .class width=95% height=95%}
 
-The preprocessing can also be done in the R console directly, which allows for additional start and end specifications. For the purpose of creating a small example to include in the package, we additonally restricted the data between 
-basepairs 8,937,041 to 8,997,041, which is centered around the Eef1g gene. In practice, we advise users to filter to just the chromosome level to keep the region relatively large. The seriation tab for visualization in the next step  allows for mor refined searching along the chromosome.
+The preprocessing can also be done in the R console directly, which allows for additional start and end specifications. For the purpose of creating a small example to include in the package, we additonally restricted the data between basepairs 8,947,041 to 8,987,041, which is centered around the Eef1g gene. In practice, we advise users to filter to just the chromosome level to keep the region relatively large. The seriation tab for visualization in the next step  allows for mor refined searching along the chromosome.
 
 ## Pre-processing using methylscaper functions
 ```{r, eval=FALSE}
@@ -84,54 +83,17 @@ saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
 
 The screenshot below is of the Seriation tab in the methylscaper shiny app. First indicate the location of the singlecell_subset.rds file. Once the file is loaded, we have included preset gene locations for Mouse and Human, so that a gene can be selected. The input box can also be typed in and genes will begin to appear, this is the easiest way to navigate. The default start and end is the entire gene, however a slider will appear that allows the user to refine the genomic locaition of interest. The start and end positions can also be manually entered. For any other organism, the start and end positions should be entered manually.
 
-![Visualization of the Eef1g gene](process_sc.png){#id .class width=80% height=80%}
+In the visualization, two heatmaps will appear. They both represent the same genomic region, but are colored based on either GpC or CpG sites. The x-axis represents the genomic location, and the y-axis is each individual cell. The left heatmap contains the genomic region mapped to CpG sites (sites are indicated by tick marks at the top) and the right heatmap contains the genomic region mapped to GpC sites. For CpG (i.e. endogenous methylation), methylscaper colors patches in between each CpG site. If two consecutive CpG sites are methylated, a red path is present. If two consecutive CpG sites are unmethylated, a black patch is present. If two consecutive CpG sites are inconsistently methylated, the patch appears gray. For GpC (i.e. accessibility), methylscaper colors patches as follows: yellow patches occur between two methylated sites (an accessible region), black patches occur between two unmethylated sites (inaccessible region), and gray pataches occur between inconsistent methylation of consecutive sites. Any missing data (e.g. no reads covered that region for a particular cell) will show up as a white patch in either heatmap.
 
-Once a region is chosen, the default ordering is the unweighted PCA by methylscaper. The user is then able to dynamically refine and re-weight the plot via Shiny's brushing mechanics. The user can click and drag the mouse across the heatmap horizontally to choose which bases (i.e. columns) should be weighted in the gloabl PCA ordering. THe plot will updates and two green lines will appear to indicate the weighting positions (note that these are not included once the heatmap is downloaded). The next (optional) step is to refine the ordering of some reads. In this case, select refinement and begin to drag the mouse vertically to choose which cells should be reordered. Blue lines will be drawn to indicate the refined cells.
+![Visualization of the Eef1g gene](sc.png){#id .class width=80% height=80%}
 
+Once a region is chosen, the default ordering is the unweighted PCA by methylscaper. The user is then able to dynamically refine and re-weight the plot via Shiny's brushing mechanics. The user can click and drag the mouse across the heatmap horizontally to choose which bases (i.e. columns) should be weighted in the gloabl PCA ordering. THe plot will updates and two green lines will appear to indicate the weighting positions (note that these are not included once the heatmap is downloaded).
 
+With "PCA" selected as the seriation method, the new ordering will be generated with a weighted Principal Components Analysis. The weighting is done on the propostion of methylation within the specified region. We recomend using "PCA" as the ordering method. However, for comparison purposes we have also included the "ARSA" method, here the ordering is found by first building a weighted Euclidean distance matrix, which is then passed to the Simulated Annealing algorithm in the seriation package. This method tends to work well on smaller datasets but due to computational inefficiency it is generally not recomended for very large datasets at this time.
 
+The next (optional) step is to refine the ordering of some reads. In this case, select refinement and begin to click and drag the mouse vertically to choose which cells should be reordered locally. Blue lines will be drawn to indicate the refined cells. PCA is used by default and is also recomended, however we provide Hierarchical clustering as an option for refinement method in the Shiny app for comparison purposed. Unlike re-weightings, refinements to the sequence plot stack onto each other, and several refinements can be done to a single plot before exporting. However, it is important to note that re-weighting the sites will reorder the entire set of data, and hence will undo any refinements that you may have made.
 
-<!-- <!-- Once the initial sequence plot is generated, `methylscaper` allows the --> -->
-<!-- <!-- user to dynamically refine and re-weight the plot via Shiny's brushing --> -->
-<!-- <!-- mechanics. Clicking and dragging along either of the two plots will --> -->
-<!-- <!-- select sites (i.e., columns) by which to weight the data in the site --> -->
-<!-- <!-- matrix. `methylscaper` will then regenerate the plot with a new --> -->
-<!-- <!-- ordering, influenced by the weighted sites. With "PCA" selected as the --> -->
-<!-- <!-- seriation method, the new ordering will be generated with a weighted --> -->
-<!-- <!-- Principal Components Analysis. If "ARSA" is selected, the ordering is found by first --> -->
-<!-- <!-- building a weighted Euclidean distance matrix, which is then passed to --> -->
-<!-- <!-- the Simulated Annealing algorithm. Note that weighting is --> -->
-<!-- <!-- done with respect to either the GC sites or the CG sites - the plot on --> -->
-<!-- <!-- which brushing is performed determines which sites to use. --> -->
-
-
-<!-- <!-- If "Refinement" is selected as the brushing option, clicking and --> -->
-<!-- <!-- dragging on the sequence plot will select reads (i.e., rows) to --> -->
-<!-- <!-- reorder locally. PCA is used by default, but Hierarchical Clustering --> -->
-<!-- <!-- can also be selected as the refinement method. Unlike re-weightings, --> -->
-<!-- <!-- refinements to the sequence plot stack onto each other, and several --> -->
-<!-- <!-- refinements can be done to a single plot before exporting. However, it --> -->
-<!-- <!-- is important to note that re-weighting the sites will reorder the --> -->
-<!-- <!-- entire set of data, and hence will undo any refinements that you may --> -->
-<!-- <!-- have made. --> -->
-
-<!-- <!-- The green lines indicate the columns selected for weighting, and the --> -->
-<!-- <!-- blue lines indicate the rows that were most recently refined. --> -->
-
-<!-- <!-- After making any desired changes, the sequence plot can be saved as --> -->
-<!-- <!-- either a PNG, PDF, or SVG file. Additionally, `methylscaper` keeps --> -->
-<!-- <!-- track of all changes made to the plots in the form of a changes log, --> -->
-<!-- <!-- which can be saved as a text file. --> -->
-
-<!-- <!-- The "Single-molecule" panel includes a "Preprocessing" tab, where --> -->
-<!-- <!-- users are prompted to input two sequence FASTA files, the first --> -->
-<!-- <!-- containing all of the raw reads and second containing the reference --> -->
-<!-- <!-- sequence for the region of interest. Users are asked to enter two --> -->
-<!-- <!-- files paths, indicating where to save the  --> -->
-<!-- <!-- two processed state matrices. The GCH file contains the GC site --> -->
-<!-- <!-- accessibility data, and the HCG file contains CG site methylation data. These files can --> -->
-<!-- <!-- then be loaded on the "Seriation" tab, which offers the same --> -->
-<!-- <!-- functionality as described above. --> -->
+After making any desired changes, the sequence plot can be saved as either a PNG, PDF, or SVG file. Additionally, `methylscaper` keeps track of all changes made to the plots in the form of a changes log, which can be saved as a text file.
 
 The heatmap can then be downloaded along with a log indicating the weighting and refinement choices for reproducibility.
 
@@ -273,3 +235,11 @@ avgs <- methyl_average_status(orderObj, makePlot = TRUE, window_length = 25)
 ```
 
 # FAQ
+
+Frequently asked questions will be entered here.
+
+# SessionInfo
+
+```{r sessionInfo, results='markup'}
+sessionInfo()
+```
