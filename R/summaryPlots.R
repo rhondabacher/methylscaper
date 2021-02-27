@@ -138,7 +138,7 @@ methyl_average_status <- function(orderObject, window_length = 20,
         plot(moving_acc_avg, type = "l", col="gold2", lwd=2,
             xlab="Position along the specified genomic location", 
             ylab="Population-averaged status", ylim = c(0,1))
-        lines(moving_meth_avg, col="brown1", lwd=2singlemolecule_example)
+        lines(moving_meth_avg, col="brown1", lwd=2)
         legend("topright", c("Endogenous", "Accessibility"), lwd=2, 
                 col=c("brown1", "gold2"), bty='n', title="Methylation Type")
     }
