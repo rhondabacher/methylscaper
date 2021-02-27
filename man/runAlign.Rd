@@ -49,7 +49,7 @@ Runs the preprocessing methods for single-molecule data.
 }
 \examples{
  
-data(reads_day7)
+data(reads_sm)
 data(ref_seq)
-example_alignedseq <- runAlign(fasta=reads_day7, ref = ref_seq, fasta_subset = 1:150)
+example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq, fasta_subset = 1:150)
 }

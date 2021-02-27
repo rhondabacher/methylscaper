@@ -4,7 +4,7 @@
 \alias{refineFunction}
 \title{Refinement}
 \usage{
-refineFunction(orderObject, refineStart, refineEnd, Method = "HC_average")
+refineFunction(orderObject, refineStart, refineEnd, Method = "PCA")
 }
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}, generated 
@@ -27,9 +27,9 @@ Reorders a subset of the methylation data.
 }
 \examples{
  
-data(day7)
+data(singlemolecule_example)
 
-orderObj <- initialOrder(day7, Method = "PCA")
+orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 # reordering the first 50 cells/molecules (rows)
 orderObj$order1 <- refineFunction(orderObj, 1, 50) 
 }

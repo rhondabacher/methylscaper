@@ -2,7 +2,7 @@
 % Please edit documentation in R/summaryPlots.R
 \name{methyl_average_status}
 \alias{methyl_average_status}
-\title{Calculate the average methylation/accessibility status across all reads.}
+\title{Calculate the average methylation/accessibility status across all cells/molecules.}
 \usage{
 methyl_average_status(orderObject, window_length = 20, makePlot = TRUE, ...)
 }
@@ -24,13 +24,13 @@ The proportion of methylated bases for each cell/molecule
      or accessible methylation respectively.
 }
 \description{
-Calculate the average methylation/accessibility status across all reads.
+Calculate the average methylation/accessibility status across all cells/molecules.
 }
 \examples{
  
-data(day7)
+data(singlemolecule_example)
 
-orderObj <- initialOrder(day7, Method = "PCA")
+orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 methyl_average_status(orderObj, makePlot = TRUE)
 
 }

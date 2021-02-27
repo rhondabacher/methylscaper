@@ -411,7 +411,7 @@ output$sc_preprocessing_down <- downloadHandler(
     if (sum(sc_orderObject$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.",
              type="message");NULL}
-    else methyl_percent_bases(sc_orderObject, makePlot=TRUE)
+    else methyl_percent_sites(sc_orderObject, makePlot=TRUE)
   })
 
   output$sc_percentC_plot_download <- downloadHandler(
@@ -420,7 +420,7 @@ output$sc_preprocessing_down <- downloadHandler(
     },
     content = function(file){
         pdf(file)
-        methyl_percent_bases(sc_orderObject, makePlot = TRUE)
+        methyl_percent_sites(sc_orderObject, makePlot = TRUE)
       dev.off()
     }
   )
@@ -430,7 +430,7 @@ output$sc_preprocessing_down <- downloadHandler(
       return("percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_percent_bases(sc_orderObject, makePlot = FALSE)
+      dat <-  methyl_percent_sites(sc_orderObject, makePlot = FALSE)
       capture.output(dat, file = file)
     }
   )
@@ -681,7 +681,7 @@ output$sm_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0){
         showNotification("Select methylation data files to generate the plot.", 
                 type="message");NULL}
-    else methyl_percent_bases(obj, makePlot=TRUE)
+    else methyl_percent_sites(obj, makePlot=TRUE)
   })
 
   output$sm_percentC_plot_download <- downloadHandler(
@@ -690,7 +690,7 @@ output$sm_preprocessing_down <- downloadHandler(
     },
     content = function(file){
         pdf(file)
-        methyl_percent_bases(sm_orderObject, makePlot = TRUE)
+        methyl_percent_sites(sm_orderObject, makePlot = TRUE)
       dev.off()
     }
   )
@@ -700,7 +700,7 @@ output$sm_preprocessing_down <- downloadHandler(
         return("percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_percent_bases(sm_orderObject, makePlot = FALSE)
+      dat <-  methyl_percent_sites(sm_orderObject, makePlot = FALSE)
       capture.output(dat, file = file)
     }
   )

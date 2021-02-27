@@ -14,7 +14,7 @@ This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
 'gch' or 'yellow' for accessibility.}
 
 \item{makePlot}{Indicates whether to plot a histogram of the proportions 
-across all reads.}
+across all cells/molcules.}
 
 \item{...}{Additional parameters used by the \code{hist} function.}
 }
@@ -28,8 +28,8 @@ Calculate the proportion of methylated bases for each cell/molecule
 }
 \examples{
  
-data(day7)
+data(singlemolecule_example)
 
-orderObj <- initialOrder(day7, Method = "PCA")
+orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 methyl_proportion(orderObj, makePlot = TRUE)
 }
