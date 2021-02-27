@@ -6,7 +6,7 @@ both single-cell and single-molecule data, and a common interface for jointly vi
 
 # Webserver
 
-`methylscaper` is available for use on a webserver located at [www.methylscaper.com](www.methylscaper.com) and clicking on "Start Shiny App". Also located on the website is easy access to the vignette and example datasets to use.
+`methylscaper` is available for use on a webserver located at [www.methylscaper.com](http://www.methylscaper.com) and clicking on "Start Shiny App". Also located on the website is easy access to the vignette and example datasets to use.
 
 # Installation
 
