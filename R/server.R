@@ -1,7 +1,24 @@
 server <- function(input, output, session) {
 
-    # logs the actions taken wrt the plot
-  actionsLog <- reactiveValues(log = c("")) 
+  source("seqPlot.R")
+  source("initialOrder.R")
+  source("ioHelpers.R")
+  source("appHelpers.R")
+  source("refinement.R")
+  source("preprocessSingleMolecule.R")
+  source("summaryPlots.R")
+  source("preprocessSingleCell.R")
+ 
+  library(seriation)
+
+  library(seqinr)
+  library(Biostrings)
+  library(Rfast)
+  library(svglite)
+ 
+ 
+  actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
+
 
 
   ####################
