@@ -31,7 +31,7 @@
 #'                  startPos = 105636488, endPos = 105636993)
 
 prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
-                     updateProgress = NULL)
+                    updateProgress = NULL)
 {
     gc_seq_data <- dataIn$gch
     cg_seq_data <- dataIn$hcg
@@ -45,12 +45,12 @@ prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
     })
 
     if (is.function(updateProgress))
-         updateProgress(message = "Filtering GCH site data", value = 0.5)
+            updateProgress(message = "Filtering GCH site data", value = 0.5)
     
     gc_seq_sub <- lapply(gc_seq_data, function(x) {
-         QQ <- x[order(x$pos),]
-         QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
-         return(QQ)
+        QQ <- x[order(x$pos),]
+        QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
+        return(QQ)
     })
     
     all_cg_sites <- unique(do.call(c, cg_seq_sub))
@@ -199,7 +199,7 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
 
         if (!is.null(startPos) & !is.null(endPos)) {
             in_gc_seq <- subset(in_gc_seq, in_gc_seq$pos >= startPos & in_gc_seq$pos <= endPos)
-         }
+        }
          
         gc_seq[[i]] <- in_gc_seq
         if (is.function(updateProgress))

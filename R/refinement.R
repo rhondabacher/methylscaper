@@ -36,7 +36,7 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
   if (refineEnd < min(order1) | refineStart < min(order1)) {
      message(paste0("Refine parameters are out of bounds. The maximum has been set to ", refineEnd))
      if (refineEnd < min(order1)) refineEnd <- min(order1)
-     if (refineStart < min(order1)) refineStart <- minsinglemolecule_example(order1)  
+     if (refineStart < min(order1)) refineStart <- min(order1)  
   }
   
  
