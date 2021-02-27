@@ -2,7 +2,6 @@ server <- function(input, output, session) {
 
   source("seqPlot.R")
   source("initialOrder.R")
-  source("ioHelpers.R")
   source("appHelpers.R")
   source("refinement.R")
   source("preprocessSingleMolecule.R")
