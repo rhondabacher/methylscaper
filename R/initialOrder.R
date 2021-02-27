@@ -55,7 +55,6 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
     weightFeature <- tolower(weightFeature)
     
-    singlemolecule_example
     toClust <- cbind(input_GCH, input_HCG)
     weighted = FALSE
 
