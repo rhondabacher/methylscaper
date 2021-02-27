@@ -1,17 +1,17 @@
 #' Example single-molecule GCH and HCG matrices
 #' 
-#' This was made after running methylscaper::runAlign(fasta=reads_day7, 
+#' This was made after running methylscaper::runAlign(fasta=reads_sm, 
 #' ref=ref_seq)
 #' @docType data
-#' @usage data(day7)
-"day7"
+#' @usage data(singlemolecule_example)
+"singlemolecule_example"
 
 #' Example reads from single-molecule experiment
 #' 
 #' This dataset was loaded into R using seqinr::read.fasta
 #' @docType data
-#' @usage data(reads_day7)
-"reads_day7"
+#' @usage data(reads_sm)
+"reads_sm"
 
 #' Example reference sequence to align reads to from a 
 #' single-molecule experiment
@@ -25,7 +25,7 @@
 #'
 #' This data is from GSE109262, and has been pre-processed by methylscaper
 #' It contains a small subset of chromosome 19 region from 8947041bp - 8987041bp.
-#' The RDS in ext data was made specifically with the two commands:
+#' The RDS in ext data was made specifically with the two commandssinglemolecule_example:
 #' singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19", 
 #'    startPos = 8967041-20000, endPos = 8967041+20000, updateProgress = NULL)
 #' saveRDS(singlecell_subset, file="methylscaper/inst/ext/singlecell_subset.rds", compress = 'xz')

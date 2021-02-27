@@ -33,9 +33,9 @@
 #' @export
 #' @examples 
 #'  
-#' data(day7)
+#' data(singlemolecule_example)
 #' 
-#' orderObj <- initialOrder(day7, Method = "PCA")
+#' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' plotSequence(orderObj)
 
 plotSequence <- function(orderObject, plotFast=TRUE,
