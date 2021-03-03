@@ -344,12 +344,10 @@ output$sc_preprocessing_down <- downloadHandler(
   output$sc_plot_down <- downloadHandler(
     filename = function(){
       if (input$sc_plot_filetype == "PNG") return("methylscaper_heatmap.png")
-      if (input$sc_plot_filetype == "SVG") return("methylscaper_heatmap.svg")
       if (input$sc_plot_filetype == "PDF") return("methylscaper_heatmap.pdf")
     },
     content = function(file){
       if (input$sc_plot_filetype == "PNG") png(file)
-      if (input$sc_plot_filetype == "SVG") svglite::svglite(file)
       if (input$sc_plot_filetype == "PDF") pdf(file)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
@@ -613,12 +611,10 @@ output$sm_preprocessing_down <- downloadHandler(
   output$sm_plot_down <- downloadHandler(
     filename = function(){
       if (input$sm_filetype == "PNG") return("methylscaper_heatmap.png")
-      if (input$sm_filetype == "SVG") return("methylscaper_heatmap.svg")
       if (input$sm_filetype == "PDF") return("methylscaper_heatmap.pdf")
     },
     content = function(file){
       if (input$sm_filetype == "PNG") png(file)
-      if (input$sm_filetype == "SVG") svglite::svglite(file)
       if (input$sm_filetype == "PDF") pdf(file)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 

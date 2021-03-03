@@ -31,8 +31,6 @@ If after reading this vignette, you have questions, please submit your question 
 `methylscaper` can be installed via [GitHub](https://github.com/rhondabacher/methylscaper/).
 ```{r, message=FALSE, eval=F}
 # This is currently required for R >= 4.1
-if (!requireNamespace("svglite", quietly=TRUE))
-    install.packages("svglite")
 if (!requireNamespace("gert", quietly=TRUE))
     install.packages("gert")
 if (!requireNamespace("devtools", quietly=TRUE))
@@ -96,7 +94,7 @@ With "PCA" selected as the seriation method, the new ordering will be generated 
 
 The next (optional) step is to refine the ordering of some reads. In this case, select refinement and begin to click and drag the mouse vertically to choose which cells should be reordered locally. Blue lines will be drawn to indicate the refined cells. PCA is used by default and is also recomended, however we provide Hierarchical clustering as an option for refinement method in the Shiny app for comparison purposed. Unlike re-weightings, refinements to the sequence plot stack onto each other, and several refinements can be done to a single plot before exporting. However, it is important to note that re-weighting the sites will reorder the entire set of data, and hence will undo any refinements that you may have made.
 
-After making any desired changes, the sequence plot can be saved as either a PNG, PDF, or SVG file. Additionally, `methylscaper` keeps track of all changes made to the plots in the form of a changes log, which can be saved as a text file.
+After making any desired changes, the sequence plot can be saved as either a PNG or PDF file. Additionally, `methylscaper` keeps track of all changes made to the plots in the form of a changes log, which can be saved as a text file.
 
 The heatmap can then be downloaded along with a log indicating the weighting and refinement choices for reproducibility.
 
