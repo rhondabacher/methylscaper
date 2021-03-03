@@ -29,7 +29,7 @@ If after reading this vignette, you have questions, please submit your question 
 ## Installation
 
 `methylscaper` can be installed via [GitHub](https://github.com/rhondabacher/methylscaper/).
-```{r, message=FALSE}
+```{r, message=FALSE, eval=F}
 # This is currently required for R >= 4.1
 if (!requireNamespace("svglite", quietly=TRUE))
     install.packages("svglite")
