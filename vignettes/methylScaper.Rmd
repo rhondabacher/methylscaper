@@ -33,6 +33,8 @@ If after reading this vignette, you have questions, please submit your question 
 `methylscaper` can be installed via [GitHub](https://github.com/rhondabacher/methylscaper/).
 ```{r, message=FALSE}
 # This is currently required for R >= 4.1
+if (!requireNamespace("svglite", quietly=TRUE))
+    install.packages("svglite")
 if (!requireNamespace("gert", quietly=TRUE))
     install.packages("gert")
 if (!requireNamespace("devtools", quietly=TRUE))
