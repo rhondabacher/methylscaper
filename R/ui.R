@@ -86,7 +86,7 @@ ui <- navbarPage("methylscaper",
                                 column(width = 8,
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
-                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PNG", "SVG", "PDF")),
+                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PNG", "PDF")),
                                     downloadButton("sc_plot_down", label = "Download Heatmap"),
                                     downloadButton("sc_log_down", label = "Download Ordering Log"))
                                     )
@@ -177,7 +177,7 @@ ui <- navbarPage("methylscaper",
                                          plotOutput(outputId = "sm_seqPlot",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',
-                                         selectInput("sm_filetype", label = "File type", choices = c("PNG", "SVG", "PDF")),
+                                         selectInput("sm_filetype", label = "File type", choices = c("PNG", "PDF")),
                                          downloadButton("sm_plot_down", label = "Download Heatmap"),
                                          downloadButton("sm_log_down", label = "Download Ordering Log"))
                          )

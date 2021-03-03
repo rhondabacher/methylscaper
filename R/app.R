@@ -6,9 +6,8 @@
 #' @return This starts up the shiny app interface for methylscaper.
 #' @import shiny
 #' @importFrom shinyFiles shinyDirChoose shinyDirButton getVolumes
-#' @importFrom grDevices dev.off pdf png svg
+#' @importFrom grDevices dev.off pdf png
 #' @importFrom utils write.csv capture.output data
-#' @importFrom svglite svglite
 #' @importFrom data.table fread
 #' @export
 #' @examples 
