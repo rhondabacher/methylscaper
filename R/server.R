@@ -1,5 +1,15 @@
 server <- function(input, output, session) {
 
+  source("seqPlot.R")
+  source("initialOrder.R")
+  source("appHelpers.R")
+  source("refinement.R")
+  source("preprocessSingleMolecule.R")
+  source("summaryPlots.R")
+  source("preprocessSingleCell.R")
+ 
+  library(seriation)
+
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -13,7 +23,6 @@ server <- function(input, output, session) {
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
   sc_input_folder <- reactiveValues(path = NULL)
   
-
   ## preprocessing tab
   observe({
     volumes = getVolumes()
@@ -63,6 +72,7 @@ output$sc_preprocessing_down <- downloadHandler(
     
  
   observe({
+
       if (is.null(input$sc_rds_file))
       {
         showNotification("Select RDS file to begin", 
