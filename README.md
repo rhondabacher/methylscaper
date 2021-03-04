@@ -10,12 +10,12 @@ both single-cell and single-molecule data, and a common interface for jointly vi
 
 # Installation
 
-For local use of methylscaper, it can be installed into R by:
+For local use of methylscaper, it can be installed into R by the code below. The version specified by the `ref` parameter is preferred as it only requires R >= 4.0 (current stable release).
 
 ```{r}
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE)
+devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="v0.99")
 ```
 Note: on Ubuntu, users may need to install libgsl via:
 `sudo apt-get install libgsl-dev`
