@@ -48,6 +48,10 @@ importFrom(shinyFiles,shinyDirChoose)
 importFrom(stats,as.dist)
 importFrom(stats,dist)
 importFrom(stats,filter)
+<<<<<<< HEAD
+=======
+importFrom(svglite,svglite)
+>>>>>>> 7effef310ac8f8dbf2980da63bfe831c88f8b637
 importFrom(utils,capture.output)
 importFrom(utils,data)
 importFrom(utils,tail)
