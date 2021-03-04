@@ -7,8 +7,6 @@ server <- function(input, output, session) {
   source("preprocessSingleMolecule.R")
   source("summaryPlots.R")
   source("preprocessSingleCell.R")
- 
-  library(seriation)
 
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
