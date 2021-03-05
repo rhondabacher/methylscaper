@@ -124,9 +124,11 @@ output$sc_preprocessing_down <- downloadHandler(
       if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
           
           if (input$organism_choice == "Mouse") {
+	      mouse_bm <- methylscaper::mouse_bm
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
+	      hum_bm <- methylscaper::hum_bm
               gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
@@ -150,10 +152,12 @@ output$sc_preprocessing_down <- downloadHandler(
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
 
           if (input$organism_choice == "Mouse") {
+              mouse_bm <- methylscaper::mouse_bm
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-              gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
+              hum_bm <- methylscaper::hum_bm
+	      gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
             cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
