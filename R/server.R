@@ -107,7 +107,7 @@ output$sc_preprocessing_down <- downloadHandler(
             mouse_bm <- methylscaper::mouse_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
             mouse_bm_sub <- subset(mouse_bm, mouse_bm$chromosome_name == getchr)
-            Genes <- sort(unique(mouse_bm$mgi_symbol))
+            Genes <- sort(unique(mouse_bm_sub$mgi_symbol))
         } else if (input$organism_choice == "Other") {
             Genes = "Click here to begin manual start and end selection."
         }
