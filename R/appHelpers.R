@@ -17,7 +17,7 @@ refineOrderShiny <- function(orderObject, refine_method, coordinatesObject)
                     coordinatesObject$refine_stop, Method=refine_method)
 }
 
-drawPlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
+drawPlot <- function(orderObject, coordinatesObject, blankWidth = 75, drawLines = TRUE, ...)
 {
     plotSequence(orderObject, ...)
     # draw the horizontal lines
@@ -32,12 +32,13 @@ drawPlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
     }
     # draw the vertical lines
     if (coordinatesObject$weight_start != 0 & coordinatesObject$weight_stop != 0) {
-        m <- ncol(orderObject$toClust) / 2 # convert back to raw coordinates
-        xmin <- (coordinatesObject$weight_start / m) * 0.45
-        xmax <- (coordinatesObject$weight_stop / m) * 0.45
+		firstm <- (ncol(orderObject$toClust) + blankWidth)
+        xmin <- coordinatesObject$weight_start / firstm
+        xmax <- coordinatesObject$weight_stop / firstm
         if (coordinatesObject$weight_color == "yellow") {
-            xmin <- xmin + 0.55
-            xmax <- xmax + 0.55
+			secondm <- (blankWidth+ncol(orderObject$toClust)/2) / firstm
+            xmin <- xmin + secondm
+            xmax <- xmax + secondm
         }
         if (drawLines) {
             abline(v = xmin, col = "green", lwd = 2.5)
@@ -46,9 +47,8 @@ drawPlot <- function(orderObject, coordinatesObject, drawLines = TRUE, ...)
     }
 }
 
-handleBrushCoordinates <- function(plot_brush, n, m){
+handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=75){
     weight_color <- "red"
-
     first_row_raw <- round(plot_brush$ymin * n) - 10
     last_row_raw <- round(plot_brush$ymax * n) - 10
     first_row <- round((first_row_raw / (n - 10)) * n)
@@ -62,23 +62,24 @@ handleBrushCoordinates <- function(plot_brush, n, m){
         last_row <- 0
     }
 
-    first_col <- round(plot_brush$xmin, 2)
-    last_col <- round(plot_brush$xmax, 2)
-
-    if (first_col <= 0.45) { # red weighting 
-        if (last_col >= 0.45) last_col <- 0.45 # force the last column to be in red
-        first_col <- first_col / 0.45
+    first_col <- round(plot_brush$xmin, 4)
+    last_col <- round(plot_brush$xmax, 4)
+	firstm <- (m) / (m*2 + blankWidth)
+	secondm <- (blankWidth+m) / (m*2 + blankWidth)
+    if (first_col <= firstm) { # red weighting 
+        if (last_col >= firstm) last_col <- firstm # force the last column to be in red
+        first_col <- first_col / firstm
         first_col <- round(first_col * m)
-        last_col <- last_col / 0.45
+        last_col <- last_col / firstm
         last_col <- round(last_col * m)
-    } else if (first_col >= 0.55) { # yellow weighting
+    } else if (first_col >= secondm) { # yellow weighting
         weight_color <- "yellow"
-        first_col <- first_col - 0.55
-        last_col <- last_col - 0.55
+        first_col <- first_col - secondm
+        last_col <- last_col - secondm
 
-        first_col <- first_col / 0.45
+        first_col <- first_col / firstm
         first_col <- round(first_col * m)
-        last_col <- last_col / 0.45
+        last_col <- last_col / firstm
         last_col <- round(last_col * m)
     } else { # in the middle, just set them to 0
         first_col <- 0

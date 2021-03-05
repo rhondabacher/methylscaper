@@ -1,7 +1,11 @@
-#' Example single-molecule GCH and HCG matrices
-#' 
-#' This was made after running methylscaper::runAlign(fasta=reads_sm, 
+#' Example preprocessed single-molecule experiment
+#'
+#' The RDS in ext data was made specifically with the command:
+#' singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm, 
 #' ref=ref_seq)
+#' saveRDS(singlemolecule_example, file="methylscaper/inst/ext/singlemolecule_example.rds", compress = 'xz')
+#' A version is also saved as RData used running examples in the man pages.
+#' save(singlemolecule_example, file="methylscaper/data/singlemolecule_example.RData", compress = 'xz')
 #' @docType data
 #' @usage data(singlemolecule_example)
 "singlemolecule_example"
@@ -29,10 +33,11 @@
 #' singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19", 
 #'    startPos = 8967041-20000, endPos = 8967041+20000, updateProgress = NULL)
 #' saveRDS(singlecell_subset, file="methylscaper/inst/ext/singlecell_subset.rds", compress = 'xz')
+#' A version is also saved as RData used running examples in the man pages.
+#' save(singlecell_subset, file="methylscaper/data/singlecell_subset.RData", compress = 'xz')
 #' @docType data
 #' @usage data(singlecell_subset)
 "singlecell_subset"
-
 
 #' Human gene symbols and positions
 #'
@@ -48,7 +53,6 @@
 #' @docType data
 #' @usage data(hum_bm)
 "hum_bm"
-
 
 #' Mouse gene symbols and positions
 #'

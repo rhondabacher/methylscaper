@@ -101,12 +101,34 @@ output$sc_preprocessing_down <- downloadHandler(
         if (input$organism_choice == "Human") {
             hum_bm <- methylscaper::hum_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            hum_bm_sub <- subset(hum_bm, hum_bm$chromosome_name == getchr)
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+			getmin <- pmin(cg_min_pos, gc_min_pos) 
+			getmin <- max(c(0,getmin - 100000))
+			getmax <- pmax(cg_max_pos, gc_max_pos) 
+			getmax <- max(c(0,getmax + 100000))
+            hum_bm_sub <- subset(hum_bm, 
+								hum_bm$chromosome_name == getchr & 
+								hum_bm$start_position >= getmin & 
+								hum_bm$end_position <= getmax)
              Genes <- sort(unique(hum_bm_sub$hgnc_symbol))
         } else if (input$organism_choice == "Mouse") {
             mouse_bm <- methylscaper::mouse_bm
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            mouse_bm_sub <- subset(mouse_bm, mouse_bm$chromosome_name == getchr)
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+			getmin <- pmin(cg_min_pos, gc_min_pos) 
+			getmin <- max(c(0,getmin - 100000))
+			getmax <- pmax(cg_max_pos, gc_max_pos) 
+			getmax <- max(c(0,getmax + 100000))
+
+            mouse_bm_sub <- subset(mouse_bm, mouse_bm$chromosome_name == getchr & 
+								mouse_bm$start_position >= getmin & 
+								mouse_bm$end_position <= getmax)
             Genes <- sort(unique(mouse_bm_sub$mgi_symbol))
         } else if (input$organism_choice == "Other") {
             Genes = "Click here to begin manual start and end selection."
@@ -132,10 +154,10 @@ output$sc_preprocessing_down <- downloadHandler(
               gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
 
             start <- pmax(cg_min_pos, gc_min_pos)
             gene_select <- data.frame(start_position = start)
@@ -160,10 +182,10 @@ output$sc_preprocessing_down <- downloadHandler(
 	      gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
 
             end <- pmax(cg_min_pos, gc_min_pos) + 5000
             gene_select <- data.frame(end_position = end)
@@ -176,17 +198,21 @@ output$sc_preprocessing_down <- downloadHandler(
   })
     output$positionSlider <- renderUI({
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
-            cg_max_pos <- max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos)}, numeric(1)))
-            cg_min_pos <- min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos)}, numeric(1)))
-            gc_max_pos <- max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos)}, numeric(1)))
-            gc_min_pos <- min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos)}, numeric(1)))
+		    isolate({
+		      actionsLog$log <- c(actionsLog$log,
+		                          paste("Current gene selected: ", input$geneList))
+		    })
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
         start <- input$startPos
         end <- input$endPos
             
-        if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
-            showNotification("Selected range is out of bounds. Please choose a valid 
-                        starting and end position to generate the plot.", duration=3, type="error")
-        }
+        # if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
+        #     showNotification("Selected range is out of bounds. Please choose a valid
+        #                 starting and end position to generate the plot.", duration=1, type="error")
+        # }
         if (end -  start > 50000) {
             showNotification("Selected range is longer than 50k bp, plot may take a few 
                         seconds to render", duration=3)
@@ -225,6 +251,10 @@ output$sc_preprocessing_down <- downloadHandler(
         if (!is.list(prep_out)) {
           showNotification("No valid sites in designated range. Choose a gene or adjust  
                       start and end positions with a larger range.", duration=3)
+	    isolate({
+	      actionsLog$log <- c(actionsLog$log,
+	                          paste("No valid sites for gene ", input$geneList))
+	    })
          } else {
          temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
@@ -236,8 +266,7 @@ output$sc_preprocessing_down <- downloadHandler(
             sc_input_data$gch <- temp_gch
             sc_input_data$hcg <- temp_hcg
             isolate({
-              actionsLog$log <- c(actionsLog$log, paste("Beginning 
-                              single-cell data analysis"))
+              actionsLog$log <- c(actionsLog$log, paste("Beginning single-cell data analysis"))
               actionsLog$log <- c(actionsLog$log, paste("From position",
                                input$positionSliderInput[1], 
                                "to", input$positionSliderInput[2]))
@@ -498,6 +527,9 @@ output$sm_preprocessing_down <- downloadHandler(
     temp <- readRDS(file = input$sm_rds_file$datapath)
     temp_gch <- temp$gch
     temp_hcg <- temp$hcg
+    if (all(rownames(temp_hcg) == temp_hcg[,1])) temp_hcg <- temp_hcg[,-1]
+    if (all(rownames(temp_gch) == temp_gch[,1])) temp_gch <- temp_gch[,-1]
+		
     if (nrow(temp_gch) == nrow(temp_hcg))
     {
       sm_coordinatesObject$refine_start <- 0
