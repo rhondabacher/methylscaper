@@ -51,7 +51,7 @@ server <- function(input, output, session) {
        sc_raw_data$gch <- dat_subset$gch
        sc_raw_data$hcg <- dat_subset$hcg
        rm(dat_subset)
-       showNotification("Removed temporary raw data; Click button to download now.")
+       showNotification("Removed temporary raw data; Click button to download now.", duration=3)
      }
   })
 output$sc_preprocessing_down <- downloadHandler(
@@ -185,15 +185,15 @@ output$sc_preprocessing_down <- downloadHandler(
             
         if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
             showNotification("Selected range is out of bounds. Please choose a valid 
-                        starting and end position to generate the plot.", duration=NULL, type="error")
+                        starting and end position to generate the plot.", duration=3, type="error")
         }
         if (end -  start > 50000) {
             showNotification("Selected range is longer than 50k bp, plot may take a few 
-                        seconds to render")
+                        seconds to render", duration=3)
         }
         if (end -  start > 100000) {
             showNotification("Selected range is longer than 100k bp, this is not optimal for 
-                        visualization, reducing to 100k bp.")
+                        visualization, reducing to 100k bp.", duration=3)
             end <- start + 100000
         }
         if (start > end) {
@@ -224,7 +224,7 @@ output$sc_preprocessing_down <- downloadHandler(
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
           showNotification("No valid sites in designated range. Choose a gene or adjust  
-                      start and end positions with a larger range.")
+                      start and end positions with a larger range.", duration=3)
          } else {
          temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
@@ -349,7 +349,7 @@ output$sc_preprocessing_down <- downloadHandler(
     obj <- sc_orderObject
     if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
                                 files to generate the plot.", 
-                                type="message");NULL}
+                                type="message", duration=3);NULL}
     else drawPlot(obj,isolate(sc_coordinatesObject))
   }, height=600, width=600)
 
@@ -390,7 +390,7 @@ output$sc_preprocessing_down <- downloadHandler(
     obj <- sc_orderObject
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate 
-            the plot.", type="message");NULL}
+            the plot.", type="message", duration=3);NULL}
     else methyl_proportion(obj, makePlot = TRUE,   
             type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
   })
@@ -420,7 +420,7 @@ output$sc_preprocessing_down <- downloadHandler(
   output$sc_percent_C <- renderPlot({
     if (sum(sc_orderObject$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.",
-             type="message");NULL}
+             type="message", duration=3);NULL}
     else methyl_percent_sites(sc_orderObject, makePlot=TRUE)
   })
 
@@ -616,7 +616,7 @@ output$sm_preprocessing_down <- downloadHandler(
   output$sm_seqPlot <- renderPlot({
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
-                    files to generate the plot.", type="message");NULL}
+                    files to generate the plot.", type="message", duration=3);NULL}
     else drawPlot(obj,isolate(sm_coordinatesObject))
   }, height=600, width=600)
 
@@ -657,7 +657,7 @@ output$sm_preprocessing_down <- downloadHandler(
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0)
     {showNotification("Select methylation data files to generate the plot.",
-             type="message");NULL}
+             type="message", duration=3);NULL}
     else methyl_proportion(obj, makePlot = TRUE, 
                 type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
   })
@@ -688,7 +688,7 @@ output$sm_preprocessing_down <- downloadHandler(
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0){
         showNotification("Select methylation data files to generate the plot.", 
-                type="message");NULL}
+                type="message", duration=3);NULL}
     else methyl_percent_sites(obj, makePlot=TRUE)
   })
 
