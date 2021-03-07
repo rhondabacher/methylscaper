@@ -58,7 +58,7 @@ prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
     useseq <- intersect(which(vapply(cg_seq_sub, function(x) nrow(x), numeric(1)) > 1 ),
                 which(vapply(gc_seq_sub, function(x) nrow(x), numeric(1)) > 1 ))
     
-    if (length(useseq) == 0) return()
+    if (length(useseq) == 0) return(NULL)
 
     cg_seq_sub <- cg_seq_sub[useseq]
     gc_seq_sub <- gc_seq_sub[useseq]

@@ -13,6 +13,8 @@ server <- function(input, output, session) {
   sc_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
   sc_input_folder <- reactiveValues(path = NULL)
+  mouse_bm <- NULL
+  hum_bm <- NULL
   
   ## preprocessing tab
   observe({
@@ -92,7 +94,7 @@ output$sc_preprocessing_down <- downloadHandler(
       if(!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
       
         if (input$organism_choice == "Human") {
-            hum_bm <- methylscaper::hum_bm
+            data("hum_bm", package="methylscaper", envir = environment())
             getchr <- sc_seq_data$gch[[1]]$chr[1]
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
             cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
@@ -108,7 +110,7 @@ output$sc_preprocessing_down <- downloadHandler(
 								hum_bm$end_position <= getmax)
              Genes <- sort(unique(hum_bm_sub$hgnc_symbol))
         } else if (input$organism_choice == "Mouse") {
-            mouse_bm <- methylscaper::mouse_bm
+            data("mouse_bm", package="methylscaper", envir = environment())
             getchr <- sc_seq_data$gch[[1]]$chr[1]
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
             cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
@@ -139,11 +141,11 @@ output$sc_preprocessing_down <- downloadHandler(
       if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
           
           if (input$organism_choice == "Mouse") {
-	      mouse_bm <- methylscaper::mouse_bm
+	          data("mouse_bm", package="methylscaper", envir = environment())
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-	      hum_bm <- methylscaper::hum_bm
+	          data("hum_bm", package="methylscaper", envir = environment())
               gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
@@ -167,12 +169,12 @@ output$sc_preprocessing_down <- downloadHandler(
         if (!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg) & input$geneList != "") {
 
           if (input$organism_choice == "Mouse") {
-              mouse_bm <- methylscaper::mouse_bm
+              data("mouse_bm", package="methylscaper", envir = environment())
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-              hum_bm <- methylscaper::hum_bm
-	      gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
+              data("hum_bm", package="methylscaper", envir = environment())
+	      	  gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
@@ -199,8 +201,9 @@ output$sc_preprocessing_down <- downloadHandler(
             cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
             gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
             gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-        start <- input$startPos
-        end <- input$endPos
+		if (!is.null(input$startPos) & !is.null(input$endPos)) {
+			start <- input$startPos
+			end <- input$endPos
             
         # if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
         #     showNotification("Selected range is out of bounds. Please choose a valid
@@ -219,11 +222,14 @@ output$sc_preprocessing_down <- downloadHandler(
             end <- start + 2000
         }
         len <- end - start
+		if (len > 0) {
         sliderInput(inputId = "positionSliderInput", 
                     label = "Position adjustment slider", 
                     min = start - len, max = end + len,
                         value = c(start, end))
-        }
+					}
+		}
+		}
 
     })
 
@@ -237,17 +243,18 @@ output$sc_preprocessing_down <- downloadHandler(
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
-        prep_out <- prepSC(sc_seq_data, 
+		
+		prep_out <- prepSC(sc_seq_data, 
                             input$positionSliderInput[1],
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
           showNotification("No valid sites in designated range. Choose a gene or adjust  
                       start and end positions with a larger range.", duration=3)
-	    isolate({
-	      actionsLog$log <- c(actionsLog$log,
-	                          paste("No valid sites for gene ", input$geneList))
-	    })
+		    isolate({
+		      actionsLog$log <- c(actionsLog$log,
+		                          paste("No valid sites for gene ", input$geneList))
+		    })
          } else {
          temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
