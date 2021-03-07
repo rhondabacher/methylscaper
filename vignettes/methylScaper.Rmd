@@ -28,14 +28,19 @@ If after reading this vignette, you have questions, please submit your question 
 
 ## Installation
 
-`methylscaper` can be installed via [GitHub](https://github.com/rhondabacher/methylscaper/).
+For local use of `methylscaper`, it can be installed into R from Bioconductor (using R version >= 4.1.0): 
+```{r, eval=F}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("methylscaper")
+```
+
+`methylscaper` can also be installed via [GitHub](https://github.com/rhondabacher/methylscaper/). The v0.99 version is current with the bioconductor version and only required R version >= 4.0.0.
 ```{r, message=FALSE, eval=F}
-# This is currently required for R >= 4.1
-if (!requireNamespace("gert", quietly=TRUE))
-    install.packages("gert")
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE)
+devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="v0.99")
 ```
 
 ## Load the package
@@ -111,6 +116,7 @@ mydata <- system.file("extdata", "singlecell_subset.rds", package = "methylscape
 mydata <- readRDS(mydata)
 gene <- "Eef1g"
 getchr <- (mydata$gch)[[1]]$chr[1]
+data("mouse_bm")
 gene.select <- subset(mouse_bm, mgi_symbol == gene)
 # We will further subset the region to a narrow region of the gene: from 8966841bp to 8967541bp
 startPos <- 8966841 # gene.select$start_position

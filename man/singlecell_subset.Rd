@@ -13,9 +13,11 @@ data(singlecell_subset)
 \description{
 This data is from GSE109262, and has been pre-processed by methylscaper
 It contains a small subset of chromosome 19 region from 8947041bp - 8987041bp.
-The RDS in ext data was made specifically with the two commandssinglemolecule_example:
+The RDS in ext data was made specifically with the two commands:
 singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19", 
    startPos = 8967041-20000, endPos = 8967041+20000, updateProgress = NULL)
 saveRDS(singlecell_subset, file="methylscaper/inst/ext/singlecell_subset.rds", compress = 'xz')
+A version is also saved as RData used running examples in the man pages.
+save(singlecell_subset, file="methylscaper/data/singlecell_subset.RData", compress = 'xz')
 }
 \keyword{datasets}
