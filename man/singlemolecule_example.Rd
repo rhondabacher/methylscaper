@@ -3,7 +3,7 @@
 \docType{data}
 \name{singlemolecule_example}
 \alias{singlemolecule_example}
-\title{Example single-molecule GCH and HCG matrices}
+\title{Example preprocessed single-molecule experiment}
 \format{
 An object of class \code{list} of length 2.
 }
@@ -11,7 +11,11 @@ An object of class \code{list} of length 2.
 data(singlemolecule_example)
 }
 \description{
-This was made after running methylscaper::runAlign(fasta=reads_sm, 
+The RDS in ext data was made specifically with the command:
+singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm, 
 ref=ref_seq)
+saveRDS(singlemolecule_example, file="methylscaper/inst/ext/singlemolecule_example.rds", compress = 'xz')
+A version is also saved as RData used running examples in the man pages.
+save(singlemolecule_example, file="methylscaper/data/singlemolecule_example.RData", compress = 'xz')
 }
 \keyword{datasets}

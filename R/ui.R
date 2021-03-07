@@ -1,4 +1,5 @@
 library(shinyFiles)
+library(shiny)
 
 ui <- navbarPage("methylscaper",
 

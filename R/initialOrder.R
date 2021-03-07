@@ -46,7 +46,7 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
     if (all(rownames(input_GCH) == input_GCH[,1])) input_GCH <- input_GCH[,-1]
     if (all(rownames(input_HCG) == input_HCG[,1])) input_HCG <- input_HCG[,-1]
-
+				
     if (is.function(updateProgress)) {
         updateProgress(message = "Recoding input data", value = 0.1)}
     recoded <- recode(input_GCH, input_HCG)
@@ -65,15 +65,22 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
             updateProgress(message = "Weighting selected columns", value = 0.2)
         }
         weighted = TRUE
+		if (weightStart < 1) weightStart <- 1
+	    if (weightEnd > ncol(input_HCG)) {
+			print("Setting weightEnd to maximum columns")
+			weightEnd <- ncol(input_HCG)
+		}
+		
         if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
             FEATURE = 3
             weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
-        }
-        if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
+        } else if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
             FEATURE = -3
             weightVector <- apply(input_GCH[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
+        } else {
+        	print("weightFeature value is not valid, see ?weightFeature for valid values")
         }
         weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
     }

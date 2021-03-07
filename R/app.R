@@ -10,6 +10,7 @@
 #' @importFrom grDevices dev.off pdf png
 #' @importFrom utils write.csv capture.output data
 #' @importFrom data.table fread
+#' @import seriation
 #' @export
 #' @examples 
 #' 

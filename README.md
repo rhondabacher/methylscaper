@@ -10,7 +10,16 @@ both single-cell and single-molecule data, and a common interface for jointly vi
 
 # Installation
 
-For local use of methylscaper, it can be installed into R by the code below. The version specified by the `ref` parameter is preferred as it only requires R >= 4.0 (current stable release).
+For local use of methylscaper, it can be installed into R from Bioconductor (using R version > 4.1.0): 
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("methylscaper")
+```
+
+Alternatively, the version specified by the `ref` parameter below only requires R >= 4.0 (current stable release).
 
 ```{r}
 if (!requireNamespace("devtools", quietly=TRUE))
