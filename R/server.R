@@ -31,29 +31,28 @@ server <- function(input, output, session) {
     })
 
   observeEvent(input$run_subset,{
-   if (!is.na(sc_input_folder$path))
-     {
-       progress <- Progress$new()
-       progress$set(message = "Loading single cell data", value = 0)
-       on.exit(progress$close())
-
-       updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
-            progress$set(value = value, message = message, detail = detail)}
-
-       showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome_number))
-       dat_subset <- subsetSC(sc_input_folder$path, input$chromosome_number, updateProgress = updateProgress) 
-       showNotification("Done with single cell processing")
-       sc_raw_data$gch <- dat_subset$gch
-       sc_raw_data$hcg <- dat_subset$hcg
-       rm(dat_subset)
-       showNotification("Removed temporary raw data; Click button to download now.", duration=3)
-     }
+    
+    validate(need(sc_input_folder$path != "NA", message = "Please choose an input directory.", label = "sc_input_folder"))
+  
+    progress <- Progress$new()
+    progress$set(message = "Loading single cell data", value = 0)
+    on.exit(progress$close())
+    updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
+         progress$set(value = value, message = message, detail = detail) }
+    showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome_number))
+    dat_subset <- subsetSC(sc_input_folder$path, input$chromosome_number, updateProgress = updateProgress) 
+    showNotification("Done with single cell processing")
+    sc_raw_data$gch <- dat_subset$gch
+    sc_raw_data$hcg <- dat_subset$hcg
+    rm(dat_subset)
+    showNotification("Removed temporary raw data; Click button to download now.", duration=3)
   })
 output$sc_preprocessing_down <- downloadHandler(
   filename = function(){
       "methylscaper_singlecell_preprocessed.rds"
     },
     content = function(file){
+      validate(need(sc_raw_data$gch & sc_raw_data$hcg, "Data has not been processed."))
       print("Saving data")
       saveRDS(list(gch = sc_raw_data$gch, hcg = sc_raw_data$hcg), file = file)
       sc_raw_data$gch <- NULL
@@ -485,6 +484,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   # alignment handling
   observeEvent(input$run_align, {
+    validate(!is.null(input$ref_file$datapath) & !is.null(input$fasta_file$datapath), "Please provide reference and FASTA files.")
     ref <- read.fasta(input$ref_file$datapath)
     fasta <- read.fasta(input$fasta_file$datapath)
 
