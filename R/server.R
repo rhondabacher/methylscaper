@@ -306,7 +306,9 @@ output$sc_preprocessing_down <- downloadHandler(
 
   # this handles updates to sc_coordinatesObject
   observeEvent(input$sc_plot_brush, {
+    validate(need(sc_input_data$gch, "Please provide input data"))
     n <- nrow(sc_input_data$gch)
+    validate(need(sc_input_data$hcg, "Please provide input data"))  
     m <- ncol(sc_input_data$hcg)
     processed_brush <- handleBrushCoordinates(input$sc_plot_brush, n, m)
 
@@ -557,6 +559,7 @@ output$sm_preprocessing_down <- downloadHandler(
   sm_orderObject <- reactiveValues(toClust = 0, order1 = 0)
   observe({ if (!is.null(sm_input_data$gch) & !is.null(sm_input_data$hcg))
   {
+   
     progress <- Progress$new()
     progress$set(message = "Beginning seriation", value = 0)
     on.exit(progress$close())
@@ -578,6 +581,8 @@ output$sm_preprocessing_down <- downloadHandler(
 
   # this handles updates to sm_coordinatesObject
   observeEvent(input$sm_plot_brush, {
+    validate(need(sm_input_data$gch, "Please provide input data"))
+    validate(need(sm_input_data$hcg, "Please provide input data"))  
     n <- nrow(sm_input_data$gch)
     m <- ncol(sm_input_data$hcg)
     processed_brush <- handleBrushCoordinates(input$sm_plot_brush, n, m)
