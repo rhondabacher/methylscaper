@@ -1,5 +1,6 @@
 library(shinyFiles)
 library(shiny)
+library(shinyjs)
 
 ui <- navbarPage("methylscaper",
 
@@ -85,6 +86,7 @@ ui <- navbarPage("methylscaper",
                         mainPanel(
                             fluidRow(
                                 column(width = 8,
+																	  useShinyjs(),
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
                                     selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PNG", "PDF")),

@@ -15,7 +15,7 @@ server <- function(input, output, session) {
   sc_input_folder <- reactiveValues(path = NULL)
   mouse_bm <- NULL
   hum_bm <- NULL
-  
+
   ## preprocessing tab
   observe({
     volumes = getVolumes()
@@ -211,11 +211,11 @@ output$sc_preprocessing_down <- downloadHandler(
         # }
         if (end -  start > 50000) {
             showNotification("Selected range is longer than 50k bp, plot may take a few 
-                        seconds to render", duration=3)
+                        seconds to render", duration=5)
         }
         if (end -  start > 100000) {
             showNotification("Selected range is longer than 100k bp, this is not optimal for 
-                        visualization, reducing to 100k bp.", duration=3)
+                        visualization, reducing to 100k bp.", duration=10)
             end <- start + 100000
         }
         if (start > end) {
@@ -249,14 +249,17 @@ output$sc_preprocessing_down <- downloadHandler(
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
+					hide("sc_seqPlot")
           showNotification("No valid sites in designated range. Choose a gene or adjust  
-                      start and end positions with a larger range.", duration=3)
+                      start and end positions with a larger range.", duration=5)
 		    isolate({
 		      actionsLog$log <- c(actionsLog$log,
 		                          paste("No valid sites for gene ", input$geneList))
 		    })
-         } else {
-         temp_gch <- prep_out$gch
+         
+			 } else {
+				 show("sc_seqPlot")
+				 temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
          if (nrow(temp_gch) == nrow(temp_hcg)) {
             sc_coordinatesObject$refine_start <- 0
@@ -276,6 +279,7 @@ output$sc_preprocessing_down <- downloadHandler(
     }
 
   })
+	
 
 # this object keeps track of the coordinates for refinement and weighting
   sc_coordinatesObject <- reactiveValues(refine_start = 0, refine_stop = 0,
@@ -373,6 +377,7 @@ output$sc_preprocessing_down <- downloadHandler(
   })
 
 
+    
 
   output$sc_seqPlot <- renderPlot({
     obj <- sc_orderObject
