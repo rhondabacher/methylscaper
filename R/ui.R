@@ -81,11 +81,12 @@ ui <- navbarPage("methylscaper",
                                   radioButtons("sc_brush_choice", label = "Brushing for:",
                                                choices = c("Refinement", "Weighting"), selected = "Weighting"),
                                   actionButton("sc_force_reverse", label = "Reverse Current Ordering"),
-                                  verbatimTextOutput("sc_info")
+                                  verbatimTextOutput("sc_info"),
+																	width = 3
                                 ),
                         mainPanel(
                             fluidRow(
-                                column(width = 8,
+                                column(width = 10,
 																	  useShinyjs(),
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
@@ -172,11 +173,12 @@ ui <- navbarPage("methylscaper",
                          radioButtons("sm_brush_choice", label = "Brushing for:",
                                       choices = c("Refinement", "Weighting"), selected = "Weighting"),
                          actionButton("sm_force_reverse", label = "Reverse Current Ordering"),
-                         verbatimTextOutput("sm_info")
+                         verbatimTextOutput("sm_info"),
+												 width = 3
                        ),
 
                        mainPanel(
-                         fluidRow(column(width = 8,
+                         fluidRow(column(width = 10,
                                          plotOutput(outputId = "sm_seqPlot",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',

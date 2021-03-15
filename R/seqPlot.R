@@ -6,7 +6,7 @@
 #'    the processed data and the ordering.
 #' @param plotFast Logical, setting to FALSE will generate a higher 
 #'    quality plot. TRUE generates a lower resolution file, useful to improve
-#'    speed while testing. For publication quality use plotFAST=TRUE.
+#'    speed while testing. For publication quality use plotFast=TRUE.
 #' @param blankWidth Indicates the amount of space to leave between
 #'     the two plots
 #' @param Title The title of the plot.

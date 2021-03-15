@@ -248,8 +248,8 @@ output$sc_preprocessing_down <- downloadHandler(
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
-					hide("sc_seqPlot")
-          showNotification("No valid sites in designated range. Choose a gene or adjust  
+					shinyjs::hide("sc_seqPlot")
+          showNotification("No valid sites in designated range. Choose another gene or adjust  
                       start and end positions with a larger range.", duration=5)
 		    isolate({
 		      actionsLog$log <- c(actionsLog$log,
@@ -257,7 +257,7 @@ output$sc_preprocessing_down <- downloadHandler(
 		    })
          
 			 } else {
-				 show("sc_seqPlot")
+				 shinyjs::show("sc_seqPlot")
 				 temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
          if (nrow(temp_gch) == nrow(temp_hcg)) {
@@ -672,7 +672,7 @@ output$sm_preprocessing_down <- downloadHandler(
       if (input$sm_filetype == "PDF") pdf(file)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
-                  drawLines = FALSE, plotFAST = FALSE)
+                  drawLines = FALSE, plotFast = FALSE)
       dev.off()
     }
   )
