@@ -23,6 +23,8 @@
 #'          1: base pairs between two methylated GCH or HCG sites
 #'          2: methylated GCH or HCG site
 #' @importFrom utils tail
+#' @import data.table
+#' @importFrom methods is
 #' @export
 #' @examples 
 #'  
@@ -33,25 +35,29 @@
 prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
                     updateProgress = NULL)
 {
+    if (is(dataIn, "SummarizedExperiment") | is(dataIn, "SingleCellExperiment")) {
+        dataIn <- reformatSCE(dataIn)
+    }
+    
     gc_seq_data <- dataIn$gch
     cg_seq_data <- dataIn$hcg
     if (is.function(updateProgress)) 
         updateProgress(message = "Filtering HCG site data", value = 0.1)
-
-    cg_seq_sub <- lapply(cg_seq_data, function(x) {
-        QQ <- x[order(x$pos),]
-        QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
-    return(QQ)
-    })
+    
+		cg_seq_sub <- lapply(cg_seq_data, function(x) {
+				QQ <- x[order(x$pos),]
+			  QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
+			  return(QQ)
+		    })
 
     if (is.function(updateProgress))
             updateProgress(message = "Filtering GCH site data", value = 0.5)
     
-    gc_seq_sub <- lapply(gc_seq_data, function(x) {
-        QQ <- x[order(x$pos),]
+		gc_seq_sub <- lapply(gc_seq_data, function(x) {
+				QQ <- x[order(x$pos),]
         QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
         return(QQ)
-    })
+		   })
     
     all_cg_sites <- unique(do.call(c, cg_seq_sub))
     all_gc_sites <- unique(do.call(c, gc_seq_sub))
@@ -93,16 +99,15 @@ prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
 
 mapSC <- function(IN_seq, startPos, endPos) {
 
-    IN_seq$pos <- as.numeric(IN_seq$pos) - startPos + 1
+    IN_seq$basePos <- as.numeric(IN_seq$pos) - startPos + 1
     fill_1 <- seq(startPos, endPos) - startPos + 1
     someMethyl <- which(IN_seq$rate > 0)
     noMethyl <- which(IN_seq$rate <= 0)
-    fill_1[fill_1 %in% IN_seq[someMethyl,]$pos] <- 2
-    fill_1[fill_1 %in% IN_seq[noMethyl,]$pos] <- -2
+    fill_1[fill_1 %in% IN_seq[someMethyl,]$basePos] <- 2
+    fill_1[fill_1 %in% IN_seq[noMethyl,]$basePos] <- -2
     fill_1[abs(fill_1) != 2] <- "."
-    tail(sort(table(fill_1)))
 
-    sites = as.numeric(IN_seq$pos)
+    sites = IN_seq$basePos
     sites <- sites[sites > 0]
     editseq = fill_1
     sites_temp <- c(0, sites, max(sites)+1)
@@ -149,7 +154,7 @@ mapSC <- function(IN_seq, startPos, endPos) {
 #'   Should be left NULL otherwise.
 #' @return The output is RDS files that can be loaded into the visualization 
 #'  tab on the Shiny app
-#' @importFrom data.table fread
+#' @import data.table
 #' @export
 #'
 #' @examples 
@@ -165,16 +170,17 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
 
     cg_seq <- list()
     for(i in seq(1,length(cgfiles))) {
+    
         in_cg_seq <- fread(paste0(path,"/","met/",cgfiles[i]), header=FALSE, stringsAsFactors = FALSE)
+        
         if (in_cg_seq[1,1] == "chr") {
             in_cg_seq <- in_cg_seq[-1,]
         }
         colnames(in_cg_seq) <- c("chr", "pos", "rate")
         in_cg_seq$pos <- as.numeric(in_cg_seq$pos)
         in_cg_seq$rate <- as.numeric(in_cg_seq$rate)
-        in_cg_seq <- in_cg_seq[order(in_cg_seq$pos), ]
 
-        in_cg_seq <- subset(in_cg_seq, in_cg_seq$chr==useChr)
+				in_cg_seq <- subset(in_cg_seq, in_cg_seq$chr==useChr)
         if (!is.null(startPos) & !is.null(endPos)) {
             in_cg_seq <- subset(in_cg_seq, in_cg_seq$pos >= startPos & in_cg_seq$pos <= endPos)
         }
@@ -186,7 +192,9 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
 
     gc_seq<- list()
     for(i in seq(1,length(gcfiles))) { 
+        
         in_gc_seq <- fread(paste0(path,"/","acc/",gcfiles[i]), header=FALSE, stringsAsFactors = FALSE)
+        
         colnames(in_gc_seq) <- c("chr", "pos", "rate")
         if (in_gc_seq[1,1] == "chr") {
             in_gc_seq <- in_gc_seq[-1,]
@@ -194,9 +202,8 @@ subsetSC <- function(path, chromosome, startPos = NULL, endPos = NULL, updatePro
         colnames(in_gc_seq) <- c("chr", "pos", "rate")
         in_gc_seq$pos <- as.numeric(in_gc_seq$pos)
         in_gc_seq$rate <- as.numeric(in_gc_seq$rate)
-        in_gc_seq <- in_gc_seq[order(in_gc_seq$pos), ]
-        in_gc_seq <- subset(in_gc_seq, in_gc_seq$chr==useChr)
-
+        
+				in_gc_seq <- subset(in_gc_seq, in_gc_seq$chr==useChr)
         if (!is.null(startPos) & !is.null(endPos)) {
             in_gc_seq <- subset(in_gc_seq, in_gc_seq$pos >= startPos & in_gc_seq$pos <= endPos)
         }

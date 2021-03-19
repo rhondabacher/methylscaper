@@ -95,10 +95,10 @@ output$sc_preprocessing_down <- downloadHandler(
         if (input$organism_choice == "Human") {
             data("hum_bm", package="methylscaper", envir = environment())
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 			getmin <- pmin(cg_min_pos, gc_min_pos) 
 			getmin <- max(c(0,getmin - 100000))
 			getmax <- pmax(cg_max_pos, gc_max_pos) 
@@ -111,10 +111,10 @@ output$sc_preprocessing_down <- downloadHandler(
         } else if (input$organism_choice == "Mouse") {
             data("mouse_bm", package="methylscaper", envir = environment())
             getchr <- sc_seq_data$gch[[1]]$chr[1]
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 			getmin <- pmin(cg_min_pos, gc_min_pos) 
 			getmin <- max(c(0,getmin - 100000))
 			getmax <- pmax(cg_max_pos, gc_max_pos) 
@@ -148,10 +148,10 @@ output$sc_preprocessing_down <- downloadHandler(
               gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 
             start <- pmax(cg_min_pos, gc_min_pos)
             gene_select <- data.frame(start_position = start)
@@ -176,10 +176,10 @@ output$sc_preprocessing_down <- downloadHandler(
 	      	  gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 
             end <- pmax(cg_min_pos, gc_min_pos) + 5000
             gene_select <- data.frame(end_position = end)
@@ -196,10 +196,10 @@ output$sc_preprocessing_down <- downloadHandler(
 		      actionsLog$log <- c(actionsLog$log,
 		                          paste("Current gene selected: ", input$geneList))
 		    })
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=T)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=T)}, numeric(1))))
+            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
+            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 		if (!is.null(input$startPos) & !is.null(input$endPos)) {
 			start <- input$startPos
 			end <- input$endPos
@@ -248,7 +248,9 @@ output$sc_preprocessing_down <- downloadHandler(
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
-					shinyjs::hide("sc_seqPlot")
+					print(prep_out)
+					showElement("sc_seqPlot")
+					toggleElement("sc_seqPlot")
           showNotification("No valid sites in designated range. Choose another gene or adjust  
                       start and end positions with a larger range.", duration=5)
 		    isolate({
@@ -257,7 +259,7 @@ output$sc_preprocessing_down <- downloadHandler(
 		    })
          
 			 } else {
-				 shinyjs::show("sc_seqPlot")
+				 showElement("sc_seqPlot")
 				 temp_gch <- prep_out$gch
          temp_hcg <- prep_out$hcg
          if (nrow(temp_gch) == nrow(temp_hcg)) {

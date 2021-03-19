@@ -12,6 +12,7 @@
 #' @return The refinement reorders the cells/molecules (rows) between the indicated
 #' start and end positions. The function returns the new complete ordering 
 #' with the refinement applied.
+#' @importFrom seriation seriate get_order
 #' @export
 #'
 #' @examples 
@@ -57,8 +58,8 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
     else {
         distMat <- as.dist(as.matrix(orderObject$distMat)[toRefine_order,toRefine_order])
     }
-    order_new <- seriation::seriate(distMat, method=Method, verbose=FALSE)
-    order_new <- seriation::get_order(order_new)
+    order_new <- seriate(distMat, method=Method, verbose=FALSE)
+    order_new <- get_order(order_new)
   }
   
   

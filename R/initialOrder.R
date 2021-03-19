@@ -108,14 +108,14 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
             w_sqrt <- sqrt(w)
             toClust_weighted <- diag(w_sqrt) %*% toClust
 
-            distMat <- as.dist(Rfast::Dist(toClust_weighted,
+            distMat <- as.dist(Dist(toClust_weighted,
                                     method = "euclidean"))
-            order1 <- seriation::seriate(distMat, method=Method)
-            order1 <- seriation::get_order(order1)
+            order1 <- seriate(distMat, method=Method)
+            order1 <- get_order(order1)
         } else {
-            distMat <- as.dist(Rfast::Dist(toClust,method = "euclidean"))
-            order1 <- seriation::seriate(distMat, method=Method)
-            order1 <- seriation::get_order(order1)
+            distMat <- as.dist(Dist(toClust,method = "euclidean"))
+            order1 <- seriate(distMat, method=Method)
+            order1 <- get_order(order1)
 
         }
     }

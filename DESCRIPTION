@@ -26,8 +26,10 @@ Imports:
   graphics, 
   stats, 
   utils,
+  methods,
   shinyFiles,
-  data.table
+  data.table,
+  SummarizedExperiment
 RoxygenNote: 7.1.1
 Suggests: knitr, rmarkdown, devtools
 VignetteBuilder: knitr
@@ -36,4 +38,5 @@ biocViews:
 	Epigenetics,
 	PrincipalComponent,
 	Visualization,
-	SingleCell
+	SingleCell,
+	NucleosomePositioning

@@ -19,7 +19,7 @@ the processed data and the ordering.}
 
 \item{plotFast}{Logical, setting to FALSE will generate a higher 
 quality plot. TRUE generates a lower resolution file, useful to improve
-speed while testing. For publication quality use plotFAST=TRUE.}
+speed while testing. For publication quality use plotFast=TRUE.}
 
 \item{blankWidth}{Indicates the amount of space to leave between
 the two plots}
