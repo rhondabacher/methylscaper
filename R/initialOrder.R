@@ -65,18 +65,20 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
             updateProgress(message = "Weighting selected columns", value = 0.2)
         }
         weighted = TRUE
+
 		if (weightStart < 1) weightStart <- 1
 	    if (weightEnd > ncol(input_HCG)) {
 			print("Setting weightEnd to maximum columns")
 			weightEnd <- ncol(input_HCG)
 		}
-		
+	
         if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
             FEATURE = 3
             weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
+
         } else if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
-            FEATURE = -3
+           FEATURE = -3
             weightVector <- apply(input_GCH[,seq(weightStart,weightEnd)], 
                                     1, function(x) sum(x==FEATURE))
         } else {

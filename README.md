@@ -19,6 +19,12 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("methylscaper")
 ```
 
+Note: on Ubuntu, users may need to install libgsl via:
+`sudo apt-get install libgsl-dev`
+
+For any other installation issues/questions please leave a message on our [Github Issues](https://github.com/rhondabacher/methylscaper/issues).
+
+
 Alternatively, the version specified by the `ref` parameter below only requires R >= 4.0 (current stable release).
 
 ```{r}
@@ -30,6 +36,7 @@ Note: on Ubuntu, users may need to install libgsl via:
 `sudo apt-get install libgsl-dev`
 
 For any other installation issues/questions please leave a message on our [Github Issues](https://github.com/rhondabacher/methylscaper/issues).
+
 
 To load the package into R:
 

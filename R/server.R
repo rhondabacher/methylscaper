@@ -1,6 +1,5 @@
 server <- function(input, output, session) {
 
-
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -64,7 +63,6 @@ output$sc_preprocessing_down <- downloadHandler(
     
  
   observe({
-
       if (is.null(input$sc_rds_file))
       {
         showNotification("Select RDS file to begin", 
@@ -242,8 +240,9 @@ output$sc_preprocessing_down <- downloadHandler(
         updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
             progress$set(value = value, message = message, detail = detail)}
 
+
 		
-		prep_out <- prepSC(sc_seq_data, 
+				prep_out <- prepSC(sc_seq_data, 
                             input$positionSliderInput[1],
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)

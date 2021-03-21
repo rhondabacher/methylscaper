@@ -53,6 +53,7 @@ prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
     if (is.function(updateProgress))
             updateProgress(message = "Filtering GCH site data", value = 0.5)
     
+
 		gc_seq_sub <- lapply(gc_seq_data, function(x) {
 				QQ <- x[order(x$pos),]
         QQ = subset(QQ, QQ$pos >= startPos & QQ$pos <= endPos)
