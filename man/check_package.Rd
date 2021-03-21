@@ -9,6 +9,9 @@ check_package(package)
 \arguments{
 \item{package}{Name of the package.}
 }
+\value{
+Message is returned if package not installed.
+}
 \description{
 Check if a package is installed
 }

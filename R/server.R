@@ -388,7 +388,10 @@ output$sc_preprocessing_down <- downloadHandler(
                                 files to generate the plot.", 
                                 type="message", duration=3);NULL}
     else drawPlot(obj,isolate(sc_coordinatesObject))
-  }, height=600, width=600)
+  }, height = function() {
+      session$clientData$output_sc_seqPlot_width
+    })
+
 
   output$sc_plot_down <- downloadHandler(
     filename = function(){
@@ -662,7 +665,10 @@ output$sm_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
                     files to generate the plot.", type="message", duration=3);NULL}
     else drawPlot(obj,isolate(sm_coordinatesObject))
-  }, height=600, width=600)
+  }, height = function() {
+      session$clientData$output_sm_seqPlot_width
+    })
+
 
   output$sm_plot_down <- downloadHandler(
     filename = function(){

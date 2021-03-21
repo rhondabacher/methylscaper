@@ -14,6 +14,9 @@ reformatSCE(dataIn)
 \arguments{
 \item{dataIn}{Input SCE object passed to the prepSC() function.}
 }
+\value{
+List object containing the met and acc tables.
+}
 \description{
 This is an internal function for now and a place-holder 
 in case SingleCellExperiment may be
