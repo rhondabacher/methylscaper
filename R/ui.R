@@ -63,7 +63,9 @@ ui <- navbarPage("methylscaper",
                      ),
                      fluidRow(sidebarLayout(
                                 sidebarPanel(
-                                  actionButton("sc_demo_data", label = "Load Example Data"),
+                                  actionButton("sc_demo_data", label = "Load Example Data", style = "background-color: rgb(209, 238, 238)"),
+                                  tags$br(),
+                                  tags$br(),
                                   fileInput("sc_rds_file", label = "RDS File Input"),
                                   radioButtons("organism_choice", label = "Choose Organism:", choices = c("Human", "Mouse", "Other"), 
                                                           selected = character(0)),
@@ -166,7 +168,9 @@ ui <- navbarPage("methylscaper",
                      ),
                      fluidRow(sidebarLayout(
                        sidebarPanel(
-                         actionButton("sm_demo_data", label = "Load Example Data"),
+                         actionButton("sm_demo_data", label = "Load Example Data", style = "background-color: rgb(209, 238, 238)"),
+                         tags$br(),
+                         tags$br(),
                          fileInput("sm_rds_file", label = "RDS File Input", accept= c(".rds", ".RDS")),
                          selectInput("sm_ser_method", label = "Seriation Method:",
                                      choices = c("PCA", "ARSA")),
