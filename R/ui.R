@@ -63,6 +63,7 @@ ui <- navbarPage("methylscaper",
                      ),
                      fluidRow(sidebarLayout(
                                 sidebarPanel(
+                                  actionButton("sc_demo_data", label = "Load Example Data"),
                                   fileInput("sc_rds_file", label = "RDS File Input"),
                                   radioButtons("organism_choice", label = "Choose Organism:", choices = c("Human", "Mouse", "Other"), 
                                                           selected = character(0)),
@@ -165,6 +166,7 @@ ui <- navbarPage("methylscaper",
                      ),
                      fluidRow(sidebarLayout(
                        sidebarPanel(
+                         actionButton("sm_demo_data", label = "Load Example Data"),
                          fileInput("sm_rds_file", label = "RDS File Input", accept= c(".rds", ".RDS")),
                          selectInput("sm_ser_method", label = "Seriation Method:",
                                      choices = c("PCA", "ARSA")),
