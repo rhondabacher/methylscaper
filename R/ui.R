@@ -2,10 +2,10 @@ library(shinyFiles)
 library(shiny)
 library(shinyjs)
 
-ui <- navbarPage("methylscaper",
+ui <- navbarPage("methylscaper",id="big_tab",
 
     tabPanel("Single-cell",
-          navbarPage("",
+          navbarPage("", id="seriate_sc",
                    tabPanel("Preprocessing",
                    
                    fluidRow(
@@ -32,7 +32,7 @@ ui <- navbarPage("methylscaper",
                                 tags$p("After processing and subsetting the data for visualization, you may download the data below. 
                                 The data will be downloaded in RDS format and can be loaded into the Seriation tab."),   
                             
-                            downloadButton("sc_preprocessing_down", label = "Download Processed Data")
+                            shinyjs::disabled(downloadButton("sc_preprocessing_down", label = "Download Processed Data"))
                             )),
                     tags$br(),
                     tags$br(),
@@ -45,7 +45,7 @@ ui <- navbarPage("methylscaper",
                    ),        
                              
                     
-                tabPanel("Seriation",
+                tabPanel("Seriation", 
                               
                     fluidRow(
                          column(11, 
@@ -94,8 +94,8 @@ ui <- navbarPage("methylscaper",
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
                                     selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PNG", "PDF")),
-                                    downloadButton("sc_plot_down", label = "Download Heatmap"),
-                                    downloadButton("sc_log_down", label = "Download Ordering Log"))
+                                    shinyjs::disabled(downloadButton("sc_plot_down", label = "Download Heatmap")),
+                                    shinyjs::disabled(downloadButton("sc_log_down", label = "Download Ordering Log")))
                                     )
                         )
                         ))),
@@ -114,13 +114,13 @@ ui <- navbarPage("methylscaper",
                                 plotOutput(outputId = "sc_proportion_color_histogram"),
                                 plotOutput(outputId = "sc_percent_C")),
                             splitLayout(cellWidths = c("50%", "50%"),
-                              downloadButton("sc_proportion_hist_download", label = "Download Histogram"),
-                              downloadButton("sc_percentC_plot_download", label = "Download Plot")),
+                              shinyjs::disabled(downloadButton("sc_proportion_hist_download", label = "Download Histogram")),
+                              shinyjs::disabled(downloadButton("sc_percentC_plot_download", label = "Download Plot"))),
                             splitLayout(cellWidths = c("50%", "50%"),
-                              downloadButton("sc_proportion_data_download", label = "Download Proportion Data"),
-                              downloadButton("sc_percentC_data_download", label = "Download Percentage Data")))))),
+                              shinyjs::disabled(downloadButton("sc_proportion_data_download", label = "Download Proportion Data")),
+                              shinyjs::disabled(downloadButton("sc_percentC_data_download", label = "Download Percentage Data"))))))),
     tabPanel("Single-molecule",
-        navbarPage("",
+        navbarPage("",  id="seriate_sm",
            tabPanel("Preprocessing",
            fluidRow(
                column(3,
@@ -142,8 +142,8 @@ ui <- navbarPage("methylscaper",
                         tags$p("After aligining and processing the reads for visualization, you may download the data and the 
                     preprocessing log below. The data will be downloaded in RDS format and can be loaded into the Seriation tab. 
                     The processing log contains details on the read alignments."),
-                    downloadButton("sm_preprocessing_down", label = "Download Processed Data"),
-                    downloadButton("processing_log", label = "Download Log File")
+                    shinyjs::disabled(downloadButton("sm_preprocessing_down", label = "Download Processed Data")),
+                    shinyjs::disabled(downloadButton("processing_log", label = "Download Log File"))
             )),
             tags$br(),
             tags$br(),
@@ -189,8 +189,8 @@ ui <- navbarPage("methylscaper",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',
                                          selectInput("sm_filetype", label = "File type", choices = c("PNG", "PDF")),
-                                         downloadButton("sm_plot_down", label = "Download Heatmap"),
-                                         downloadButton("sm_log_down", label = "Download Ordering Log"))
+                                         shinyjs::disabled(downloadButton("sm_plot_down", label = "Download Heatmap")),
+                                         shinyjs::disabled(downloadButton("sm_log_down", label = "Download Ordering Log")))
                          )
                        )
                      ))),
@@ -209,8 +209,8 @@ ui <- navbarPage("methylscaper",
                         plotOutput(outputId = "sm_proportion_color_histogram"),
                         plotOutput(outputId = "sm_percent_C")),
                     splitLayout(cellWidths = c("50%", "50%"),
-                      downloadButton("sm_proportion_hist_download", label = "Download Histogram"),
-                      downloadButton("sm_percentC_plot_download", label = "Download Plot")),
+                      shinyjs::disabled(downloadButton("sm_proportion_hist_download", label = "Download Histogram")),
+                      shinyjs::disabled(downloadButton("sm_percentC_plot_download", label = "Download Plot"))),
                     splitLayout(cellWidths = c("50%", "50%"),
-                      downloadButton("sm_proportion_data_download", label = "Download Proportion Data"),
-                      downloadButton("sm_percentC_data_download", label = "Download Percentage Data")))))))
+                      shinyjs::disabled(downloadButton("sm_proportion_data_download", label = "Download Proportion Data")),
+                      shinyjs::disabled(downloadButton("sm_percentC_data_download", label = "Download Percentage Data"))))))))

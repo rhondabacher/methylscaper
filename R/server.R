@@ -17,6 +17,11 @@ server <- function(input, output, session) {
 
   ## preprocessing tab
   observe({
+    if (is.null(input$sc_rds_file) & input$seriate_sc == "Preprocessing"  & input$big_tab == "Single-cell")
+    {
+      showNotification("Please select the input folder to begin", 
+                                      type="message", duration=10)
+    }
     volumes = getVolumes()
     shinyDirChoose(input, 'folder', roots=volumes())
     path_list <- input$folder["path"][[1]]
@@ -25,7 +30,7 @@ server <- function(input, output, session) {
    })
   
   output$sc_folder_name <- renderText({
-    if (is.null(sc_input_folder$path)) "Choose an input folder."
+    if (is.null(sc_input_folder$path)) "Folder Input"
     else sc_input_folder$path
     })
 
@@ -46,6 +51,16 @@ server <- function(input, output, session) {
     rm(dat_subset)
     showNotification("Removed temporary raw data; Click button to download now.", duration=3)
   })
+	
+	
+	observe({
+	    if (is.null(sc_raw_data$gch)){
+				shinyjs::disable("sc_preprocessing_down") 
+	   } else {
+	      shinyjs::enable("sc_preprocessing_down")
+			}
+	  })
+		
 output$sc_preprocessing_down <- downloadHandler(
   filename = function(){
       "methylscaper_singlecell_preprocessed.rds"
@@ -63,9 +78,9 @@ output$sc_preprocessing_down <- downloadHandler(
     
  
   observe({
-      if (is.null(input$sc_rds_file))
+      if (is.null(input$sc_rds_file) & input$seriate_sc == "Seriation" & input$big_tab == "Single-cell")
       {
-        showNotification("Select RDS file to begin", 
+        showNotification("Provide select the RDS file to begin", 
                                         type="message", duration=10)
       }
     if (!is.null(input$sc_rds_file))
@@ -80,7 +95,8 @@ output$sc_preprocessing_down <- downloadHandler(
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
-      showNotification("Now select Organism", 
+			print(input$seriate_sc)
+      showNotification("Now select Organism and begin selecting genes", 
                                       type="message", duration=10)
     }
   })
@@ -384,15 +400,16 @@ output$sc_preprocessing_down <- downloadHandler(
       data("singlecell_subset")
       sc_seq_data$gch <- singlecell_subset$gch
       sc_seq_data$hcg <- singlecell_subset$hcg
-    })
+			
+			showNotification("Data successfully loaded! Please select Mouse 
+			under Choose Organism and select a gene.", type="default", duration=8)
+		})
   })
     
 
   output$sc_seqPlot <- renderPlot({
     obj <- sc_orderObject
-    if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
-                                files to generate the plot.", 
-                                type="message", duration=3);NULL}
+    if (sum(obj$toClust) == 0) {}
     else drawPlot(obj,isolate(sc_coordinatesObject))
   }, height = function() {
       session$clientData$output_sc_seqPlot_width
@@ -432,11 +449,26 @@ output$sc_preprocessing_down <- downloadHandler(
                                 " ", sc_coordinatesObject$weight_stop)
   })
 
+	observe({
+	    if (sum(sc_orderObject$toClust) == 0) {
+	      shinyjs::disable("sc_proportion_hist_download")
+			  shinyjs::disable("sc_proportion_data_download")
+	      shinyjs::disable("sc_percentC_plot_download")
+			  shinyjs::disable("sc_percentC_data_download")
+	      shinyjs::disable("sc_plot_down")
+			  shinyjs::disable("sc_log_down")
+	    } else {
+	      shinyjs::enable("sc_proportion_hist_download")
+			  shinyjs::enable("sc_proportion_data_download")
+	      shinyjs::enable("sc_percentC_plot_download")
+			  shinyjs::enable("sc_percentC_data_download")
+	      shinyjs::enable("sc_plot_down")
+			  shinyjs::enable("sc_log_down")}
+	  })
+		
   output$sc_proportion_color_histogram <- renderPlot({
     obj <- sc_orderObject
-    if (sum(obj$toClust) == 0)
-    {showNotification("Select methylation data files to generate 
-            the plot.", type="message", duration=3);NULL}
+    if (sum(obj$toClust) == 0) {}
     else methyl_proportion(obj, makePlot = TRUE,   
             type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
   })
@@ -464,9 +496,7 @@ output$sc_preprocessing_down <- downloadHandler(
   )
 
   output$sc_percent_C <- renderPlot({
-    if (sum(sc_orderObject$toClust) == 0)
-    {showNotification("Select methylation data files to generate the plot.",
-             type="message", duration=3);NULL}
+    if (sum(sc_orderObject$toClust) == 0) {}
     else methyl_percent_sites(sc_orderObject, makePlot=TRUE)
   })
 
@@ -500,6 +530,18 @@ output$sc_preprocessing_down <- downloadHandler(
   sm_input_data <- reactiveValues(gch = NULL, hcg = NULL)
   sm_raw_data <- reactiveValues(gch = NULL, hcg = NULL)
 
+
+  observe({
+  		if (input$seriate_sm == "Preprocessing" & input$big_tab == "Single-molecule") {
+				showNotification("Please provide reference and FASTA files to begin",
+                                    type="message", duration=10)
+      }
+		 if (input$seriate_sm == "Seriation" & input$big_tab == "Single-molecule") {
+			showNotification("Provide select the RDS file to begin",
+                                  type="message", duration=10)
+			}
+	})
+	
   # alignment handling
   observeEvent(input$run_align, {
     validate(!is.null(input$ref_file$datapath) & !is.null(input$fasta_file$datapath), "Please provide reference and FASTA files.")
@@ -522,6 +564,16 @@ output$sc_preprocessing_down <- downloadHandler(
 
   })
 
+	observe({
+	    if (is.null(sm_raw_data$hcg)){
+				shinyjs::disable("sm_preprocessing_down") 
+			  shinyjs::disable("processing_log")
+	   } else {
+	      shinyjs::enable("sm_preprocessing_down")
+			  shinyjs::enable("processing_log")}
+	  })
+		
+		
 output$sm_preprocessing_down <- downloadHandler(
   filename = function(){
             "methylscaper_singlemolecule_preprocessed.rds"
@@ -675,13 +727,13 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_seqPlot <- renderPlot({
     obj <- sm_orderObject
-    if (sum(obj$toClust) == 0) {showNotification("Select methylation data 
-                    files to generate the plot.", type="message", duration=3);NULL}
+    if (sum(obj$toClust) == 0) {}
     else drawPlot(obj,isolate(sm_coordinatesObject))
   }, height = function() {
       session$clientData$output_sm_seqPlot_width
     })
 
+		
 
   output$sm_plot_down <- downloadHandler(
     filename = function(){
@@ -716,11 +768,28 @@ output$sm_preprocessing_down <- downloadHandler(
                     sm_coordinatesObject$weight_stop)
   })
 
+
+	observe({
+	    if (sum(sm_orderObject$toClust) == 0) {
+	      shinyjs::disable("sm_proportion_hist_download")
+			  shinyjs::disable("sm_proportion_data_download")
+	      shinyjs::disable("sm_percentC_plot_download")
+			  shinyjs::disable("sm_percentC_data_download")
+				shinyjs::disable("sm_plot_down") 
+			  shinyjs::disable("sm_log_down")
+	    } else {
+	      shinyjs::enable("sm_proportion_hist_download")
+			  shinyjs::enable("sm_proportion_data_download")
+	      shinyjs::enable("sm_percentC_plot_download")
+			  shinyjs::enable("sm_percentC_data_download")
+	      shinyjs::enable("sm_plot_down")
+			  shinyjs::enable("sm_log_down")}
+	  })
+
+		
   output$sm_proportion_color_histogram <- renderPlot({
     obj <- sm_orderObject
-    if (sum(obj$toClust) == 0)
-    {showNotification("Select methylation data files to generate the plot.",
-             type="message", duration=3);NULL}
+    if (sum(obj$toClust) == 0) {}
     else methyl_proportion(obj, makePlot = TRUE, 
                 type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
   })
@@ -749,9 +818,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_percent_C <- renderPlot({
     obj <- sm_orderObject
-    if (sum(obj$toClust) == 0){
-        showNotification("Select methylation data files to generate the plot.", 
-                type="message", duration=3);NULL}
+    if (sum(obj$toClust) == 0){}
     else methyl_percent_sites(obj, makePlot=TRUE)
   })
 
