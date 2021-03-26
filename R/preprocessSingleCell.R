@@ -42,6 +42,15 @@ prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
         dataIn <- reformatSCE(dataIn)
     }
     
+		if(is.null(updateProgress) & (endPos - startPos) >= 50000) {
+											message("Selected range is longer than 50k bp, 
+											plot may take a few seconds to render."}
+		
+		if(is.null(updateProgress) & (endPos - startPos) >= 100000) {
+											message("Selected range is longer than 100k bp, 
+											this may not be optimal. Plot will render but may 
+											take a few minutes."}
+		
     gc_seq_data <- dataIn$gch
     cg_seq_data <- dataIn$hcg
     if (is.function(updateProgress)) 

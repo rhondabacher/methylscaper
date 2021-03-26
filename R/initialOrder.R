@@ -41,6 +41,10 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
     input_HCG <- dataIn$hcg
     
     ## File checks:
+		
+		if(is.null(updateProgress) & !is.list(dataIn)) {
+			stop("No valid sites in designated range. Choose another gene or adjust  
+			                      start and end positions with a larger range"}
     if (nrow(input_HCG) != nrow(input_GCH)) {
         stop("Input files have different numbers of rows.")}
 

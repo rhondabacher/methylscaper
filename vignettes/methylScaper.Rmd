@@ -116,12 +116,11 @@ The visualization can be done using methylscaper functions as well. Each functio
 mydata <- system.file("extdata", "singlecell_subset.rds", package = "methylscaper")
 mydata <- readRDS(mydata)
 gene <- "Eef1g"
-getchr <- (mydata$gch)[[1]]$chr[1]
 data("mouse_bm")
 gene.select <- subset(mouse_bm, mgi_symbol == gene)
 # We will further subset the region to a narrow region of the gene: from 8966841bp to 8967541bp
-startPos <- 8966841 # gene.select$start_position
-endPos <- 8967541 # gene.select$end_position
+startPos <- 8966841 
+endPos <- 8967541
 
 # This subsets the data to a specific region and prepares the data for visualization:
 prepSC.out <- prepSC(mydata, startPos=startPos, endPos=endPos)
@@ -162,6 +161,35 @@ code below reorders the first 20 cells and generates a new sequence plot.
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
 orderObj$order1 <- refineFunction(orderObj, refineStart = 30, refineEnd = 15)
 plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
+```
+
+### Accessing gene positions via biomaRt objects
+
+In the Shiny app, we have included pre-downloaded versions of the mouse and human gene locations to ease of use. If you wish to use another organism, we demonstrate below how to obtain these from biomaRt. 
+
+```{r, eval=FALSE}
+if (!requireNamespace("biomaRt", quietly=TRUE))
+    BiocManager::install("biomaRt")
+library(biomaRt)
+ensembl <- useMart("ensembl")
+ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
+my_chr <- c(1:22, 'M', 'X', 'Y') # You can choose to omit this or include additional chromosome
+# We only need the start, end, and symbol:
+hum_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
+             filters = 'chromosome_name',
+             values = my_chr,
+             mart=ensembl)
+
+## Now that we have the biomart object, we can extract start and ends for methylscaper:
+gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == "GeneX")
+
+# These can then be passed into the prepSC function:
+prepSC.out <- prepSC(mydata, startPos=gene_select$startPos, endPos=gene_select$endPos)
+
+# To continue the analysis:
+# Next the cells are ordered using the PCA approach and then plot:
+orderObj <- initialOrder(prepSC.out)
+plotSequence(orderObj, Title = "Gene X", plotFast=TRUE)
 ```
 
 
