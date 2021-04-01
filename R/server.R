@@ -1,6 +1,5 @@
 server <- function(input, output, session) {
 
-
   	source("seqPlot.R")
 	  source("initialOrder.R")
 	  source("appHelpers.R")
@@ -88,6 +87,7 @@ output$sc_preprocessing_down <- downloadHandler(
  
   observe({
       if (is.null(input$sc_rds_file) & input$seriate_sc == "Seriation" & input$big_tab == "Single-cell")
+
       {
         showNotification("Provide select the RDS file to begin", 
                                         type="message", duration=10)
@@ -176,6 +176,7 @@ output$sc_preprocessing_down <- downloadHandler(
             gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
             gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
 
+
             start <- pmax(cg_min_pos, gc_min_pos)
             gene_select <- data.frame(start_position = start)
           }
@@ -238,6 +239,7 @@ output$sc_preprocessing_down <- downloadHandler(
         if (end -  start > 100000) {
             showNotification("Selected range is longer than 100k bp, this is not optimal for 
                         visualization, reducing to 100k bp.", duration=10)
+
             end <- start + 100000
         }
         if (start > end) {
@@ -272,7 +274,7 @@ output$sc_preprocessing_down <- downloadHandler(
                             input$positionSliderInput[2],
                             updateProgress = updateProgress)
         if (!is.list(prep_out)) {
-					print(prep_out)
+
 					showElement("sc_seqPlot")
 					toggleElement("sc_seqPlot")
           showNotification("No valid sites in designated range. Choose another gene or adjust  
@@ -285,6 +287,7 @@ output$sc_preprocessing_down <- downloadHandler(
 			 } else {
 				 showElement("sc_seqPlot")
 				 temp_gch <- prep_out$gch
+
          temp_hcg <- prep_out$hcg
          if (nrow(temp_gch) == nrow(temp_hcg)) {
             sc_coordinatesObject$refine_start <- 0

@@ -75,7 +75,6 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 			print("Setting weightEnd to maximum columns")
 			weightEnd <- ncol(input_HCG)
 		}
-	
         if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
             FEATURE = 3
             weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
