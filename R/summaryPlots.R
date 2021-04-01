@@ -34,7 +34,7 @@ methyl_percent_sites <- function(orderObject, makePlot = TRUE, ...){
     if (makePlot) {
         plot(x = red_sites - ncol(dat)/2, y = c_red,
             col="brown1", pch=19, ylim=c(0,1), 
-            xlab = "Region (Base Pair)", ylab="%Methylated",
+            xlab = "Position in the genomic region", ylab="% methylated",
             bty='n', cex.lab=1.3,...)
         lines(x = red_sites - ncol(dat)/2, y = c_red, col="brown1")
         points(x = yellow_sites, y = c_yellow, col="gold2", pch=19)
@@ -137,8 +137,8 @@ methyl_average_status <- function(orderObject, window_length = 20,
     if (makePlot) {
         plot(x=seq(1,length(moving_acc_avg)), y=moving_acc_avg, 
 						type = "l", col="gold2", lwd=2, bty='n',
-            xlab="Position along the genomic location", 
-            ylab="Averaged methylation status", 
+            xlab="Position in the genomic region", 
+            ylab="Averaged % methylation status", 
 						cex.lab=1.3, ylim = c(0,1),...)
         lines(moving_meth_avg, col="brown1", lwd=2)
         legend("topright", c("Endogenous", "Accessibility"), lwd=2, 

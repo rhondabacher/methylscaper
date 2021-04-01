@@ -479,8 +479,10 @@ output$sc_preprocessing_down <- downloadHandler(
   output$sc_proportion_color_histogram <- renderPlot({
     obj <- sc_orderObject
     if (sum(obj$toClust) == 0) {}
-    else methyl_proportion(obj, makePlot = TRUE,   
-            type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
+    else {par(mar=c(5,4,2,2))
+			methyl_proportion(obj, makePlot = TRUE,   
+            type = input$sc_proportion_choice, main="", xlab="Proportion methylation within cells")
+					}
   })
 
   output$sc_proportion_hist_download <- downloadHandler(
@@ -490,7 +492,7 @@ output$sc_preprocessing_down <- downloadHandler(
     content = function(file){
                   pdf(file)
                   methyl_proportion(sc_orderObject, makePlot = TRUE,
-                                   type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
+                                   type = input$sc_proportion_choice, main="Methylated Bases Per Cell")
       dev.off()
     }
   )
@@ -500,14 +502,16 @@ output$sc_preprocessing_down <- downloadHandler(
     },
     content = function(file){
         dat <-  methyl_proportion(sc_orderObject, makePlot = FALSE,
-                               type = input$sc_proportion_choice, main="Methylated Basepairs Per Cell")
+                               type = input$sc_proportion_choice, main="")
       write.csv(dat, file = file)
     }
   )
 
   output$sc_percent_C <- renderPlot({
     if (sum(sc_orderObject$toClust) == 0) {}
-    else methyl_percent_sites(sc_orderObject, makePlot=TRUE)
+    else {par(mar=c(5,4,2,2))
+			methyl_percent_sites(sc_orderObject, makePlot=TRUE)
+		}
   })
 
   output$sc_percentC_plot_download <- downloadHandler(
@@ -534,7 +538,10 @@ output$sc_preprocessing_down <- downloadHandler(
   output$sc_avg_c <- renderPlot({
     obj <- sc_orderObject
     if (sum(obj$toClust) == 0){}
-    else methyl_average_status(obj, makePlot=TRUE, window=input$sc_window_choice)
+    else {
+			par(mar=c(5,4,2,2))
+			methyl_average_status(obj, makePlot=TRUE, window=input$sc_window_choice)
+		}
   })
 	
   output$sc_avg_c_data_download <- downloadHandler(
@@ -830,8 +837,10 @@ output$sm_preprocessing_down <- downloadHandler(
   output$sm_proportion_color_histogram <- renderPlot({
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0) {}
-    else methyl_proportion(obj, makePlot = TRUE, 
-                type = input$sm_proportion_choice, main="",xlab="Proportion of Bases Methylated Per Molecule")
+    else {par(mar=c(5,4,2,2))
+			methyl_proportion(obj, makePlot = TRUE, 
+                type = input$sm_proportion_choice, main="",xlab="Proportion methylation within molecules")
+							}
   })
 
   output$sm_proportion_hist_download <- downloadHandler(
@@ -841,7 +850,7 @@ output$sm_preprocessing_down <- downloadHandler(
     content = function(file){
        pdf(file)
        methyl_proportion(sm_orderObject, makePlot = TRUE,
-                       type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
+                       type = input$sm_proportion_choice, main="Methylated Bases Per Molecule")
       dev.off()
     }
   )
@@ -859,7 +868,9 @@ output$sm_preprocessing_down <- downloadHandler(
   output$sm_percent_C <- renderPlot({
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0){}
-    else methyl_percent_sites(obj, makePlot=TRUE)
+    else {par(mar=c(5,4,2,2))
+			methyl_percent_sites(obj, makePlot=TRUE)
+		}
   })
 
   output$sm_percentC_plot_download <- downloadHandler(
@@ -886,7 +897,9 @@ output$sm_preprocessing_down <- downloadHandler(
   output$sm_avg_c <- renderPlot({
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0){}
-    else methyl_average_status(obj, makePlot=TRUE, window=input$sm_window_choice)
+    else {par(mar=c(5,4,2,2))
+			methyl_average_status(obj, makePlot=TRUE, window=input$sm_window_choice)
+		}
   })
 	
   output$sm_avg_c_data_download <- downloadHandler(
