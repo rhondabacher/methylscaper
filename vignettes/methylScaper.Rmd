@@ -57,7 +57,7 @@ methylscaper()
 
 # Visualizing single-cell data
 
-For analyzing single-cell data from methods such as scNMT-seq, methylscaper begins with pre-aligned data. The data should be in the form of three columns (chromosome, position, and methylation status). There should also be two files for each cell, one for the GCH sites and another for the HCG sites. This type of file is generated via the "bismarck\_methylation\_extractor" script in the Bismarck software tool.
+For analyzing single-cell data from methods such as scNMT-seq, methylscaper begins with pre-aligned data. For each cell, there should be two files, one for the GCH sites and another for the HCG sites. The minimal number of columns needed for methylscaper is three: chromosome, position, and methylation status. This type of file is generated via the "Bismark\_methylation\_extractor" script in the Bismark software tool. The extractor function outputs files in either a four or six column output (see bedGraph option described here: http://felixkrueger.github.io/Bismark/Docs/). 
 
 Methylscaper will further process the data for the visualization analysis. The files should be organized such that all GCH files are located in a subfolder labelled 'acc' and all HCG files in a subfolder labelled 'met'. In the Shiny app, first point to the directory containing these two subdirectories. Then, for optimal processing speed, we filter to the chromosome level. 
 

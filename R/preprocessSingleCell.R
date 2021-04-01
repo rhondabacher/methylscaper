@@ -192,6 +192,11 @@ subsetSC <- function(path, chromosome, startPos = NULL,
     
         in_cg_seq <- fread(paste0(path,"/","met/",cgfiles[i]), 
 														header=FALSE, stringsAsFactors = FALSE)
+				# A couple possible formats from bismark:										
+        if(ncol(in_cg_seq) %in% c(4,6)) {
+					in_cg_seq <- in_cg_seq[,c(1,2,4)]	
+        }									
+        								
         if(ncol(in_cg_seq) != 3) {stop("Data is not formatted correctly. See vignette for details.")}
 					
         if (in_cg_seq[1,1] == "chr") {
@@ -215,7 +220,9 @@ subsetSC <- function(path, chromosome, startPos = NULL,
     for(i in seq(1,length(gcfiles))) { 
         
         in_gc_seq <- fread(paste0(path,"/","acc/",gcfiles[i]), header=FALSE, stringsAsFactors = FALSE)
-        
+        if(ncol(in_gc_seq) %in% c(4,6)) {
+					in_gc_seq <- in_gc_seq[,c(1,2,4)]	
+        }	
 				if(ncol(in_gc_seq) != 3) {stop("Data is not formatted correctly. See vignette for details.")}
 					
         colnames(in_gc_seq) <- c("chr", "pos", "rate")
