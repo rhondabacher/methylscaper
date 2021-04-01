@@ -28,7 +28,7 @@ server <- function(input, output, session) {
     if (is.null(input$sc_rds_file) & input$seriate_sc == "Preprocessing"  & input$big_tab == "Single-cell")
     {
       showNotification("Please select the input folder to begin", 
-                                      type="message", duration=10)
+                                      type="message", duration=4)
     }
     volumes = getVolumes()
     shinyDirChoose(input, 'folder', roots=volumes())
@@ -82,15 +82,15 @@ output$sc_preprocessing_down <- downloadHandler(
     }
   )
  
-  ## seriation tab
+  ## Visualization tab
     
  
   observe({
-      if (is.null(input$sc_rds_file) & input$seriate_sc == "Seriation" & input$big_tab == "Single-cell")
+      if (is.null(input$sc_rds_file) & input$seriate_sc == "Visualization" & input$big_tab == "Single-cell")
 
       {
         showNotification("Provide select the RDS file to begin", 
-                                        type="message", duration=10)
+                                        type="message", duration=4)
       }
     if (!is.null(input$sc_rds_file))
     {
@@ -221,21 +221,14 @@ output$sc_preprocessing_down <- downloadHandler(
 		      actionsLog$log <- c(actionsLog$log,
 		                          paste("Current gene selected: ", input$geneList))
 		    })
-            cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
-            cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
-            gc_max_pos <- suppressWarnings(max(vapply(sc_seq_data$gch, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
-            gc_min_pos <- suppressWarnings(min(vapply(sc_seq_data$gch, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
+
 		if (!is.null(input$startPos) & !is.null(input$endPos)) {
 			start <- input$startPos
 			end <- input$endPos
             
-        # if (start < cg_min_pos | start < gc_min_pos | end > cg_max_pos | end > gc_max_pos) {
-        #     showNotification("Selected range is out of bounds. Please choose a valid
-        #                 starting and end position to generate the plot.", duration=1, type="error")
-        # }
         if (end -  start > 50000) {
             showNotification("Selected range is longer than 50k bp, plot may take a few 
-                        seconds to render", duration=5)
+                        seconds to render", duration=3)
         }
         if (end -  start > 100000) {
             showNotification("Selected range is longer than 100k bp, this is not optimal for 
@@ -415,7 +408,7 @@ output$sc_preprocessing_down <- downloadHandler(
       sc_seq_data$hcg <- singlecell_subset$hcg
 			
 			showNotification("Data successfully loaded! Please select Mouse 
-			under Choose Organism and select a gene.", type="default", duration=8)
+			under Choose Organism and select a gene (e.g., Eef1g, Mta2, or Tut1).", type="default", duration=8)
 		})
   })
     
@@ -549,7 +542,7 @@ output$sc_preprocessing_down <- downloadHandler(
 				showNotification("Please provide reference and FASTA files to begin",
                                     type="message", duration=10)
       }
-		 if (input$seriate_sm == "Seriation" & input$big_tab == "Single-molecule") {
+		 if (input$seriate_sm == "Visualization" & input$big_tab == "Single-molecule") {
 			showNotification("Provide select the RDS file to begin",
                                   type="message", duration=10)
 			}

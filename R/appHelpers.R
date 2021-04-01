@@ -17,14 +17,17 @@ refineOrderShiny <- function(orderObject, refine_method, coordinatesObject)
                     coordinatesObject$refine_stop, Method=refine_method)
 }
 
-drawPlot <- function(orderObject, coordinatesObject, blankWidth = 75, drawLines = TRUE, ...)
+drawPlot <- function(orderObject, coordinatesObject, blankWidth = NULL, drawLines = TRUE, ...)
 {
     plotSequence(orderObject, ...)
+		
+		if (is.null(blankWidth)) blankWidth <- ceiling(.12 * ncol(orderObject$toClust) / 2) 
+			
     # draw the horizontal lines
     if (coordinatesObject$refine_start != 0 & coordinatesObject$refine_stop != 0) {
         n <- nrow(orderObject$toClust)# convert back to raw coordinates
-        ymin <- (((n:1)[coordinatesObject$refine_start] / n * (n - 10)) + 10) / n 
-        ymax <- (((n:1)[coordinatesObject$refine_stop] / n * (n - 10)) + 10) / n
+        ymin <- (((n:1)[coordinatesObject$refine_start] / n * (n - 12)) + 12) / n 
+        ymax <- (((n:1)[coordinatesObject$refine_stop] / n * (n - 12)) + 12) / n
         if (drawLines) {
             abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
             abline(b = 0, a = ymin, col = "blue", lwd = 2.5)
@@ -47,12 +50,15 @@ drawPlot <- function(orderObject, coordinatesObject, blankWidth = 75, drawLines 
     }
 }
 
-handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=75){
+handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=NULL){
+	
+	  if (is.null(blankWidth)) blankWidth <- ceiling(.12 * m) 
+		
     weight_color <- "red"
-    first_row_raw <- round(plot_brush$ymin * n) - 10
-    last_row_raw <- round(plot_brush$ymax * n) - 10
-    first_row <- round((first_row_raw / (n - 10)) * n)
-    last_row <- round((last_row_raw / (n - 10)) * n)
+    first_row_raw <- round(plot_brush$ymin * n) - 12
+    last_row_raw <- round(plot_brush$ymax * n) - 12
+    first_row <- round((first_row_raw / (n - 12)) * n)
+    last_row <- round((last_row_raw / (n - 12)) * n)
 
     if (first_row <= 2) first_row <- 1
     if (last_row >= n - 1) last_row <- n

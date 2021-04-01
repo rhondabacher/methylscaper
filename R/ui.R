@@ -21,16 +21,15 @@ ui <- navbarPage("methylscaper",id="big_tab",
                             tags$h3("Directions"),
                             tags$ul(
                                 tags$li("Select the folder containing the summarized data from the single-cell experiment. This summarized data
-                                should be in the form of three columns (chromosome, position, methylation status). This is the typical
-                                format obtained from programs such as Bismarck. The folder should contain two subfolders with 
-                                the names 'met' and 'acc' which contain the files with the endogenous methylation and the 
+                                should be from Bismark's methylation extractor or in the form of three columns (chromosome, position, methylation rate). 
+																The folder should contain two subfolders with the names 'met' and 'acc' which contain the files with the endogenous methylation and the 
                                 accessibility methylation, respectively."),
-                                tags$li("As these files are large, we preprocess a single chromosome at a time. 
-                                    Indicate the desired chromosome as a number or as X, Y, MT."),
+                                tags$li("As these files are large, we process a single chromosome at a time. 
+                                    Indicate the desired chromosome as a number (e.g., 1 - 22) or as X, Y, MT."),
                                 tags$li("After pressing 'Run', a progress bar will appear in the bottom right.")),
                                 tags$br(),
                                 tags$p("After processing and subsetting the data for visualization, you may download the data below. 
-                                The data will be downloaded in RDS format and can be loaded into the Seriation tab."),   
+                                The data will be downloaded in RDS format and can be loaded into the Visualization tab."),   
                             
                             shinyjs::disabled(downloadButton("sc_preprocessing_down", label = "Download Processed Data"))
                             )),
@@ -45,20 +44,21 @@ ui <- navbarPage("methylscaper",id="big_tab",
                    ),        
                              
                     
-                tabPanel("Seriation", 
+                tabPanel("Visualization", 
                               
                     fluidRow(
                          column(11, 
                          tags$p("Upload the RDS file obtained in the Preprocessing tab below in the input labelled 
-                         'RDS File Input'."),
-                         tags$p("To move along the genome, we have pre-loaded gene locations for Human and Mouse 
+                         'RDS File Input'. Alternatively, explore the app by selecting 'Load Example Data' below. The example data
+												 is from Mouse on Chromosome 19 subset to a 40 kbp region around 8,967,041. Some genes that are located in this region
+												 are Eef1g, Mta2, and Tut1"),
+                         tags$p("To move along the genome, we have pre-loaded gene locations for Human (GRCh38) and Mouse (GRCm39)
                          for the chromosome selected in the Preprocessing tab. Select a gene and then a slider will appear 
                          to refine the genomic location."),
                          tags$p("With Brushing set to Weighting, drag the mouse/cursor to select basepairs (columns) 
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the cells (rows) to refine the ordering."),
-                         tags$p("Detailed
-                         descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
+                         tags$p("Detailed descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
                          vignette: ", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")))
                      ),
                      fluidRow(sidebarLayout(
@@ -135,12 +135,12 @@ ui <- navbarPage("methylscaper",id="big_tab",
                     tags$ul(
                         tags$li("Upload the reads or sequences from the single-molecule experiment in FASTA format in the input labelled
                                 'FASTA File'."),
-                        tags$li("Upload the reference sequences for the gene or genomic location of interest in the input 
+                        tags$li("Upload the reference sequence for the gene or genomic location of interest in the input 
                                 labelled 'Reference File', this should also be in FASTA format."),
                         tags$li("After pressing 'Run', a progress bar will appear in the bottom right.")),
                         tags$br(),
                         tags$p("After aligining and processing the reads for visualization, you may download the data and the 
-                    preprocessing log below. The data will be downloaded in RDS format and can be loaded into the Seriation tab. 
+                    preprocessing log below. The data will be downloaded in RDS format and can be loaded into the Visualization tab. 
                     The processing log contains details on the read alignments."),
                     shinyjs::disabled(downloadButton("sm_preprocessing_down", label = "Download Processed Data")),
                     shinyjs::disabled(downloadButton("processing_log", label = "Download Log File"))
@@ -154,11 +154,11 @@ ui <- navbarPage("methylscaper",id="big_tab",
                 tags$p("Questions can also be submitted on our GitHub page:", 
                 tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
            ),
-           tabPanel( "Seriation",
+           tabPanel( "Visualization",
                      fluidRow(
                          column(11, 
                          tags$p("Upload the RDS file obtained in the Preprocessing tab below in the input labelled 
-                         'RDS File Input'."),
+                         'RDS File Input'. Alternatively, explore the app by selecting 'Load Example Data'."),
                          tags$p("With Brushing set to Weighting, drag the mouse/cursor to select basepairs (columns) 
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the molecules (rows) to refine the ordering."),
