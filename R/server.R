@@ -104,9 +104,10 @@ output$sc_preprocessing_down <- downloadHandler(
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
-			print(input$seriate_sc)
+			if(is.null(input$organism_choice)) {
       showNotification("Now select Organism and begin selecting genes", 
                                       type="message", duration=10)
+																		}
     }
   })
 
