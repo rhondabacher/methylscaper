@@ -461,6 +461,8 @@ output$sc_preprocessing_down <- downloadHandler(
 			  shinyjs::disable("sc_proportion_data_download")
 	      shinyjs::disable("sc_percentC_plot_download")
 			  shinyjs::disable("sc_percentC_data_download")
+	      shinyjs::disable("sc_avg_c_plot_download")
+			  shinyjs::disable("sc_avg_c_data_download")
 	      shinyjs::disable("sc_plot_down")
 			  shinyjs::disable("sc_log_down")
 	    } else {
@@ -468,6 +470,8 @@ output$sc_preprocessing_down <- downloadHandler(
 			  shinyjs::enable("sc_proportion_data_download")
 	      shinyjs::enable("sc_percentC_plot_download")
 			  shinyjs::enable("sc_percentC_data_download")
+	      shinyjs::enable("sc_avg_c_plot_download")
+			  shinyjs::enable("sc_avg_c_data_download")
 	      shinyjs::enable("sc_plot_down")
 			  shinyjs::enable("sc_log_down")}
 	  })
@@ -527,7 +531,33 @@ output$sc_preprocessing_down <- downloadHandler(
     }
   )
 
-
+  output$sc_avg_c <- renderPlot({
+    obj <- sc_orderObject
+    if (sum(obj$toClust) == 0){}
+    else methyl_average_status(obj, makePlot=TRUE, window=input$sc_window_choice)
+  })
+	
+  output$sc_avg_c_data_download <- downloadHandler(
+    filename = function(){
+        return("avg_percent_bases_methylated_data.txt")
+    },
+    content = function(file){
+      dat <-  methyl_average_status(sc_orderObject, makePlot = FALSE, window=input$sc_window_choice)
+      capture.output(dat, file = file)
+    }
+  )
+	
+  output$sc_avg_c_plot_download <- downloadHandler(
+    filename = function(){
+            return(paste0("avg_percent_bases_methylated", ".pdf"))
+    },
+    content = function(file){
+        pdf(file)
+        methyl_average_status(sc_orderObject, makePlot = TRUE, window=input$sc_window_choice)
+      dev.off()
+    }
+  )
+	
 
 
   ########################
@@ -540,11 +570,11 @@ output$sc_preprocessing_down <- downloadHandler(
   observe({
   		if (input$seriate_sm == "Preprocessing" & input$big_tab == "Single-molecule") {
 				showNotification("Please provide reference and FASTA files to begin",
-                                    type="message", duration=10)
+                                    type="message", duration=4)
       }
 		 if (input$seriate_sm == "Visualization" & input$big_tab == "Single-molecule") {
 			showNotification("Provide select the RDS file to begin",
-                                  type="message", duration=10)
+                                  type="message", duration=4)
 			}
 	})
 	
@@ -781,6 +811,8 @@ output$sm_preprocessing_down <- downloadHandler(
 			  shinyjs::disable("sm_proportion_data_download")
 	      shinyjs::disable("sm_percentC_plot_download")
 			  shinyjs::disable("sm_percentC_data_download")
+	      shinyjs::disable("sm_avg_c_plot_download")
+			  shinyjs::disable("sm_avg_c_data_download")
 				shinyjs::disable("sm_plot_down") 
 			  shinyjs::disable("sm_log_down")
 	    } else {
@@ -788,6 +820,8 @@ output$sm_preprocessing_down <- downloadHandler(
 			  shinyjs::enable("sm_proportion_data_download")
 	      shinyjs::enable("sm_percentC_plot_download")
 			  shinyjs::enable("sm_percentC_data_download")
+	      shinyjs::enable("sm_avg_c_plot_download")
+			  shinyjs::enable("sm_avg_c_data_download")
 	      shinyjs::enable("sm_plot_down")
 			  shinyjs::enable("sm_log_down")}
 	  })
@@ -797,7 +831,7 @@ output$sm_preprocessing_down <- downloadHandler(
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0) {}
     else methyl_proportion(obj, makePlot = TRUE, 
-                type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
+                type = input$sm_proportion_choice, main="",xlab="Proportion of Bases Methylated Per Molecule")
   })
 
   output$sm_proportion_hist_download <- downloadHandler(
@@ -848,4 +882,33 @@ output$sm_preprocessing_down <- downloadHandler(
       capture.output(dat, file = file)
     }
   )
+
+  output$sm_avg_c <- renderPlot({
+    obj <- sm_orderObject
+    if (sum(obj$toClust) == 0){}
+    else methyl_average_status(obj, makePlot=TRUE, window=input$sm_window_choice)
+  })
+	
+  output$sm_avg_c_data_download <- downloadHandler(
+    filename = function(){
+        return("avg_percent_bases_methylated_data.txt")
+    },
+    content = function(file){
+      dat <-  methyl_average_status(sm_orderObject, makePlot = FALSE, window=input$sm_window_choice)
+      capture.output(dat, file = file)
+    }
+  )
+	
+  output$sm_avg_c_plot_download <- downloadHandler(
+    filename = function(){
+            return(paste0("avg_percent_bases_methylated", ".pdf"))
+    },
+    content = function(file){
+        pdf(file)
+        methyl_average_status(sm_orderObject, makePlot = TRUE, window=input$sm_window_choice)
+      dev.off()
+    }
+  )
+	
+
 }

@@ -85,7 +85,7 @@ methyl_proportion <- function(orderObject, type = "yellow",
     opar <- par(lwd=4)
     H = hist(Proportion, plot=FALSE, breaks = 15)
     plot(H, xlim=c(0,1), border=ifelse(type == "yellow", "gold2", "brown1"),
-        col="gray75",
+        col="gray75", cex.lab=1.3,
         lwd=2,...)
     par(opar)
   }
@@ -135,9 +135,11 @@ methyl_average_status <- function(orderObject, window_length = 20,
     moving_meth_avg <- filter(x = meth_avg, filter = rep(1, width)) / width
 
     if (makePlot) {
-        plot(moving_acc_avg, type = "l", col="gold2", lwd=2,
-            xlab="Position along the specified genomic location", 
-            ylab="Population-averaged status", ylim = c(0,1))
+        plot(x=seq(1,length(moving_acc_avg)), y=moving_acc_avg, 
+						type = "l", col="gold2", lwd=2, bty='n',
+            xlab="Position along the genomic location", 
+            ylab="Averaged methylation status", 
+						cex.lab=1.3, ylim = c(0,1),...)
         lines(moving_meth_avg, col="brown1", lwd=2)
         legend("topright", c("Endogenous", "Accessibility"), lwd=2, 
                 col=c("brown1", "gold2"), bty='n', title="Methylation Type")

@@ -51,7 +51,7 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$p("Upload the RDS file obtained in the Preprocessing tab below in the input labelled 
                          'RDS File Input'. Alternatively, explore the app by selecting 'Load Example Data' below. The example data
 												 is from Mouse on Chromosome 19 subset to a 40 kbp region around 8,967,041. Some genes that are located in this region
-												 are Eef1g, Mta2, and Tut1"),
+												 are Eef1g, Mta2, and Tut1."),
                          tags$p("To move along the genome, we have pre-loaded gene locations for Human (GRCh38) and Mouse (GRCm39)
                          for the chromosome selected in the Preprocessing tab. Select a gene and then a slider will appear 
                          to refine the genomic location."),
@@ -99,26 +99,36 @@ ui <- navbarPage("methylscaper",id="big_tab",
                                     )
                         )
                         ))),
-                    tabPanel("Summary Statistics",
-                    fluidRow(
-                        column(10, 
-                        tags$p("Below are summary plots of the methylation data. The histogram on the left
-                        calulates the proportion of methylated basepairs in each cell. Choose whether to calculate this for
-                        the endogenous methylation or the accessibility methylation. The plot on the right calculates the percent of
-                        cells having methylation along the region, and the dots indicate either GCH (yellow) or HCG (red) sites."
-                        )
-                       )),
-                      fluidRow( radioButtons("sc_proportion_choice", label = "Proportion of:", 
-                                      choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation"),
-                            splitLayout(cellWidths = c("50%", "50%"),
-                                plotOutput(outputId = "sc_proportion_color_histogram"),
-                                plotOutput(outputId = "sc_percent_C")),
-                            splitLayout(cellWidths = c("50%", "50%"),
-                              shinyjs::disabled(downloadButton("sc_proportion_hist_download", label = "Download Histogram")),
-                              shinyjs::disabled(downloadButton("sc_percentC_plot_download", label = "Download Plot"))),
-                            splitLayout(cellWidths = c("50%", "50%"),
-                              shinyjs::disabled(downloadButton("sc_proportion_data_download", label = "Download Proportion Data")),
-                              shinyjs::disabled(downloadButton("sc_percentC_data_download", label = "Download Percentage Data"))))))),
+		            tabPanel("Summary Statistics",
+		                fluidRow(
+		                    column(10, 
+		                    tags$p("Below are summary plots of the methylation data. The histogram on the left
+		                    calulates the proportion of methylated bases within each cell. Choose whether to calculate this for
+		                    the endogenous methylation or the accessibility methylation. The plot in the middle calculates the percent of
+		                    cells having methylation at each GCH (yellow) or HCG (red) site in the region. The plot on the right calculates
+		 									 a population averaged methylation status over the entire region. The window size can be adjusted. This plot
+											 is similar to the one in the middle but is easier to interpret when the region is large."
+		                    )
+		                 )),
+		                  fluidRow(column(10, radioButtons("sc_proportion_choice", label = "Proportion of:", 
+		                                  choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation")),
+		 													column(2, numericInput("sc_window_choice", label = "Window size:", 
+		 													                                  value=20))),
+		 						     fluidRow(																								
+		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                         plotOutput(outputId = "sc_proportion_color_histogram"),
+		                         plotOutput(outputId = "sc_percent_C"),
+		 												plotOutput(outputId = "sc_avg_c")),
+		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                       shinyjs::disabled(downloadButton("sc_proportion_hist_download", label = "Download Histogram")),
+		                       shinyjs::disabled(downloadButton("sc_percentC_plot_download", label = "Download Plot")),
+		 											shinyjs::disabled(downloadButton("sc_avg_c_plot_download", label = "Download Plot"))),
+		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                       shinyjs::disabled(downloadButton("sc_proportion_data_download", label = "Download Proportion Data")),
+		                       shinyjs::disabled(downloadButton("sc_percentC_data_download", label = "Download Percentage Data")),
+		 											shinyjs::disabled(downloadButton("sc_avg_c_data_download", label = "Download Averaged Percent Data"))))
+            
+		 											))),
     tabPanel("Single-molecule",
         navbarPage("",  id="seriate_sm",
            tabPanel("Preprocessing",
@@ -198,19 +208,29 @@ ui <- navbarPage("methylscaper",id="big_tab",
                fluidRow(
                    column(10, 
                    tags$p("Below are summary plots of the methylation data. The histogram on the left
-                   calulates the proportion of methylated basepairs in each molecule. Choose whether to calculate this for
-                   the endogenous methylation or the accessibility methylation. The plot on the right calculates the percent of
-                   molecules having methylation along the region, and the dots indicate either GCH (yellow) or HCG (red) sites."
+                   calulates the proportion of methylated bases within each molecule. Choose whether to calculate this for
+                   the endogenous methylation or the accessibility methylation. The plot in the middle calculates the percent of
+                   molecules having methylation at each GCH (yellow) or HCG (red) site in the region. The plot on the right calculates
+									 a population averaged methylation status over the entire region. The window size can be adjusted. This plot
+											 is similar to the one in the middle but is easier to interpret when the region is large."
                    )
                   )),
-                 fluidRow( radioButtons("sm_proportion_choice", label = "Proportion of:", 
-                                 choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation"),
-                    splitLayout(cellWidths = c("50%", "50%"),
+                 fluidRow(column(10, radioButtons("sm_proportion_choice", label = "Proportion of:", 
+                                 choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation")),
+													column(2, numericInput("sm_window_choice", label = "Window size:", 
+													                                  value=20))),
+						     fluidRow(																								
+                    splitLayout(cellWidths = c("33%", "33%", "33%"),
                         plotOutput(outputId = "sm_proportion_color_histogram"),
-                        plotOutput(outputId = "sm_percent_C")),
-                    splitLayout(cellWidths = c("50%", "50%"),
+                        plotOutput(outputId = "sm_percent_C"),
+												plotOutput(outputId = "sm_avg_c")),
+                    splitLayout(cellWidths = c("33%", "33%", "33%"),
                       shinyjs::disabled(downloadButton("sm_proportion_hist_download", label = "Download Histogram")),
-                      shinyjs::disabled(downloadButton("sm_percentC_plot_download", label = "Download Plot"))),
-                    splitLayout(cellWidths = c("50%", "50%"),
+                      shinyjs::disabled(downloadButton("sm_percentC_plot_download", label = "Download Plot")),
+											shinyjs::disabled(downloadButton("sm_avg_c_plot_download", label = "Download Plot"))),
+                    splitLayout(cellWidths = c("33%", "33%", "33%"),
                       shinyjs::disabled(downloadButton("sm_proportion_data_download", label = "Download Proportion Data")),
-                      shinyjs::disabled(downloadButton("sm_percentC_data_download", label = "Download Percentage Data"))))))))
+                      shinyjs::disabled(downloadButton("sm_percentC_data_download", label = "Download Percentage Data")),
+											shinyjs::disabled(downloadButton("sm_avg_c_data_download", label = "Download Averaged Percent Data"))))
+                    
+											))))
