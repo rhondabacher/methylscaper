@@ -410,7 +410,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   observeEvent (input$sc_demo_data,{
     isolate({
-      data("singlecell_subset")
+			 data("singlecell_subset", package="methylscaper", envir = environment())
       sc_seq_data$gch <- singlecell_subset$gch
       sc_seq_data$hcg <- singlecell_subset$hcg
 			
@@ -731,7 +731,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   observeEvent(input$sm_demo_data, {
     isolate({
-      data("singlemolecule_example")
+			data("singlemolecule_example", package="methylscaper", envir = environment())
       sm_input_data$gch <- singlemolecule_example$gch
       sm_input_data$hcg <- singlemolecule_example$hcg
     })
