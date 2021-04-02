@@ -12,7 +12,7 @@ data(mouse_bm)
 }
 \description{
 library(biomaRt) #v2.44.4
-ensembl <- useMart("ensembl")
+ensembl <- useMart("ensembl") # GRCm39
 ensembl <- useDataset("mmusculus_gene_ensembl",mart=ensembl)
 my_chr <- c(1:19, 'M', 'X', 'Y')
 mouse_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'mgi_symbol'),

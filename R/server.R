@@ -14,7 +14,10 @@ server <- function(input, output, session) {
   sc_input_folder <- reactiveValues(path = NULL)
   mouse_bm <- NULL
   hum_bm <- NULL
-
+  singlecell_subset <- NULL
+	singlemolecule_example <- NULL
+	
+	
   ## preprocessing tab
   observe({
     if (is.null(input$sc_rds_file) & input$seriate_sc == "Preprocessing"  & input$big_tab == "Single-cell")
@@ -532,7 +535,7 @@ output$sc_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0){}
     else {
 			par(mar=c(5,4,2,2))
-			methyl_average_status(obj, makePlot=TRUE, window=input$sc_window_choice)
+			methyl_average_status(obj, makePlot=TRUE, window_length=input$sc_window_choice)
 		}
   })
 	
@@ -541,7 +544,7 @@ output$sc_preprocessing_down <- downloadHandler(
         return("avg_percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_average_status(sc_orderObject, makePlot = FALSE, window=input$sc_window_choice)
+      dat <-  methyl_average_status(sc_orderObject, makePlot = FALSE, window_length=input$sc_window_choice)
       capture.output(dat, file = file)
     }
   )
@@ -552,7 +555,7 @@ output$sc_preprocessing_down <- downloadHandler(
     },
     content = function(file){
         pdf(file)
-        methyl_average_status(sc_orderObject, makePlot = TRUE, window=input$sc_window_choice)
+        methyl_average_status(sc_orderObject, makePlot = TRUE, window_length=input$sc_window_choice)
       dev.off()
     }
   )
@@ -579,7 +582,10 @@ output$sc_preprocessing_down <- downloadHandler(
 	
   # alignment handling
   observeEvent(input$run_align, {
-    validate(!is.null(input$ref_file$datapath) & !is.null(input$fasta_file$datapath), "Please provide reference and FASTA files.")
+    validate(
+			need(input$ref_file$datapath, "Please provide the reference file."),
+			need(input$fasta_file$datapath, "Please provide FASTA file.")
+			)
     ref <- read.fasta(input$ref_file$datapath)
     fasta <- read.fasta(input$fasta_file$datapath)
 
@@ -890,7 +896,7 @@ output$sm_preprocessing_down <- downloadHandler(
     obj <- sm_orderObject
     if (sum(obj$toClust) == 0){}
     else {par(mar=c(5,4,2,2))
-			methyl_average_status(obj, makePlot=TRUE, window=input$sm_window_choice)
+			methyl_average_status(obj, makePlot=TRUE, window_length=input$sm_window_choice)
 		}
   })
 	
@@ -899,7 +905,7 @@ output$sm_preprocessing_down <- downloadHandler(
         return("avg_percent_bases_methylated_data.txt")
     },
     content = function(file){
-      dat <-  methyl_average_status(sm_orderObject, makePlot = FALSE, window=input$sm_window_choice)
+      dat <-  methyl_average_status(sm_orderObject, makePlot = FALSE, window_length=input$sm_window_choice)
       capture.output(dat, file = file)
     }
   )
@@ -910,7 +916,7 @@ output$sm_preprocessing_down <- downloadHandler(
     },
     content = function(file){
         pdf(file)
-        methyl_average_status(sm_orderObject, makePlot = TRUE, window=input$sm_window_choice)
+        methyl_average_status(sm_orderObject, makePlot = TRUE, window_length=input$sm_window_choice)
       dev.off()
     }
   )

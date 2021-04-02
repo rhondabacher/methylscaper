@@ -12,7 +12,7 @@ data(hum_bm)
 }
 \description{
 library(biomaRt) #v2.44.4
-ensembl <- useMart("ensembl")
+ensembl <- useMart("ensembl") # GRCh38
 ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
 my_chr <- c(1:22, 'M', 'X', 'Y')
 hum_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),

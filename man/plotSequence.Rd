@@ -7,7 +7,7 @@
 plotSequence(
   orderObject,
   plotFast = TRUE,
-  blankWidth = 75,
+  blankWidth = NULL,
   Title = "",
   drawLine = TRUE,
   drawKey = TRUE

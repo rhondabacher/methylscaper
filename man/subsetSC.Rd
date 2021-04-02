@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocessSingleCell.R
 \name{subsetSC}
 \alias{subsetSC}
-\title{Load in and subset methylation data}
+\title{Load in methylation data}
 \usage{
 subsetSC(
   path,
@@ -19,7 +19,7 @@ subsetSC(
 
 \item{startPos}{The index of the first position to include 
 in the subsetting. This is optional as further narrowing of the 
-position can be doen in the visualization step/tab.
+position can be done in the visualization step/tab.
 In the Shiny app, a slider will let the user refine the positions.}
 
 \item{endPos}{The index of the final position to include in subset.}
@@ -32,9 +32,10 @@ The output is RDS files that can be loaded into the visualization
  tab on the Shiny app
 }
 \description{
-This function loads the single-cell files. It takes a path to the datafiles
+This function loads the single-cell files. It takes a path to the data files
 and a chromosome number as arguments and returns the desired subset of the 
-data. The files should be tab separated with three columns.
+data. Processing by chromosome is important for speed and memory efficiency.
+The input files should be tab separated with three columns.
 The first column is the chromosome, the second is the position (basepair), and the third
 is the methylation indicator/rate. The folder should contain two subfolders titled
 met and acc, with the endogenous methylation and accessibility methylation files,
