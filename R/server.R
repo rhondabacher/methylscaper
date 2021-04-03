@@ -1,12 +1,15 @@
 server <- function(input, output, session) {
 		
-	source("seqPlot.R")
+	    source("seqPlot.R")
 		  source("initialOrder.R")
 		  source("appHelpers.R")
 		  source("refinement.R")
 		  source("preprocessSingleMolecule.R")
 		  source("summaryPlots.R")
 		  source("preprocessSingleCell.R")
+			
+			library(seqinr)
+			library(Biostrings)
 			
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
