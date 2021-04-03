@@ -45,14 +45,14 @@
 #' ensembl <- useMart("ensembl") # GRCh38
 #' ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
 #' my_chr <- c(1:22, 'M', 'X', 'Y')
-#' hum_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
+#' human_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
 #'             filters = 'chromosome_name',
 #'             values = my_chr,
 #'             mart=ensembl)
 #' 
 #' @docType data
-#' @usage data(hum_bm)
-"hum_bm"
+#' @usage data(human_bm)
+"human_bm"
 
 #' Mouse gene symbols and positions
 #'

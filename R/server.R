@@ -13,7 +13,7 @@ server <- function(input, output, session) {
   sc_input_data <- reactiveValues(gch = NULL, hcg = NULL) # for state matrices
   sc_input_folder <- reactiveValues(path = NULL)
   mouse_bm <- NULL
-  hum_bm <- NULL
+  human_bm <- NULL
   singlecell_subset <- NULL
 	singlemolecule_example <- NULL
 	
@@ -112,7 +112,7 @@ output$sc_preprocessing_down <- downloadHandler(
       if(!is.null(sc_seq_data$gch) & !is.null(sc_seq_data$hcg)) {
       
         if (input$organism_choice == "Human") {
-            data("hum_bm", package="methylscaper", envir = environment())
+            data("human_bm", package="methylscaper", envir = environment())
             getchr <- sc_seq_data$gch[[1]]$chr[1]
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
             cg_min_pos <- suppressWarnings(min(vapply(sc_seq_data$hcg, FUN=function(x) {min(x$pos, na.rm=TRUE)}, numeric(1))))
@@ -122,10 +122,10 @@ output$sc_preprocessing_down <- downloadHandler(
 			getmin <- max(c(0,getmin - 100000))
 			getmax <- pmax(cg_max_pos, gc_max_pos) 
 			getmax <- max(c(0,getmax + 100000))
-            hum_bm_sub <- subset(hum_bm, 
-								hum_bm$chromosome_name == getchr & 
-								hum_bm$start_position >= getmin & 
-								hum_bm$end_position <= getmax)
+            hum_bm_sub <- subset(human_bm, 
+								human_bm$chromosome_name == getchr & 
+								human_bm$start_position >= getmin & 
+								human_bm$end_position <= getmax)
              Genes <- sort(unique(hum_bm_sub$hgnc_symbol))
         } else if (input$organism_choice == "Mouse") {
             data("mouse_bm", package="methylscaper", envir = environment())
@@ -163,8 +163,8 @@ output$sc_preprocessing_down <- downloadHandler(
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-	          data("hum_bm", package="methylscaper", envir = environment())
-              gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
+	          data("human_bm", package="methylscaper", envir = environment())
+              gene_select <- subset(human_bm, human_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))
@@ -192,8 +192,8 @@ output$sc_preprocessing_down <- downloadHandler(
               gene_select <- subset(mouse_bm, mouse_bm$mgi_symbol == input$geneList)
           }
           if (input$organism_choice == "Human") {
-              data("hum_bm", package="methylscaper", envir = environment())
-	      	  gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == input$geneList)
+              data("human_bm", package="methylscaper", envir = environment())
+	      	  gene_select <- subset(human_bm, human_bm$hgnc_symbol == input$geneList)
           }
           if (input$organism_choice == "Other") {
             cg_max_pos <- suppressWarnings(max(vapply(sc_seq_data$hcg, FUN=function(x) {max(x$pos, na.rm=TRUE)}, numeric(1))))

@@ -175,16 +175,17 @@ if (!requireNamespace("biomaRt", quietly=TRUE))
     BiocManager::install("biomaRt")
 library(biomaRt)
 ensembl <- useMart("ensembl")
+# Demonstrating how to get the human annotations.
 ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
 my_chr <- c(1:22, 'M', 'X', 'Y') # You can choose to omit this or include additional chromosome
 # We only need the start, end, and symbol:
-hum_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
+human_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
              filters = 'chromosome_name',
              values = my_chr,
              mart=ensembl)
 
 ## Now that we have the biomart object, we can extract start and ends for methylscaper:
-gene_select <- subset(hum_bm, hum_bm$hgnc_symbol == "GeneX")
+gene_select <- subset(human_bm, human_bm$hgnc_symbol == "GeneX")
 
 # These can then be passed into the prepSC function:
 prepSC.out <- prepSC(mydata, startPos=gene_select$startPos, endPos=gene_select$endPos)
