@@ -30,7 +30,7 @@ Alternatively, the version specified by the `ref` parameter below only requires 
 ```{r}
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="v0.99")
+devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="R4.0")
 ```
 Note: on Ubuntu, users may need to install libgsl via:
 `sudo apt-get install libgsl-dev`
