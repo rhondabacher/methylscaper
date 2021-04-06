@@ -134,8 +134,11 @@ alignSequences <- function(fasta, ref_string, log_vector,
 
     good_alignment_idxs <- which(scores > score_cutoff)
 
-    if(length(good_alignment_idxs) == 0) {stop("No good alignments were found. See methylscaper FAQ for more details.")}
-
+    if(length(good_alignment_idxs) == 0) {stop("No good alignments were found. 
+					See methylscaper FAQ for more details.")}
+		if(length(good_alignment_idxs)/length(scores) >= .8) {stop("Alignment to this
+				 			target reference may be poor and should be examined more closely. 
+							See methylscaper FAQ for more details.")}
     alignedseq <- lapply(good_alignment_idxs, function(i){
         SEQ1 = s2c(paste(alignedPattern(useseqs[[i]])))
         SEQ2 = s2c(paste(alignedSubject(useseqs[[i]])))
