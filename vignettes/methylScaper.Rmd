@@ -220,7 +220,7 @@ ref_file <- system.file("extdata", "reference.fa", package = "methylscaper")
 if (!requireNamespace("seqinr", quietly=TRUE))
     install.packages("seqinr")
 fasta <- seqinr::read.fasta(seq_file)
-ref <- seqinr::read.fasta(ref_file)
+ref <- seqinr::read.fasta(ref_file)[[1]]
 
 # For the vignette we will only run a subset of the molecules
 singlemolecule_example <- runAlign(fasta = fasta, ref = ref, fasta_subset = 1:150)
