@@ -587,6 +587,8 @@ output$sc_preprocessing_down <- downloadHandler(
 			need(input$fasta_file$datapath, "Please provide FASTA file.")
 			)
     ref <- read.fasta(input$ref_file$datapath)
+		if (length(ref)==1){ref <- ref[[1]]}
+			
     fasta <- read.fasta(input$fasta_file$datapath)
 
     progress <- Progress$new()

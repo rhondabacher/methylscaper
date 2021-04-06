@@ -40,7 +40,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
                      log_file = NULL)
 {
     fasta <- fasta[fasta_subset]
-    ref_string <- DNAString(toupper(c2s(ref[[1]])))
+    ref_string <- DNAString(toupper(c2s(ref)))
 
     log_vector <- c("Beginning preprocessing")
 
