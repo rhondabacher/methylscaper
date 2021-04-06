@@ -68,7 +68,7 @@ plotSequence <- function(orderObject, plotFast=TRUE,
 
     ## Add some rows in order to add a legend:
     if(drawKey == TRUE) {
-			keyHeight <- ceiling(nrow(toPlot_fix) * 0.1)
+			keyHeight <- pmax(ceiling(nrow(toPlot_fix) * 0.1), 3)
       blankROW <- matrix(rep(0, ncol(toPlot_fix)*keyHeight), 
                           nrow=keyHeight, ncol=ncol(toPlot_fix))
       blankROW[seq(1,2),seq(1,147)] <- 2 #147 is nucleosome
