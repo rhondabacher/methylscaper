@@ -14,6 +14,9 @@
 #' @param log_file (optional) String indicating where to save a log of the 
 #'      alignment process. If left NULL, no log is saved. We highly recommend
 #'      saving a log file.
+#' @param manualCut (optional) Only use when aligning a reads fasta that are resulting 
+#'      from multiple target sequenced. If the proportion of alignments to too high
+#'     this reports an error. 
 #' @return The output is a list containing the the matrices 'gch' and 'hcg.
 #'       Each is a dataframe with reads/cells on the rows and each column
 #'      is a base-pair. The matrix represents the methylation state for cell
@@ -37,7 +40,7 @@
 
 runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
                      multicoreParam = NULL, updateProgress = NULL, 
-                     log_file = NULL)
+                     log_file = NULL, manualCut = 2)
 {
     fasta <- fasta[fasta_subset]
     ref_string <- DNAString(toupper(c2s(ref)))
@@ -48,7 +51,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
       updateProgress(message = "Aligning sequences", value = 0.1)
     }
     alignment_out <- alignSequences(fasta, ref_string, log_vector,
-                                      multicoreParam, updateProgress)
+                                      multicoreParam, updateProgress, manualCut)
 
     alignedseq <- alignment_out$alignedseq
     log_vector <- alignment_out$log_vector
@@ -102,7 +105,9 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
 # this needs the log_vector, multicoreParam, and updateProgress
 # so that we can continue keeping track of these things
 alignSequences <- function(fasta, ref_string, log_vector,
-                        multicoreParam = NULL, updateProgress = NULL)
+                        multicoreParam = NULL, 
+												updateProgress = NULL,
+												manualCut = 2)
 {
     ## this creates the substitution matrix for use in alignment
     penalty_mat <- matrix(0,length(DNA_ALPHABET[seq(1,4)]),
@@ -136,7 +141,7 @@ alignSequences <- function(fasta, ref_string, log_vector,
 
     if(length(good_alignment_idxs) == 0) {stop("No good alignments were found. 
 					See methylscaper FAQ for more details.")}
-		if(length(good_alignment_idxs)/length(scores) >= .8) {stop("Alignment to this
+		if(length(good_alignment_idxs)/length(scores) >= manualCut) {stop("Alignment to this
 				 			target reference may be poor and should be examined more closely. 
 							See methylscaper FAQ for more details.")}
     alignedseq <- lapply(good_alignment_idxs, function(i){
