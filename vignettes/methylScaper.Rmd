@@ -37,11 +37,11 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("methylscaper")
 ```
 
-`methylscaper` can also be installed via [GitHub](https://github.com/rhondabacher/methylscaper/). The v0.99 version is current with the Bioconductor version and only requires R version >= 4.0.0 while 4.1 is still under development or for those who have not yet upgraded.
+`methylscaper` can also be installed via [GitHub](https://github.com/rhondabacher/methylscaper/). The R4.0 branch is current with the Bioconductor version and only requires R version >= 4.0.0 while 4.1 is still under development or for those who have not yet upgraded.
 ```{r, message=FALSE, eval=F}
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="v0.99")
+devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="R4.0")
 ```
 
 ## Load the package
@@ -220,7 +220,7 @@ ref_file <- system.file("extdata", "reference.fa", package = "methylscaper")
 if (!requireNamespace("seqinr", quietly=TRUE))
     install.packages("seqinr")
 fasta <- seqinr::read.fasta(seq_file)
-ref <- seqinr::read.fasta(ref_file)
+ref <- seqinr::read.fasta(ref_file)[[1]]
 
 # For the vignette we will only run a subset of the molecules
 singlemolecule_example <- runAlign(fasta = fasta, ref = ref, fasta_subset = 1:150)

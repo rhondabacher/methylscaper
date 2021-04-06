@@ -1,17 +1,21 @@
 server <- function(input, output, session) {
 		
-	    source("seqPlot.R")
-		  source("initialOrder.R")
-		  source("appHelpers.R")
-		  source("refinement.R")
-		  source("preprocessSingleMolecule.R")
-		  source("summaryPlots.R")
-		  source("preprocessSingleCell.R")
-			
-			library(seqinr)
-			library(Biostrings)
-			
+		
+  source("seqPlot.R")
+  source("initialOrder.R")
+  source("appHelpers.R")
+  source("refinement.R")
+  source("preprocessSingleMolecule.R")
+  source("summaryPlots.R")
+  source("preprocessSingleCell.R")
+	
+	library(seqinr)
+	library(Biostrings)
+	
+	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
+
+
 
   ####################
   # Single-cell data #
@@ -596,6 +600,8 @@ output$sc_preprocessing_down <- downloadHandler(
 			need(input$fasta_file$datapath, "Please provide FASTA file.")
 			)
     ref <- read.fasta(input$ref_file$datapath)
+		if (length(ref)==1){ref <- ref[[1]]}
+			
     fasta <- read.fasta(input$fasta_file$datapath)
 
     progress <- Progress$new()
