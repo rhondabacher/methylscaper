@@ -62,5 +62,6 @@ Many more details and examples on how to use the Shiny App or functions directly
 
 # Contact/Maintainer
 
-[Rhonda Bacher](https://www.rhondabacher.com) (rbacher@ufl.edu)
+* [Rhonda Bacher](https://www.rhondabacher.com) (rbacher@ufl.edu)
+
 Department of Biostatistics, University of Florida
