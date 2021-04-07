@@ -30,11 +30,10 @@ devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref=
 Note: on Ubuntu, users may need to install libgsl via:
 `sudo apt-get install libgsl-dev`
 
-The following packages are required for methylscaper. If installation fails, you may need to manually install using
-'install.packages' or 'BiocManager::install'.
+The following packages are required for methylscaper. If installation fails, you may need to manually install the dependencies using the function 'install.packages' for CRAN packages or 'BiocManager::install' for Bioconductor packages.
 
 * CRAN packages: shiny, shinyjs, shinyFiles, seriation, seqinr, Rfast, data.table
-* Bioconductor packages:   BiocParallel, Biostrings, SummarizedExperiment
+* Bioconductor packages: BiocParallel, Biostrings, SummarizedExperiment
 
 
 For any other installation issues/questions please leave a message on our [Github Issues](https://github.com/rhondabacher/methylscaper/issues).
@@ -61,6 +60,7 @@ Many more details and examples on how to use the Shiny App or functions directly
 * [Vignette](http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html)
 
 
-# Contact
+# Contact/Maintainer
 
-[Rhonda Bacher](https://www.rhondabacher.com)
+[Rhonda Bacher](https://www.rhondabacher.com) (rbacher@ufl.edu)
+Department of Biostatistics, University of Florida
