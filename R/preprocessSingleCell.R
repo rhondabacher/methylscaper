@@ -179,8 +179,6 @@ mapSC <- function(inSeq, startPos, endPos) {
 subsetSC <- function(path, chromosome, startPos = NULL, 
 											endPos = NULL, updateProgress = NULL) {
 												
-												print("AHH!")
-		
 		if (!is.list(path)){
     	cgfiles <- paste0(path,"/","met/", sort(grep("met", list.files(paste0(path,"/met")), value = TRUE)))
     	gcfiles <- paste0(path,"/","acc/", sort(grep("acc", list.files(paste0(path,"/acc")), value = TRUE)))

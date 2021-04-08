@@ -1,18 +1,5 @@
 server <- function(input, output, session) {
 		
-		
-  source("seqPlot.R")
-  source("initialOrder.R")
-  source("appHelpers.R")
-  source("refinement.R")
-  source("preprocessSingleMolecule.R")
-  source("summaryPlots.R")
-  source("preprocessSingleCell.R")
-	
-	library(seqinr)
-	library(Biostrings)
-	
-	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -41,11 +28,6 @@ server <- function(input, output, session) {
    })
 
   observeEvent(input$run_subset,{
-    
-		# print(input$sc_met_files$datapath)
-	# 	print(is.list(input$sc_met_files$datapath))
-	#   print(input$sc_met_files$name)
-	# 	print(is.null(input$sc_met_files$name[1]))
 		
     validate(need(!is.null(input$sc_met_files$name[1]) & !is.null(input$sc_acc_files$name[1]),
     							message = "Please choose an input directory.", label = "sc_input_folder"))
@@ -62,7 +44,6 @@ server <- function(input, output, session) {
 													input$chromosome_number, updateProgress = updateProgress) 
 
     showNotification("Done with single cell processing")
-		print(str(dat_subset))
     sc_raw_data$gch <- dat_subset$gch
     sc_raw_data$hcg <- dat_subset$hcg
     rm(dat_subset)
