@@ -81,7 +81,7 @@ The preprocessing can also be done in the R console directly, which allows for a
 
 ## Preprocessing using methylscaper functions
 ```{r, eval=FALSE}
-filepath <- "~/Downloads/GSE109262_RAW"
+filepath <- "~/Downloads/GSE_TEST/"
 singlecell_subset <- subsetSC(filepath, chromosome=19, startPos = 8937041, endPos = 8997041)
 # To save for later, save as an rds file and change the folder location as desired:
 saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")

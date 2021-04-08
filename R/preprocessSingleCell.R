@@ -179,9 +179,23 @@ mapSC <- function(inSeq, startPos, endPos) {
 subsetSC <- function(path, chromosome, startPos = NULL, 
 											endPos = NULL, updateProgress = NULL) {
 												
-    cgfiles <- sort(grep("met", list.files(paste0(path,"/met")), value = TRUE))
-    gcfiles <- sort(grep("acc", list.files(paste0(path,"/acc")), value = TRUE))
-
+												print("AHH!")
+		
+		if (!is.list(path)){
+    	cgfiles <- paste0(path,"/","met/", sort(grep("met", list.files(paste0(path,"/met")), value = TRUE)))
+    	gcfiles <- paste0(path,"/","acc/", sort(grep("acc", list.files(paste0(path,"/acc")), value = TRUE)))
+		} else {
+			cgfiles <- path[[1]]
+			gcfiles <- path[[2]]
+			
+			getord <- order(path[[3]])
+			cgfiles <- cgfiles[getord]
+			
+			getord <- order(path[[4]])
+			gcfiles <- gcfiles[getord]
+		}
+		
+		
 		if (length(cgfiles) != length(gcfiles)) {stop("Must have the same number of methylation and
 			accessibility files!")}
 		
@@ -190,7 +204,7 @@ subsetSC <- function(path, chromosome, startPos = NULL,
     cg_seq <- list()
     for(i in seq(1,length(cgfiles))) {
     
-        in_cg_seq <- fread(paste0(path,"/","met/",cgfiles[i]), 
+        in_cg_seq <- fread(cgfiles[i], 
 														header=FALSE, stringsAsFactors = FALSE)
 				# A couple possible formats from bismark:										
         if(ncol(in_cg_seq) %in% c(4,6)) {
@@ -219,7 +233,7 @@ subsetSC <- function(path, chromosome, startPos = NULL,
     gc_seq<- list()
     for(i in seq(1,length(gcfiles))) { 
         
-        in_gc_seq <- fread(paste0(path,"/","acc/",gcfiles[i]), header=FALSE, stringsAsFactors = FALSE)
+        in_gc_seq <- fread(gcfiles[i], header=FALSE, stringsAsFactors = FALSE)
         if(ncol(in_gc_seq) %in% c(4,6)) {
 					in_gc_seq <- in_gc_seq[,c(1,2,4)]	
         }	
