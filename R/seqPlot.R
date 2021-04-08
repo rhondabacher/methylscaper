@@ -93,7 +93,7 @@ plotSequence <- function(orderObject, plotFast=TRUE,
 	  title("HCG", adj = plot1 / 2 - 0.025, line = 1.7) 
 	  title("GCH", adj = plot2 + 0.025 + (1 - plot2) / 2, line = 1.7)
 
-    toLabel <- rev(seq(1, length(order1), by=round(length(order1)/8)))
+    toLabel <- rev(seq(1, length(order1), by=ceiling(length(order1)/8)))
     if (!(length(order1) %in% toLabel)) toLabel <- c(length(order1), toLabel)
     y_axis_starting_point <- ifelse(drawKey, nrow(blankROW) / nrow(toPlot_fix), 0)
     axis(2, at = seq(y_axis_starting_point,1,

@@ -1,5 +1,18 @@
 server <- function(input, output, session) {
 		
+		
+  source("seqPlot.R")
+  source("initialOrder.R")
+  source("appHelpers.R")
+  source("refinement.R")
+  source("preprocessSingleMolecule.R")
+  source("summaryPlots.R")
+  source("preprocessSingleCell.R")
+	
+	library(seqinr)
+	library(Biostrings)
+	
+	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -22,33 +35,34 @@ server <- function(input, output, session) {
   observe({
     if (is.null(input$sc_rds_file) & input$seriate_sc == "Preprocessing"  & input$big_tab == "Single-cell")
     {
-      showNotification("Please select the input folder to begin", 
+      showNotification("Please select the input files to begin", 
                                       type="message", duration=4)
     }
-    volumes = getVolumes()
-    shinyDirChoose(input, 'folder', roots=volumes())
-    path_list <- input$folder["path"][[1]]
-    path <- paste(unlist(path_list), collapse = "/")
-    if (!is.null(path_list)) sc_input_folder$path <- path
    })
-  
-  output$sc_folder_name <- renderText({
-    if (is.null(sc_input_folder$path)) "Folder Input"
-    else sc_input_folder$path
-    })
 
   observeEvent(input$run_subset,{
     
-    validate(need(sc_input_folder$path != "NA", message = "Please choose an input directory.", label = "sc_input_folder"))
-  
+		# print(input$sc_met_files$datapath)
+	# 	print(is.list(input$sc_met_files$datapath))
+	#   print(input$sc_met_files$name)
+	# 	print(is.null(input$sc_met_files$name[1]))
+		
+    validate(need(!is.null(input$sc_met_files$name[1]) & !is.null(input$sc_acc_files$name[1]),
+    							message = "Please choose an input directory.", label = "sc_input_folder"))
+
     progress <- Progress$new()
-    progress$set(message = "Loading single cell data", value = 0)
+    progress$set(message = "Loading single-cell data", value = 0)
     on.exit(progress$close())
     updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
          progress$set(value = value, message = message, detail = detail) }
-    showNotification(paste("Begin SC processing in", sc_input_folder$path, "at chr", input$chromosome_number))
-    dat_subset <- subsetSC(sc_input_folder$path, input$chromosome_number, updateProgress = updateProgress) 
+    showNotification(paste("Begin SC processing at chr", input$chromosome_number))
+		
+    dat_subset <- subsetSC(list(input$sc_met_files$datapath, input$sc_acc_files$datapath,
+																input$sc_met_files$data, input$sc_met_files$data), 
+													input$chromosome_number, updateProgress = updateProgress) 
+
     showNotification("Done with single cell processing")
+		print(str(dat_subset))
     sc_raw_data$gch <- dat_subset$gch
     sc_raw_data$hcg <- dat_subset$hcg
     rm(dat_subset)
@@ -69,7 +83,8 @@ output$sc_preprocessing_down <- downloadHandler(
       "methylscaper_singlecell_preprocessed.rds"
     },
     content = function(file){
-      validate(need(sc_raw_data$gch & sc_raw_data$hcg, "Data has not been processed."))
+      validate(need(!is.null(sc_raw_data$gch) & !is.null(sc_raw_data$hcg), 
+									message = "Data has not been processed."))
       print("Saving data")
       saveRDS(list(gch = sc_raw_data$gch, hcg = sc_raw_data$hcg), file = file)
       sc_raw_data$gch <- NULL
