@@ -9,21 +9,19 @@ ui <- navbarPage("methylscaper",id="big_tab",
                    tabPanel("Preprocessing",
                    
                    fluidRow(
-                       column(3,
+                       column(4,
                             tags$br(),
                             tags$br(),
-                            shinyDirButton('folder', 'Select a folder', 'Please select a folder'),
-                            verbatimTextOutput("sc_folder_name"), ## display the path
+														fileInput("sc_met_files", label = "Endogenous Methylation Files", multiple=TRUE),
+														fileInput("sc_acc_files", label = "Accessibility Methylation Files", multiple=TRUE),
                             textInput("chromosome_number", "Chromosome number"),
                             actionButton("run_subset", label = "Run"),
                             ),
                         column(6, offset = 1,
                             tags$h3("Directions"),
                             tags$ul(
-                                tags$li("Select the folder containing the summarized data from the single-cell experiment. This summarized data
-                                should be from Bismark's methylation extractor or in the form of three columns (chromosome, position, methylation rate). 
-																The folder should contain two subfolders with the names 'met' and 'acc' which contain the files with the endogenous methylation and the 
-                                accessibility methylation, respectively."),
+                                tags$li("Select all methylation files of each type when uploading data from the single-cell experiment. This summarized data
+                                should be from Bismark's methylation extractor or in the form of three columns (chromosome, position, methylation rate)."),
                                 tags$li("As these files are large, we process a single chromosome at a time. 
                                     Indicate the desired chromosome as a number (e.g., 1 - 22) or as X, Y, MT."),
                                 tags$li("After pressing 'Run', a progress bar will appear in the bottom right.")),
@@ -136,8 +134,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                column(3,
                     tags$br(),
                     tags$br(),
-                    fileInput("fasta_file", label = "FASTA File", accept= c(".fa", ".txt", ".fasta")),
-                    fileInput("ref_file", label = "Reference File", accept= c(".fa", ".txt", ".fasta")),
+                    fileInput("fasta_file", label = "FASTA File", accept= c(".fa", ".txt", ".fasta"), multiple=TRUE),
+                    fileInput("ref_file", label = "Reference File", accept= c(".fa", ".txt", ".fasta"), multiple=TRUE),
                     actionButton("run_align", label = "Run"),
                     ),
                 column(6, offset = 1,

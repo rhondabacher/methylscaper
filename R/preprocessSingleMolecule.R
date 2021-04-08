@@ -36,14 +36,14 @@
 #'  
 #' data(reads_sm)
 #' data(ref_seq)
-#' example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq, fasta_subset = 1:150)
+#' example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
 
 runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
                      multicoreParam = NULL, updateProgress = NULL, 
                      log_file = NULL, manualCut = 2)
 {
     fasta <- fasta[fasta_subset]
-    ref_string <- DNAString(toupper(c2s(ref)))
+    ref_string <- DNAString(toupper(c2s(ref[[1]])))
 
     log_vector <- c("Beginning preprocessing")
 
