@@ -1,6 +1,6 @@
 # methylscaper
 
-`methylscaper` is an R package for visualizing data that jointly profile endogenous methylation and chromatin accessibility (MAPit, NOMe-seq, scNMT-seq, nanoNOMe, etc.). The package offers pre-processing for single-molecule data and accepts input from Bismark (or similar alignment programs) for single-cell data. A common interface for visualizing both data types is done by generating ordered representational methylation-state matrices. The package provides a Shiny app to allow for interactive and optimal ordering of the individual DNA molecules to discover methylation patterns and nucleosome positioning.
+`methylscaper` is an R package for visualizing data that jointly profile endogenous methylation and chromatin accessibility (MAPit, NOMe-seq, scNMT-seq, nanoNOMe, etc.). The package offers pre-processing for single-molecule data and accepts input from Bismark (or similar alignment programs) for single-cell data. A common interface for visualizing both data types is constructed by generating ordered representational methylation-state matrices. The package provides a Shiny app to allow for interactive and optimal ordering of the individual DNA molecules to discover methylation patterns, nucleosome positioning, and transcription factor binding.
 
 # Webserver
 
@@ -22,7 +22,7 @@ Alternatively, the version specified by the `ref` parameter below only requires 
 ```{r}
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="R4.0")
+devtools::install_github("rhondabacher/methylscaper", ref="R4.0")
 ```
 
 # Dependencies
