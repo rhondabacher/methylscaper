@@ -116,7 +116,7 @@ alignSequences <- function(fasta, ref_string, log_vector,
     if (is.null(multicoreParam)) seqalign_out <- lapply(seq(1,length(fasta)),
         function(i) {
             if (is.function(updateProgress)) {
-                updateProgress(message = "Aligning seqences",
+                updateProgress(message = "Aligning sequences",
                                detail = paste(i, "/", length(fasta)),
                                value = (0.1+ 0.65/length(fasta) * i))
             }

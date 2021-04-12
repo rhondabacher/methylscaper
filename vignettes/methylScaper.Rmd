@@ -40,7 +40,7 @@ BiocManager::install("methylscaper")
 ```{r, message=FALSE, eval=F}
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", build_vignettes=TRUE, ref="R4.0")
+devtools::install_github("rhondabacher/methylscaper", ref="R4.0")
 ```
 
 ## Load the package
@@ -75,7 +75,7 @@ In the screenshot below, the data from GSE10926 data on chromosome 19 is ready f
 ![Preprocessing tab for single-cell data](process_sc.png){#id .class width=100% height=100%}
 
 
-The preprocessing can also be done in the R console directly, which allows for additional start and end specifications. For the purpose of creating a small example to include in the package, we additionally restricted the data between base pairs 8,947,041 to 8,987,041, which is centered around the Eef1g gene. In practice, we advise users to filter to just the chromosome level to keep the region relatively large. The Visualization tab described in the next step allows for a more refined search along the chromosome.
+The preprocessing can also be done in the R console directly, which allows for additional start and end specifications. For the purpose of creating a small example to include in the package, we additionally restricted the data between base pairs 8,947,041 to 8,987,041, which is centered around the *Eef1g* gene. In practice, we advise users to filter to just the chromosome level to keep the region relatively large. The Visualization tab described in the next step allows for a more refined search along the chromosome.
 
 When using methylscaper within R, rather than specifying all the files, simply point to a folder which contains two subfolders with the accessibility and endogenous methylation files. These subfolders must be named "acc" and "met", respectively.
 
@@ -91,9 +91,9 @@ saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
 
 The screenshot below is of the Visualization tab in the methylscaper Shiny app. First, indicate the location of the singlecell_subset.rds file. Once the file is loaded, we have included preset gene locations for Mouse (GRCm39) and Human (GRCh38), so that a gene can be selected. The input box can also be typed in and genes will begin to appear; this is the easiest way to navigate. The default start and end positions are those of the entire gene, however, a slider will appear that allows the user to refine the genomic location of interest. The start and end positions can also be manually entered. For any other organism, the start and end positions should be entered manually.
 
-In the visualization, two heatmaps will appear. They both represent the same genomic region, but they are colored based on either CGH or HCG sites. The x-axis represents the genomic location, and the y-axis is each individual cell. The left heatmap contains the genomic region mapped to CGH sites (sites are indicated by tick marks at the top), and the right heatmap contains the genomic region mapped to GCH sites. For HCG (i.e. endogenous methylation), methylscaper colors patches in between each HCG site. If two consecutive HCG sites are methylated, a red path is present. If two consecutive HCG sites are unmethylated, a black patch is present. If two consecutive HCG sites are inconsistently methylated, the patch appears gray. For GCH (i.e. accessibility), methylscaper colors patches as follows: yellow patches occur between two methylated sites (an accessible region), black patches occur between two unmethylated sites (inaccessible region), and gray patches occur between inconsistent methylation of consecutive sites. Any missing data (e.g. no reads covered that region for a particular cell) will show up as a white patch in either heatmap.
+In the visualization, two heatmaps will appear. They both represent the same genomic region, but they are colored based on either CGH or HCG sites. The x-axis represents the genomic location, and the y-axis is each individual cell. The left heatmap contains the genomic region mapped to CGH sites (sites are indicated by tick marks at the top), and the right heatmap contains the genomic region mapped to GCH sites. For HCG (i.e. endogenous methylation), methylscaper colors patches in between each HCG site. If two consecutive HCG sites are methylated, a red patch is present. If two consecutive HCG sites are unmethylated, a black patch is present. If two consecutive HCG sites are inconsistently methylated, the patch appears gray. For GCH (i.e. accessibility), methylscaper colors patches as follows: yellow patches occur between two methylated sites (an accessible region), black patches occur between two unmethylated sites (inaccessible region), and gray patches occur between inconsistent methylation of consecutive sites. Any missing data (e.g. no reads covered that region for a particular cell) will show up as a white patch in either heatmap.
 
-![Visualization of the Tut1 gene](sc.png){#id .class width=100% height=100%}
+![Visualization of the *Tut1* gene](sc.png){#id .class width=100% height=100%}
 
 Once a region is chosen, the default ordering by methylscaper is the unweighted PCA. The user is then able to dynamically refine and re-weight the plot via Shiny's brushing mechanics. The user can click and drag the mouse across the heatmap horizontally to choose which bases (i.e. columns) should be weighted in the global PCA ordering. The plot will update and two green lines will appear to indicate the weighting positions (note that these are not included once the heatmap is downloaded).
 
@@ -150,7 +150,7 @@ orderObj <- initialOrder(prepSC.out,
 The sequence heatmap is then generated with the `plotSequence` function. The option 'plotFast' sets the plot parameter useRaster to TRUE, which generates a fast-loading bitmap image. To save with high resolution, change 'plotFast' to TRUE. In the Shiny app, the download button automatically generates the high resolution version.
 
 The plot on the left corresponds to endogenous methylation status, and the right to
-accessibility status. The red and yellow colored portions represent the areas on each
+accessibility status. The red- and yellow- colored portions represent the areas on each
 read that are methylated and accessible, respectively.
 
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
@@ -166,9 +166,20 @@ orderObj$order1 <- refineFunction(orderObj, refineStart = 1, refineEnd = 20)
 plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
 ```
 
+Within R, there is more control over the output resolution of the plot. For example, we can
+control the resolution when outputting as a PNG. Note that saving as PNG with the best quality and size 
+takes some trial and error. You may need to increase the width/height for a given resolution. Saving as PDF
+is automatically high resolution, though you will still want to adjust the width and height to your liking.
+
+```{r, eval=FALSE}
+png("~/save_my_plot.png", width = 4, height = 6, units = 'in', res = 300)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast=FASLE)
+dev.off()
+```
+
 ### Accessing gene positions via biomaRt objects
 
-In the Shiny app, we have included pre-downloaded versions of the mouse (GRCm39) and human (GRCh38) gene locations to ease of use. If you wish to use another organism, we demonstrate below how to obtain these from biomaRt. 
+In the Shiny app, we have included pre-downloaded versions of the mouse (GRCm39) and human (GRCh38) gene locations for ease of use. If you wish to use another organism, we demonstrate below how to obtain these from biomaRt. 
 
 ```{r, eval=FALSE}
 if (!requireNamespace("biomaRt", quietly=TRUE))
