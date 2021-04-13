@@ -13,6 +13,7 @@ server <- function(input, output, session) {
 	library(Biostrings)
 	library(seriation)
 	library(data.table)
+	library(Rfast)
 	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
