@@ -34,8 +34,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                     tags$br(),
                     tags$br(),
                     fluidRow(
-                        tags$p("For additional information or to view Frequently Asked Questions, see the methylscaper 
-                        vignette:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                        tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
+                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
         
                         tags$p("Questions can also be submitted on our GitHub page:", 
                         tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
@@ -49,7 +49,7 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$p("Upload the RDS file obtained in the Preprocessing tab below in the input labelled 
                          'RDS File Input'. Alternatively, explore the app by selecting 'Load Example Data' below. The example data
 												 is from Mouse on Chromosome 19 subset to a 40 kbp region around 8,967,041. Some genes that are located in this region
-												 are Eef1g, Mta2, and Tut1."),
+												 are", tags$em("Eef1g,"), tags$em("Mta2,"), "and", tags$em("Tut1.")),
                          tags$p("To move along the genome, we have pre-loaded gene locations for Human (GRCh38) and Mouse (GRCm39)
                          for the chromosome selected in the Preprocessing tab. Select a gene and then a slider will appear 
                          to refine the genomic location."),
@@ -156,8 +156,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
             tags$br(),
             tags$br(),
             fluidRow(
-                tags$p("For additional information or to view Frequently Asked Questions, see the methylscaper 
-                vignette:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
+                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
                 
                 tags$p("Questions can also be submitted on our GitHub page:", 
                 tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
