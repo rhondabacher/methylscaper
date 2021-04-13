@@ -71,7 +71,7 @@ plotSequence <- function(orderObject, plotFast=TRUE,
 			totalHeight <- pmax(ceiling(nrow(toPlot_fix) * 0.1), 3)
       blankROW <- matrix(rep(0, ncol(toPlot_fix)*totalHeight), 
                           nrow=totalHeight, ncol=ncol(toPlot_fix))
-			keyHeight <- pmax(ceiling(totalHeight * 0.5), 3)
+			keyHeight <- pmax(ceiling(totalHeight * 0.5), 2)
       blankROW[seq(1,keyHeight),seq(1,147)] <- 2 #147 is nucleosome
       blankROW[seq(1,keyHeight),(seq(1,147)+(ncol(input_HCG_fix) + ncol(blankCOLS)))] <- 2
       toPlot_fix <- rbind(blankROW,toPlot_fix)
