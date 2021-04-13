@@ -11,7 +11,8 @@ server <- function(input, output, session) {
 	
 	library(seqinr)
 	library(Biostrings)
-	
+	library(seriation)
+	library(data.table)
 	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
