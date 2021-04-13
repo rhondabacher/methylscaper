@@ -142,7 +142,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                     tags$h3("Directions"),
                     tags$ul(
                         tags$li("Upload the reads or sequences from the single-molecule experiment in FASTA format in the input labelled
-                                'FASTA File'."),
+                                'FASTA File'. There is a 10MB upload limit for files on the webserver. For larger files, 
+																please run methylscaper locally. Additional details are provided in the vignette linked at the bottom of this page."),
                         tags$li("Upload the reference sequence for the gene or genomic location of interest in the input 
                                 labelled 'Reference File', this should also be in FASTA format."),
                         tags$li("After pressing 'Run', a progress bar will appear in the bottom right.")),
