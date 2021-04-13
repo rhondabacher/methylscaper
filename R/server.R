@@ -1,5 +1,6 @@
 server <- function(input, output, session) {
 		
+	options(shiny.maxRequestSize=10000*1024^2)
 		
   source("seqPlot.R")
   source("initialOrder.R")
