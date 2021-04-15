@@ -72,15 +72,31 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
     if (is.function(updateProgress)) {
       updateProgress(message = "Mapping sites", value = 0.8)
     }
-    if (is.null(multicoreParam)) {
-    gcmap <- lapply(alignedseq, mapseq, sites=GCsites)
-    cgmap <- lapply(alignedseq, mapseq, sites=CGsites)
-    } else {
-    gcmap <- bplapply(alignedseq, mapseq, sites=GCsites,
-                        BPPARAM = multicoreParam)
-    cgmap <- bplapply(alignedseq, mapseq, sites=CGsites,
-                        BPPARAM = multicoreParam)
-    }
+     if (alignment_out$siteOrient == "rev"){
+       GCsitesForMapping <- GCsites - 1
+       CGsitesForMapping <- CGsites + 1
+     } else {
+       GCsitesForMapping <- GCsites
+       CGsitesForMapping <- CGsites
+     }
+
+     if (is.null(multicoreParam)) {
+       gcmap <- lapply(alignedseq, mapseq, 
+                       sites=GCsitesForMapping, 
+                       siteOrient=alignment_out$siteOrient)
+       cgmap <- lapply(alignedseq, mapseq,
+                       sites=CGsitesForMapping,
+                       siteOrient=alignment_out$siteOrient)
+     } else {
+       gcmap <- bplapply(alignedseq, mapseq, 
+                         sites=GCsitesForMapping,
+                         siteOrient=alignment_out$siteOrient,
+                         BPPARAM = multicoreParam)
+       cgmap <- bplapply(alignedseq, mapseq, 
+                         sites=CGsitesForMapping,
+                         siteOrient=alignment_out$siteOrient,
+                         BPPARAM = multicoreParam)
+     }
 
     if (is.function(updateProgress)) {
           updateProgress(message = "Preparing matrices", value = 0.95)
@@ -142,18 +158,34 @@ alignSequences <- function(fasta, ref_string, log_vector,
 
         toreplace <- SEQ1[which(SEQ2=="-")]
         toreplace[toreplace!="C"] <- "."
-        toreplace[toreplace=="C"] <- "." #or T?. Leave as "." for now.
+        toreplace[toreplace=="C"] <- "."
 
         SEQ2[which(SEQ2=="-")] <- toreplace
         SEQ2 <- SEQ2[which(SEQ1!="-")]
-        if (maxAligns[i] == 1) SEQ2 <- s2c(paste(reverseComplement(DNAString(c2s(SEQ2)))))
+        # if (maxAligns[i] == 1) SEQ2 <- s2c(paste(reverseComplement(DNAString(c2s(SEQ2)))))
         return(SEQ2)
     })
     log_vector <- c(log_vector, paste("Throwing out",
                     length(useseqs) - length(good_alignment_idxs), "alignments"))
 
     names(alignedseq) <- names(fasta)[good_alignment_idxs]
-    return(list(alignedseq = alignedseq, log_vector = log_vector))
+		
+   getOrientation <- lapply(good_alignment_idxs, function(i){
+     mismt = mismatchTable(useseqs[[i]])
+     mismt = c(mismt$PatternSubstring, mismt$SubjectSubstring)
+     mismm_nt <- names(sort(table(mismt), decreasing = T)[1:2])
+     return(mismm_nt)
+   })
+   getOrientation <- table(unlist(getOrientation))
+   if (!is.na(getOrientation["A"]) & !is.na(getOrientation["T"]) & getOrientation["A"] > getOrientation["T"]) {
+     siteOrient <- "rev"
+   } else if (is.na(getOrientation["C"]) & is.na(getOrientation["T"])) {
+     siteOrient <- "rev"
+   } else {siteOrient <- "stnd"}
+
+   return(list(alignedseq = alignedseq, log_vector = log_vector, siteOrient = siteOrient))
+
+
 }
 
 # aligns a single read to the reference, returns the useseq string.
@@ -162,32 +194,44 @@ seqalign <- function(read, ref_string, substitutionMatrix) {
 
     fasta_string <- DNAString(toupper(c2s(read)))
 
-    align_bb <- pairwiseAlignment(reverseComplement(ref_string),
-                                reverseComplement(fasta_string),
-                                type="global-local", gapOpening=8,
-                                substitutionMatrix=substitutionMatrix)
+    align_bb <- pairwiseAlignment(complement(ref_string),
+                                 reverseComplement(fasta_string),
+                                 type="global-local", gapOpening=8,
+                                 substitutionMatrix=substitutionMatrix)
     align_ab <- pairwiseAlignment(ref_string, reverseComplement(fasta_string),
-                                type="global-local", gapOpening=8,
-                                substitutionMatrix=substitutionMatrix)
+                                 type="global-local", gapOpening=8,
+                                 substitutionMatrix=substitutionMatrix)
     align_aa <- pairwiseAlignment(ref_string, fasta_string,type="global-local",
-                                gapOpening=8,
-                                substitutionMatrix=substitutionMatrix)
+                                 gapOpening=8,
+                                 substitutionMatrix=substitutionMatrix)
+    align_ba <- pairwiseAlignment(complement(ref_string), fasta_string,type="global-local",
+                                 gapOpening=8,
+                                 substitutionMatrix=substitutionMatrix)
 
-    maxAlign <- which.max(c(score(align_bb), score(align_ab), score(align_aa)))
-    allseq <- list(align_bb, align_ab, align_aa)
+    maxAlign <- which.max(c(score(align_aa), score(align_ab), score(align_bb), score(align_ba)))
+    allseq <- list(align_aa, align_ab, align_bb, align_ba)
     useseq <- allseq[[maxAlign]]
 
     return(list(u = useseq, score = score(useseq), maxAlign = maxAlign))
 }
 
-mapseq <- function(i, sites) {
+mapseq <- function(i, sites, siteOrient) {
     editseq <- i
-    editseq[sites][editseq[sites] == "."] <- "T"
-    editseq[sites][editseq[sites] == "T"] <- "-2"
-    editseq[sites][editseq[sites] == "C"] <- "2"
-    editseq[sites][editseq[sites] == "G"] <- "."
-    editseq[sites][editseq[sites] == "A"] <- "."
-    editseq[sites][editseq[sites] == "N"] <- "."
+
+     if (siteOrient == "rev") {
+       editseq[sites][editseq[sites] == "."] <- "A"
+       editseq[sites][editseq[sites] == "A"] <- "-2"
+       editseq[sites][editseq[sites] == "G"] <- "2"
+       editseq[sites][editseq[sites] == "C"] <- "."
+       editseq[sites][editseq[sites] == "T"] <- "."
+     } else {
+       editseq[sites][editseq[sites] == "."] <- "T"
+       editseq[sites][editseq[sites] == "T"] <- "-2"
+       editseq[sites][editseq[sites] == "C"] <- "2"
+       editseq[sites][editseq[sites] == "G"] <- "."
+       editseq[sites][editseq[sites] == "A"] <- "."
+     }
+     editseq[sites][editseq[sites] == "N"] <- "."
     # we need to make sure that the N sites stay marked with a "."
     missing_bp <- which(editseq == ".")
 
@@ -217,7 +261,7 @@ mapseq <- function(i, sites) {
     short_non_missing_sr <- short_non_missing[(short_non_missing + 1)
                  %in% long_missing | (short_non_missing - 1) %in% long_missing]
     counts <- as.numeric(substring_table$count)
-    # this part is tricky... we want to change the short non-missing sections to missing
+    # missing artifacts
     for (idx in short_non_missing_sr) {
       if (idx == 1) editseq[seq(1,counts[idx])] <- "."
       else {

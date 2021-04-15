@@ -15,7 +15,7 @@ server <- function(input, output, session) {
 	library(seriation)
 	library(data.table)
 	library(Rfast)
-	
+		
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -44,7 +44,6 @@ server <- function(input, output, session) {
    })
 
   observeEvent(input$run_subset,{
-    
 		
     validate(need(!is.null(input$sc_met_files$name[1]) & !is.null(input$sc_acc_files$name[1]),
     							message = "Please choose an input directory.", label = "sc_input_folder"))
@@ -596,13 +595,35 @@ output$sc_preprocessing_down <- downloadHandler(
   # alignment handling
   observeEvent(input$run_align, {
     validate(
-			need(input$ref_file$datapath, "Please provide the reference file."),
-			need(input$fasta_file$datapath, "Please provide FASTA file.")
+			need(input$ref_file$datapath, "Please provide the reference .fasta file."),
+			need(input$fasta_file$datapath, "Please provide the reads .fasta file.")
 			)
-    ref <- read.fasta(input$ref_file$datapath)
-		if (length(ref)==1){ref <- ref[[1]]}
 			
-    fasta <- read.fasta(input$fasta_file$datapath)
+		 ref <- tryCatch(read.fasta(input$ref_file$datapath), 
+		 error=function(cond) {message(paste("Please check the format of your .fasta file"))
+		 											# Choose a return value in case of error
+                            return(NA)
+                        		})
+      if (is.na(ref)) {
+              showNotification("Please check the format of your reference .fasta file",
+                         type="error", duration=4)
+      }      
+
+			
+    fasta <- tryCatch(read.fasta(input$fasta_file$datapath),
+                       error=function(cond) {
+                                   message(paste("Please check the format of your .fasta file"))
+                                   # Choose a return value in case of error
+                                   return(NA)
+                               })
+     if (is.na(fasta)) {
+             showNotification("Please check the format of your reads .fasta file",
+                        type="error", duration=4)
+			}       
+     
+     if (!is.na(ref[[1]]) & !is.na(fasta[[1]])) {
+             
+			if (length(ref)==1){ref <- ref[[1]]}
 
     progress <- Progress$new()
     progress$set(message = "Beginning alignment", value = 0)
@@ -617,6 +638,7 @@ output$sc_preprocessing_down <- downloadHandler(
     sm_raw_data$gch <- align_out$gch
     sm_raw_data$hcg <- align_out$hcg
     sm_raw_data$log_vector  <- align_out$logs
+	}
 
   })
 
