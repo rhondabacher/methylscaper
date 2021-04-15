@@ -15,7 +15,8 @@ server <- function(input, output, session) {
 	library(seriation)
 	library(data.table)
 	library(Rfast)
-		
+	library(svglite)
+	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -433,10 +434,12 @@ output$sc_preprocessing_down <- downloadHandler(
     filename = function(){
       if (input$sc_plot_filetype == "PNG") return("methylscaper_heatmap.png")
       if (input$sc_plot_filetype == "PDF") return("methylscaper_heatmap.pdf")
+			if (input$sc_plot_filetype == "SVG") return("methylscaper_heatmap.svgz")
     },
     content = function(file){
       if (input$sc_plot_filetype == "PNG") png(file)
       if (input$sc_plot_filetype == "PDF") pdf(file)
+			if (input$sc_plot_filetype == "SVG") svglite(file)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -817,10 +820,12 @@ output$sm_preprocessing_down <- downloadHandler(
     filename = function(){
       if (input$sm_filetype == "PNG") return("methylscaper_heatmap.png")
       if (input$sm_filetype == "PDF") return("methylscaper_heatmap.pdf")
+			if (input$sm_filetype == "SVG") return("methylscaper_heatmap.svgz")
     },
     content = function(file){
       if (input$sm_filetype == "PNG") png(file)
       if (input$sm_filetype == "PDF") pdf(file)
+      if (input$sm_filetype == "SVG") svglite(file)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
