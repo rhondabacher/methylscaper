@@ -439,7 +439,7 @@ output$sc_preprocessing_down <- downloadHandler(
     content = function(file){
       if (input$sc_plot_filetype == "PNG") png(file)
       if (input$sc_plot_filetype == "PDF") pdf(file)
-			if (input$sc_plot_filetype == "SVG") svglite(file)
+			if (input$sc_plot_filetype == "SVG") svglite(file, height=7, width=7)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -825,7 +825,7 @@ output$sm_preprocessing_down <- downloadHandler(
     content = function(file){
       if (input$sm_filetype == "PNG") png(file)
       if (input$sm_filetype == "PDF") pdf(file)
-      if (input$sm_filetype == "SVG") svglite(file)
+      if (input$sm_filetype == "SVG") svglite(file, height=7, width=7)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
