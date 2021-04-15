@@ -157,7 +157,9 @@ alignSequences <- function(fasta, ref_string, log_vector,
         SEQ2 = s2c(paste(alignedSubject(useseqs[[i]])))
 
         toreplace <- SEQ1[which(SEQ2=="-")]
-
+		    toreplace[toreplace!="C"] <- "."
+		    toreplace[toreplace=="C"] <- "."
+				
         SEQ2[which(SEQ2=="-")] <- toreplace
         SEQ2 <- SEQ2[which(SEQ1!="-")]
         # if (maxAligns[i] == 3) SEQ2 <- s2c(paste(reverseComplement(DNAString(c2s(SEQ2)))))
@@ -211,7 +213,7 @@ seqalign <- function(read, ref_string, substitutionMatrix) {
     return(list(u = useseq, score = score(useseq), maxAlign = maxAlign))
 }
 
-mapseq <- function(i, sites) {
+mapseq <- function(i, sites, siteOrient) {
     editseq <- i
 	  if (siteOrient == "rev") {
 	    editseq[sites][editseq[sites] == "."] <- "A"
@@ -226,6 +228,7 @@ mapseq <- function(i, sites) {
 	    editseq[sites][editseq[sites] == "G"] <- "."
 	    editseq[sites][editseq[sites] == "A"] <- "."
 	  }
+	  editseq[sites][editseq[sites] == "N"] <- "."
     # we need to make sure that the N sites stay marked with a "."
     missing_bp <- which(editseq == ".")
 
@@ -253,7 +256,7 @@ mapseq <- function(i, sites) {
 	     substring_table <- get_contig_substrings(editseq)
 	     long_missing <- which(substring_table$char == "." & substring_table$count > 3)
 	     short_non_missing <- which(substring_table$char == "-" &
-	                                  substring_table$count <= 35)
+	                                  substring_table$count <= 20)
 	     short_non_missing_sr <- short_non_missing[(short_non_missing + 1)
 	                                               %in% long_missing | (short_non_missing - 1) %in% long_missing]
 	     counts <- as.numeric(substring_table$count)
