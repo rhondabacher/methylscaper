@@ -33,7 +33,8 @@ server <- function(input, output, session) {
   human_bm <- NULL
   singlecell_subset <- NULL
 	singlemolecule_example <- NULL
-	
+	outname <- reactiveValues(usename = "example_data")
+	outname_rds <- reactiveValues(usename = "example_data")
 	
   ## preprocessing tab
   observe({
@@ -78,7 +79,7 @@ server <- function(input, output, session) {
 		
 output$sc_preprocessing_down <- downloadHandler(
   filename = function(){
-      "methylscaper_singlecell_preprocessed.rds"
+      paste0("Methylscaper_Preprocessed_",input$chromosome_number,".rds")
     },
     content = function(file){
       validate(need(!is.null(sc_raw_data$gch) & !is.null(sc_raw_data$hcg), 
@@ -109,6 +110,8 @@ output$sc_preprocessing_down <- downloadHandler(
         temp <- readRDS(input$sc_rds_file$datapath)
         sc_seq_data$gch <- temp$gch
         sc_seq_data$hcg <- temp$hcg
+				outname_rds$usename <- tools::file_path_sans_ext(input$sc_rds_file$name)
+				outname_rds$usename <- gsub("Methylscaper_Preprocessed_", "", outname_rds$usename, fixed=T)
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
@@ -432,14 +435,15 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_plot_down <- downloadHandler(
     filename = function(){
-      if (input$sc_plot_filetype == "PNG") return("methylscaper_heatmap.png")
-      if (input$sc_plot_filetype == "PDF") return("methylscaper_heatmap.pdf")
-			if (input$sc_plot_filetype == "SVG") return("methylscaper_heatmap.svgz")
+      if (input$sc_plot_filetype == "PNG") return(paste0("methylscaper_",outname_rds$usename,".png"))
+      if (input$sc_plot_filetype == "PDF") return(paste0("methylscaper_",outname_rds$usename,".pdf"))
+			if (input$sc_plot_filetype == "SVG") return(paste0("methylscaper_",outname_rds$usename,".svg"))
+			if (input$sc_plot_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
     content = function(file){
       if (input$sc_plot_filetype == "PNG") png(file)
       if (input$sc_plot_filetype == "PDF") pdf(file)
-			if (input$sc_plot_filetype == "SVG") svglite(file, height=7, width=7)
+			if (input$sc_plot_filetype %in% c("SVG", "SVGZ")) svglite(file, height=7, width=7)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -449,7 +453,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_log_down <- downloadHandler(
     filename = function(){
-      "methylscaper_heatmap_log.txt"
+      paste0("methylscaper_log_",outname_rds$usename,".txt")
     },
     content = function(file){
       fileConn <- file(file)
@@ -497,8 +501,8 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_proportion_hist_download <- downloadHandler(
     filename = function(){
-        paste0("histogram_proportion_cell_methylated", "_", tolower(input$sc_proportion_choice), ".pdf")
-    },
+			return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".pdf"))
+	  },
     content = function(file){
                   pdf(file)
                   methyl_proportion(sc_orderObject, makePlot = TRUE,
@@ -508,7 +512,7 @@ output$sc_preprocessing_down <- downloadHandler(
   )
   output$sc_proportion_data_download <- downloadHandler(
     filename = function(){
-        return(paste0("proportion_cell_methylated", "_", tolower(input$sc_proportion_choice), ".csv"))
+        return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".csv"))
     },
     content = function(file){
         dat <-  methyl_proportion(sc_orderObject, makePlot = FALSE,
@@ -526,7 +530,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_plot_download <- downloadHandler(
     filename = function(){
-        return(paste0("percent_bases_methylated", ".pdf"))
+            return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
         pdf(file)
@@ -537,7 +541,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_data_download <- downloadHandler(
     filename = function(){
-      return("percent_bases_methylated_data.txt")
+            return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".txt"))
     },
     content = function(file){
       dat <-  methyl_percent_sites(sc_orderObject, makePlot = FALSE)
@@ -556,7 +560,7 @@ output$sc_preprocessing_down <- downloadHandler(
 	
   output$sc_avg_c_data_download <- downloadHandler(
     filename = function(){
-        return("avg_percent_bases_methylated_data.txt")
+        return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".txt"))
     },
     content = function(file){
       dat <-  methyl_average_status(sc_orderObject, makePlot = FALSE, window_length=input$sc_window_choice)
@@ -566,7 +570,7 @@ output$sc_preprocessing_down <- downloadHandler(
 	
   output$sc_avg_c_plot_download <- downloadHandler(
     filename = function(){
-            return(paste0("avg_percent_bases_methylated", ".pdf"))
+        return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".pdf"))
     },
     content = function(file){
         pdf(file)
@@ -641,6 +645,10 @@ output$sc_preprocessing_down <- downloadHandler(
     sm_raw_data$gch <- align_out$gch
     sm_raw_data$hcg <- align_out$hcg
     sm_raw_data$log_vector  <- align_out$logs
+		
+		read_name <- tools::file_path_sans_ext(input$fasta_file$name)
+		ref_name <- tools::file_path_sans_ext(input$ref_file$name)
+		outname$usename <- paste0(read_name, "_", ref_name)
 	}
 
   })
@@ -657,7 +665,7 @@ output$sc_preprocessing_down <- downloadHandler(
 		
 output$sm_preprocessing_down <- downloadHandler(
   filename = function(){
-            "methylscaper_singlemolecule_preprocessed.rds"
+            paste0("Preprocessed_",outname$usename,".rds")
     },
     content = function(file){
       saveRDS(list(gch = sm_raw_data$gch, hcg = sm_raw_data$hcg), file = file)
@@ -666,7 +674,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$processing_log <- downloadHandler(
     filename = function(){
-        "methylscaper_preprocess_log.txt"
+        paste0("Preprocessed_log_",outname$usename,".txt")
       },
       content = function(file){
         writeLines(sm_raw_data$log_vector, con=file)
@@ -678,6 +686,9 @@ output$sm_preprocessing_down <- downloadHandler(
     temp <- readRDS(file = input$sm_rds_file$datapath)
     temp_gch <- temp$gch
     temp_hcg <- temp$hcg
+		outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
+		outname_rds$usename <- gsub("Preprocessed_", "", outname_rds$usename,fixed=T)
+		
     if (all(rownames(temp_hcg) == temp_hcg[,1])) temp_hcg <- temp_hcg[,-1]
     if (all(rownames(temp_gch) == temp_gch[,1])) temp_gch <- temp_gch[,-1]
 		
@@ -814,18 +825,18 @@ output$sm_preprocessing_down <- downloadHandler(
       session$clientData$output_sm_seqPlot_width
     })
 
-		
 
   output$sm_plot_down <- downloadHandler(
     filename = function(){
-      if (input$sm_filetype == "PNG") return("methylscaper_heatmap.png")
-      if (input$sm_filetype == "PDF") return("methylscaper_heatmap.pdf")
-			if (input$sm_filetype == "SVG") return("methylscaper_heatmap.svgz")
+      if (input$sm_filetype == "PNG") return(paste0("methylscaper_",outname_rds$usename,".png"))
+      if (input$sm_filetype == "PDF") return(paste0("methylscaper_",outname_rds$usename,".pdf"))
+			if (input$sm_filetype == "SVG") return(paste0("methylscaper_",outname_rds$usename,".svg"))
+			if (input$sm_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
     content = function(file){
       if (input$sm_filetype == "PNG") png(file)
       if (input$sm_filetype == "PDF") pdf(file)
-      if (input$sm_filetype == "SVG") svglite(file, height=7, width=7)
+      if (input$sm_filetype %in% c("SVG", "SVGZ")) svglite(file, height=7, width=7)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -835,7 +846,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_log_down <- downloadHandler(
     filename = function(){
-      "methylscaper_heatmap_log.txt"
+      paste0("methylscaper_log_",outname_rds$usename,".txt")
     },
     content = function(file){
       fileConn <- file(file)
@@ -885,7 +896,11 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_proportion_hist_download <- downloadHandler(
     filename = function(){
-       paste0("histogram_proportion_molecule_methylated", "_", tolower(input$sm_proportion_choice), ".pdf")
+			if (input$sm_proportion_choice == "Accessibility Methylation") {
+				whichMeth <- "acc"
+			} else {whichMeth <- "met"}
+			
+       return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
        pdf(file)
@@ -896,7 +911,10 @@ output$sm_preprocessing_down <- downloadHandler(
   )
   output$sm_proportion_data_download <- downloadHandler(
     filename = function(){
-      return(paste0("proportion_molecule_methylated", "_", tolower(input$sm_proportion_choice), ".csv"))
+			if (input$sm_proportion_choice == "Accessibility Methylation") {
+				whichMeth <- "acc"
+			} else {whichMeth <- "met"}
+      return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".csv"))
     },
     content = function(file){
       dat <-  methyl_proportion(sm_orderObject, makePlot = FALSE,
@@ -915,7 +933,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_percentC_plot_download <- downloadHandler(
     filename = function(){
-            return(paste0("percent_bases_methylated", ".pdf"))
+            return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
         pdf(file)
@@ -926,7 +944,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_percentC_data_download <- downloadHandler(
     filename = function(){
-        return("percent_bases_methylated_data.txt")
+        return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".txt"))
     },
     content = function(file){
       dat <-  methyl_percent_sites(sm_orderObject, makePlot = FALSE)
@@ -944,7 +962,7 @@ output$sm_preprocessing_down <- downloadHandler(
 	
   output$sm_avg_c_data_download <- downloadHandler(
     filename = function(){
-        return("avg_percent_bases_methylated_data.txt")
+        return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".txt"))
     },
     content = function(file){
       dat <-  methyl_average_status(sm_orderObject, makePlot = FALSE, window_length=input$sm_window_choice)
@@ -954,7 +972,7 @@ output$sm_preprocessing_down <- downloadHandler(
 	
   output$sm_avg_c_plot_download <- downloadHandler(
     filename = function(){
-            return(paste0("avg_percent_bases_methylated", ".pdf"))
+            return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".pdf"))
     },
     content = function(file){
         pdf(file)

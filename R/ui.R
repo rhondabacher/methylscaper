@@ -91,7 +91,7 @@ ui <- navbarPage("methylscaper",id="big_tab",
 																	  useShinyjs(),
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
-                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PDF","PNG", "SVG")),
+                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PDF","PNG", "SVG", "SVGZ")),
                                     shinyjs::disabled(downloadButton("sc_plot_down", label = "Download Heatmap")),
                                     shinyjs::disabled(downloadButton("sc_log_down", label = "Download Ordering Log")))
                                     )
@@ -197,7 +197,7 @@ ui <- navbarPage("methylscaper",id="big_tab",
                                          plotOutput(outputId = "sm_seqPlot",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',
-                                         selectInput("sm_filetype", label = "File type", choices = c("PDF","PNG","SVG")),
+                                         selectInput("sm_filetype", label = "File type", choices = c("PDF","PNG", "SVG", "SVGZ")),
                                          shinyjs::disabled(downloadButton("sm_plot_down", label = "Download Heatmap")),
                                          shinyjs::disabled(downloadButton("sm_log_down", label = "Download Ordering Log")))
                          )
