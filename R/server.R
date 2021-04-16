@@ -79,7 +79,7 @@ server <- function(input, output, session) {
 		
 output$sc_preprocessing_down <- downloadHandler(
   filename = function(){
-      paste0("Methylscaper_Preprocessed_",input$chromosome_number,".rds")
+      paste0("methylscaper_preprocessed_",input$chromosome_number,".rds")
     },
     content = function(file){
       validate(need(!is.null(sc_raw_data$gch) & !is.null(sc_raw_data$hcg), 
@@ -111,7 +111,6 @@ output$sc_preprocessing_down <- downloadHandler(
         sc_seq_data$gch <- temp$gch
         sc_seq_data$hcg <- temp$hcg
 				outname_rds$usename <- tools::file_path_sans_ext(input$sc_rds_file$name)
-				outname_rds$usename <- gsub("Methylscaper_Preprocessed_", "", outname_rds$usename, fixed=T)
         actionsLog$log <- c(actionsLog$log, paste("Loading data:",
                                                 input$sc_rds_file$name))
       })
@@ -611,7 +610,7 @@ output$sc_preprocessing_down <- downloadHandler(
 		 											# Choose a return value in case of error
                             return(NA)
                         		})
-      if (is.na(ref)) {
+      if (!is.list(ref)) {
               showNotification("Please check the format of your reference .fasta file",
                          type="error", duration=4)
       }      
@@ -623,12 +622,12 @@ output$sc_preprocessing_down <- downloadHandler(
                                    # Choose a return value in case of error
                                    return(NA)
                                })
-     if (is.na(fasta)) {
+     if (!is.list(fasta)) {
              showNotification("Please check the format of your reads .fasta file",
                         type="error", duration=4)
 			}       
      
-     if (!is.na(ref[[1]]) & !is.na(fasta[[1]])) {
+     if (is.list(ref) & is.list(fasta)) {
              
 			if (length(ref)==1){ref <- ref[[1]]}
 
@@ -665,7 +664,7 @@ output$sc_preprocessing_down <- downloadHandler(
 		
 output$sm_preprocessing_down <- downloadHandler(
   filename = function(){
-            paste0("Preprocessed_",outname$usename,".rds")
+            paste0(outname$usename,".rds")
     },
     content = function(file){
       saveRDS(list(gch = sm_raw_data$gch, hcg = sm_raw_data$hcg), file = file)
@@ -674,7 +673,7 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$processing_log <- downloadHandler(
     filename = function(){
-        paste0("Preprocessed_log_",outname$usename,".txt")
+        paste0("Preprocessing_log_",outname$usename,".txt")
       },
       content = function(file){
         writeLines(sm_raw_data$log_vector, con=file)
@@ -687,7 +686,6 @@ output$sm_preprocessing_down <- downloadHandler(
     temp_gch <- temp$gch
     temp_hcg <- temp$hcg
 		outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
-		outname_rds$usename <- gsub("Preprocessed_", "", outname_rds$usename,fixed=T)
 		
     if (all(rownames(temp_hcg) == temp_hcg[,1])) temp_hcg <- temp_hcg[,-1]
     if (all(rownames(temp_gch) == temp_gch[,1])) temp_gch <- temp_gch[,-1]
