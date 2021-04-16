@@ -638,13 +638,23 @@ output$sc_preprocessing_down <- downloadHandler(
     updateProgress <- function(value = NULL, message = NULL, detail = NULL) {
       progress$set(value = value, message = message, detail = detail)}
 
-    align_out <- runAlign(ref, fasta, updateProgress = updateProgress,
-                          log_file = input$processing_log_name)
-
+    align_out <- tryCatch(runAlign(ref, fasta, updateProgress = updateProgress,
+                          log_file = input$processing_log_name),
+	                        error=function(cond) {
+	                                    message(paste("No good alignments were found."))
+	                                    # Choose a return value in case of error
+	                                    return(NA)
+	                                })
+   
+    if (!is.list(align_out)) {
+            showNotification("No good alignments were found.",
+                       type="error", duration=4)
+		}  
+	  if(is.list(align_out)) {
     sm_raw_data$gch <- align_out$gch
     sm_raw_data$hcg <- align_out$hcg
     sm_raw_data$log_vector  <- align_out$logs
-		
+	  }
 		read_name <- tools::file_path_sans_ext(input$fasta_file$name)
 		ref_name <- tools::file_path_sans_ext(input$ref_file$name)
 		outname$usename <- paste0(read_name, "_", ref_name)
