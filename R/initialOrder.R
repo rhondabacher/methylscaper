@@ -53,14 +53,22 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 				
     if (is.function(updateProgress)) {
         updateProgress(message = "Recoding input data", value = 0.1)}
+    
     recoded <- recode(input_GCH, input_HCG)
     input_GCH <- recoded$input_GCH
     input_HCG <- recoded$input_HCG
 
     weightFeature <- tolower(weightFeature)
     
-    toClust <- cbind(input_GCH, input_HCG)
-    weighted = FALSE
+    
+    if (nrow(dataIn$gch) == 1) {
+      toClust <- t(as.matrix(c(input_GCH, input_HCG)))
+      order1 <- 1
+      orderObject <- list(toClust = toClust, order1 = order1)
+    } 
+    else {
+      toClust <- cbind(input_GCH, input_HCG)
+      weighted = FALSE
 
     # (Optional) Weighting: Adds a variable indicating the number 
     # of red or yellow patches at specific DNA location
@@ -124,9 +132,11 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
         }
     }
-    orderObject <- list(toClust = toClust, order1 = order1)
-    if (Method != "PCA") orderObject$distMat <- distMat
-    if (weighted) orderObject$weights <- weightVector
+      orderObject <- list(toClust = toClust, order1 = order1)
+      if (weighted) orderObject$weights <- weightVector
+      if (Method != "PCA") orderObject$distMat <- distMat
+    }
+    
     if (is.function(updateProgress)) {
         updateProgress(message = "Done", value = 1)}
     return(orderObject)
@@ -154,6 +164,6 @@ recode <- function(input_GCH, input_HCG)
     input_HCG[input_HCG==-2] <- 1
     input_HCG[input_HCG==99] <- 0
 
-    return(list(input_GCH = input_GCH, input_HCG = input_HCG))
+    return(list(input_GCH = data.matrix(input_GCH), input_HCG = data.matrix(input_HCG)))
 
 }
