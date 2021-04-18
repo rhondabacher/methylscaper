@@ -51,5 +51,5 @@ Runs the preprocessing methods for single-molecule data.
  
 data(reads_sm)
 data(ref_seq)
-example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq, fasta_subset = 1:150)
+example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
 }

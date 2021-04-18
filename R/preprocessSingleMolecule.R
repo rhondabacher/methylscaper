@@ -24,7 +24,7 @@
 #'              two GCH or HCG sites
 #'          1: base pairs between two methylated GCH or HCG sites
 #'          2: methylated GCH or HCG site
-#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement
+#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement mismatchTable
 #' @importFrom Biostrings pairwiseAlignment score alignedPattern alignedSubject
 #' @importFrom seqinr c2s s2c read.fasta
 #' @importFrom BiocParallel bplapply
@@ -194,7 +194,7 @@ seqalign <- function(read, ref_string, substitutionMatrix) {
 
     fasta_string <- DNAString(toupper(c2s(read)))
 
-    align_bb <- pairwiseAlignment(complement(ref_string),
+    align_bb <- pairwiseAlignment(reverseComplement(ref_string),
                                  reverseComplement(fasta_string),
                                  type="global-local", gapOpening=8,
                                  substitutionMatrix=substitutionMatrix)
@@ -204,7 +204,7 @@ seqalign <- function(read, ref_string, substitutionMatrix) {
     align_aa <- pairwiseAlignment(ref_string, fasta_string,type="global-local",
                                  gapOpening=8,
                                  substitutionMatrix=substitutionMatrix)
-    align_ba <- pairwiseAlignment(complement(ref_string), fasta_string,type="global-local",
+    align_ba <- pairwiseAlignment(reverseComplement(ref_string), fasta_string,type="global-local",
                                  gapOpening=8,
                                  substitutionMatrix=substitutionMatrix)
 
