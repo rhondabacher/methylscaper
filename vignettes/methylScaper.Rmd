@@ -15,6 +15,13 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
+<style>
+.main-container {
+    width: 100%;
+    max-width: unset;
+}
+</style>
+
 # Introduction
 
 `methylscaper` is an R package for visualizing data that jointly profile endogenous methylation and chromatin accessibility (MAPit, NOMe-seq, scNMT-seq, nanoNOMe, etc.). The package offers pre-processing for single-molecule data and accepts input from Bismark (or similar alignment programs) for single-cell data. A common interface for visualizing both data types is done by generating ordered representational methylation-state matrices. The package provides a Shiny app to allow for interactive and optimal ordering of the individual DNA molecules to discover methylation patterns and nucleosome positioning.
@@ -85,6 +92,46 @@ filepath <- "~/Downloads/GSE109262_RAW/"
 singlecell_subset <- subsetSC(filepath, chromosome=19, startPos = 8937041, endPos = 8997041)
 # To save for later, save as an rds file and change the folder location as desired:
 saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
+```
+
+For a reproducible example, we have provided three cells for download on [http://methylscaper.com/content/exampledata.html](http://methylscaper.com/content/exampledata.html), and below we run an example where we read the data directly from the URL's into R and use the subsetSC function. If downloading the files for these three cells, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
+
+```{r, eval=TRUE}
+gse_subset_path <- list(c(("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz"),
+          ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz"),
+          ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz")),
+        
+          c(("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz"),
+            ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz"),
+            ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz")),
+          
+          c(("GSM2936197_ESC_A08_CpG-met_processed"),
+            ("GSM2936196_ESC_A07_CpG-met_processed"),
+            ("GSM2936192_ESC_A03_CpG-met_processed")),
+          
+          c(("GSM2936197_ESC_A08_GpC-acc_processed"),
+            ("GSM2936196_ESC_A07_GpC-acc_processed"),
+            ("GSM2936192_ESC_A03_GpC-acc_processed")))
+# This formatting is a list of 4 objects: the met file urls, the acc file urls, the met file names, and the acc file names.
+
+singlecell_subset <- subsetSC(gse_subset_path, chromosome=19, startPos = 8937041, endPos = 8997041)
+
+# To save for later, save as an rds file and change the folder location as desired:
+# saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
+```
+
+To demonstrate that the example of the three cells subset, we skip some explanation of the functions to show the resulting plot. For this particular region only one of the three cells has coverage and thus only one row is shown in the plot (if a cell has no data in the entire region then it is not shown in the plot rather than being plot as missing data). All functions are further explained in detail in the following sections.
+
+```{r, eval=TRUE, fig.width=7, fig.height=3}
+data("mouse_bm")
+gene.select <- subset(mouse_bm, mgi_symbol == "Eef1g")
+
+startPos <- 8966841 
+endPos <- 8967541
+prepSC.out <- prepSC(singlecell_subset, startPos=startPos, endPos=endPos)
+
+orderObj <- initialOrder(prepSC.out)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE, drawKey = FALSE)
 ```
 
 ## Visualization in the Shiny app

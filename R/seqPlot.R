@@ -51,6 +51,11 @@ plotSequence <- function(orderObject, plotFast=TRUE,
                 "gray80", "white", "gray80", "black", "gray62", "red", "darkred")
     myBreaks <- c(-5,-4,-3,-2.5,-2,-1,0,1,2,2.5,3,4)
 
+    if (nrow(toClust) == 1) {
+      input_HCG <- t(as.matrix(input_HCG))
+      input_GCH <- t(as.matrix(input_GCH))
+    }
+    
     input_HCG_fix <- input_HCG
     input_GCH_fix <- input_GCH
 
@@ -66,6 +71,9 @@ plotSequence <- function(orderObject, plotFast=TRUE,
 
     toPlot_fix <- toPlot_fix_og[rev(order1),]
 
+    if (nrow(toClust) == 1) {
+      toPlot_fix <- t(as.matrix(toPlot_fix))
+    }
     ## Add some rows in order to add a legend:
     if(drawKey == TRUE) {
 			totalHeight <- pmax(ceiling(nrow(toPlot_fix) * 0.1), 3)
