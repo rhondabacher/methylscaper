@@ -34,8 +34,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                     tags$br(),
                     tags$br(),
                     fluidRow(
-                        tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
-                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                        tags$p("For additional information or to view Frequently Asked Questions, see the ", 
+												tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                vignette.")),
         
                         tags$p("Questions can also be submitted on our GitHub page:", 
                         tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
@@ -56,8 +57,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$p("With Brushing set to Weighting, drag the mouse/cursor to select basepairs (columns) 
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the cells (rows) to refine the ordering."),
-                         tags$p("Detailed descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
-                         vignette: ", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")))
+                         tags$p("Detailed descriptions of the various options for seriation, weighting, and refinement are in the ", 
+												 tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                         vignette.")))
                      ),
                      fluidRow(sidebarLayout(
                                 sidebarPanel(
@@ -157,8 +159,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
             tags$br(),
             tags$br(),
             fluidRow(
-                tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
-                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                tags$p("For additional information or to view Frequently Asked Questions, see the ", 
+								tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                vignette.")),
                 
                 tags$p("Questions can also be submitted on our GitHub page:", 
                 tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
@@ -172,8 +175,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the molecules (rows) to refine the ordering."),
                          tags$p("Detailed
-                         descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
-                         vignette: ", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")))
+                         descriptions of the various options for seriation, weighting, 
+												 and refinement are in the ", tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper vignette.")))
                      ),
                      fluidRow(sidebarLayout(
                        sidebarPanel(
