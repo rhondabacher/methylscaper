@@ -36,7 +36,9 @@
 #' example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
 
 runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
-                     multicoreParam = NULL, updateProgress = NULL, 
+                     multicoreParam = NULL, 
+										 score_cutoff = NULL,
+										 updateProgress = NULL, 
                      log_file = NULL)
 {
     fasta <- fasta[fasta_subset]
@@ -47,7 +49,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
     if (is.function(updateProgress)) {
       updateProgress(message = "Aligning sequences", value = 0.1)
     }
-    alignment_out <- alignSequences(fasta, ref_string, log_vector,
+    alignment_out <- alignSequences(fasta, ref_string, log_vector, score_cutoff,
                                       multicoreParam, updateProgress)
 
     alignedseq <- alignment_out$alignedseq
@@ -117,7 +119,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
 # alignedseq object used in the runAlign function
 # this needs the log_vector, multicoreParam, and updateProgress
 # so that we can continue keeping track of these things
-alignSequences <- function(fasta, ref_string, log_vector,
+alignSequences <- function(fasta, ref_string, log_vector, score_cutoff=NULL,
                         multicoreParam = NULL, updateProgress = NULL)
 {
     ## this creates the substitution matrix for use in alignment
@@ -145,9 +147,10 @@ alignSequences <- function(fasta, ref_string, log_vector,
     scores <- vapply(seqalign_out, function (i) i$score, numeric(1))
     maxAligns <- vapply(seqalign_out, function (i) i$maxAlign, numeric(1))
 
-    score_cutoff_idx <- which.max(diff(sort(scores))) + 1
-    score_cutoff <- sort(scores)[score_cutoff_idx]
-
+		if (is.null(score_cutoff)) {
+    	score_cutoff_idx <- which.max(diff(sort(scores))) + 1
+    	score_cutoff <- sort(scores)[score_cutoff_idx]
+		}
     good_alignment_idxs <- which(scores > score_cutoff)
 
     if(length(good_alignment_idxs) == 0) {stop("No good alignments were found. See methylscaper FAQ for more details.")}
