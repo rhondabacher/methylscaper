@@ -1,7 +1,8 @@
 server <- function(input, output, session) {
 		
 	options(shiny.maxRequestSize=10000*1024^2)
-		
+	
+     library(methylscaper)	
   source("seqPlot.R")
   source("initialOrder.R")
   source("appHelpers.R")
@@ -439,10 +440,10 @@ output$sc_preprocessing_down <- downloadHandler(
 			if (input$sc_plot_filetype == "SVG") return(paste0("methylscaper_",outname_rds$usename,".svg"))
 			if (input$sc_plot_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
-    content = function(file){
-      if (input$sc_plot_filetype == "PNG") png(file)
-      if (input$sc_plot_filetype == "PDF") pdf(file)
-			if (input$sc_plot_filetype %in% c("SVG", "SVGZ")) svglite(file, height=7, width=7)
+    content = function(file){   
+    if (input$sc_plot_filetype == "PNG") png(file, height=input$sc_height, width=input$sc_width, units = "in", res=input$sc_res)
+    if (input$sc_plot_filetype == "PDF") cairo_pdf(file, height=input$sc_height, width=input$sc_width)
+    if (input$sc_plot_filetype %in% c("SVG", "SVGZ")) svglite(file, height=input$sc_height, width=input$sc_width)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -695,8 +696,23 @@ output$sm_preprocessing_down <- downloadHandler(
     temp <- readRDS(file = input$sm_rds_file$datapath)
     temp_gch <- temp$gch
     temp_hcg <- temp$hcg
-		outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
-		
+
+    gch_missing <- rowMeans(temp_gch!=".") * 100
+    hcg_missing <- rowMeans(temp_hcg!=".") * 100
+
+    useRows <- which(gch_missing >= input$sm_filter & hcg_missing >= input$sm_filter)
+    
+    if (length(useRows) == 0) {
+        showNotification("No molecules meet the nonmissing criteria! Drawing default plot", 
+                                        type="message", duration=4)
+       useRows <- seq(1,nrow(temp_gch))                                 
+    }
+    temp_gch <- temp_gch[useRows,]
+    temp_hcg <- temp_hcg[useRows,]
+
+    outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
+
+
     if (all(rownames(temp_hcg) == temp_hcg[,1])) temp_hcg <- temp_hcg[,-1]
     if (all(rownames(temp_gch) == temp_gch[,1])) temp_gch <- temp_gch[,-1]
 		
@@ -842,9 +858,9 @@ output$sm_preprocessing_down <- downloadHandler(
 			if (input$sm_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
     content = function(file){
-      if (input$sm_filetype == "PNG") png(file)
-      if (input$sm_filetype == "PDF") pdf(file)
-      if (input$sm_filetype %in% c("SVG", "SVGZ")) svglite(file, height=7, width=7)
+    if (input$sm_filetype == "PNG") png(file, height=input$sm_height, width=input$sm_width, units = "in", res=input$sm_res)
+    if (input$sm_filetype == "PDF") cairo_pdf(file, height=input$sm_height, width=input$sm_width)
+    if (input$sm_filetype %in% c("SVG", "SVGZ")) svglite(file, height=input$sm_height, width=input$sm_width)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)

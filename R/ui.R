@@ -94,6 +94,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
                                     selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PDF","PNG", "SVG", "SVGZ")),
+                                    numericInput("sc_height", label = "Height (inches):", value=7),
+                                    numericInput("sc_width", label = "Width (inches):", value=7),
+                                    numericInput("sc_res", label = "Resolution for PNG (ppi):", value=300),
                                     shinyjs::disabled(downloadButton("sc_plot_down", label = "Download Heatmap")),
                                     shinyjs::disabled(downloadButton("sc_log_down", label = "Download Ordering Log")))
                                     )
@@ -184,6 +187,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$br(),
                          tags$br(),
                          fileInput("sm_rds_file", label = "RDS File Input", accept= c(".rds", ".RDS")),
+                         numericInput("sm_filter", label = "Filter reads - keep reads 
+                                     with % non-missing at least:", value=0, min=0, max=100),
                          selectInput("sm_ser_method", label = "Seriation Method:",
                                      choices = c("PCA", "ARSA")),
                          selectInput("sm_refine_method", label = "Refinement Method:",
@@ -201,6 +206,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',
                                          selectInput("sm_filetype", label = "File type", choices = c("PDF","PNG", "SVG", "SVGZ")),
+                                         numericInput("sm_height", label = "Height (inches):", value=7),
+                                         numericInput("sm_width", label = "Width (inches):", value=7),
+                                         numericInput("sm_res", label = "Resolution for PNG (ppi):", value=300),
                                          shinyjs::disabled(downloadButton("sm_plot_down", label = "Download Heatmap")),
                                          shinyjs::disabled(downloadButton("sm_log_down", label = "Download Ordering Log")))
                          )
