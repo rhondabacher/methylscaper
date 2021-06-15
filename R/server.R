@@ -1,5 +1,9 @@
 server <- function(input, output, session) {
 		
+	options(shiny.maxRequestSize=10000*1024^2)
+	
+
+	
   actionsLog <- reactiveValues(log = c("")) # logs the actions taken wrt the plot
 
 
@@ -419,10 +423,13 @@ output$sc_preprocessing_down <- downloadHandler(
     filename = function(){
       if (input$sc_plot_filetype == "PNG") return(paste0("methylscaper_",outname_rds$usename,".png"))
       if (input$sc_plot_filetype == "PDF") return(paste0("methylscaper_",outname_rds$usename,".pdf"))
+			if (input$sc_plot_filetype == "SVG") return(paste0("methylscaper_",outname_rds$usename,".svg"))
+			if (input$sc_plot_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
-    content = function(file){
-      if (input$sc_plot_filetype == "PNG") png(file)
-      if (input$sc_plot_filetype == "PDF") pdf(file)
+    content = function(file){   
+    if (input$sc_plot_filetype == "PNG") png(file, height=input$sc_height, width=input$sc_width, units = "in", res=input$sc_res)
+    if (input$sc_plot_filetype == "PDF") cairo_pdf(file, height=input$sc_height, width=input$sc_width)
+    if (input$sc_plot_filetype %in% c("SVG", "SVGZ")) svglite(file, height=input$sc_height, width=input$sc_width)
 
       drawPlot(sc_orderObject, sc_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -480,8 +487,8 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_proportion_hist_download <- downloadHandler(
     filename = function(){
-        return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".pdf"))
-    },
+			return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".pdf"))
+	  },
     content = function(file){
                   pdf(file)
                   methyl_proportion(sc_orderObject, makePlot = TRUE,
@@ -509,7 +516,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_plot_download <- downloadHandler(
     filename = function(){
-        return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".pdf"))
+            return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
         pdf(file)
@@ -520,7 +527,7 @@ output$sc_preprocessing_down <- downloadHandler(
 
   output$sc_percentC_data_download <- downloadHandler(
     filename = function(){
-      return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".txt"))
+            return(paste0("prcnt_bases_methylated_", outname_rds$usename, ".txt"))
     },
     content = function(file){
       dat <-  methyl_percent_sites(sc_orderObject, makePlot = FALSE)
@@ -549,7 +556,7 @@ output$sc_preprocessing_down <- downloadHandler(
 	
   output$sc_avg_c_plot_download <- downloadHandler(
     filename = function(){
-            return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".pdf"))
+        return(paste0("avg_prcnt_bases_methylated_", outname_rds$usename,".pdf"))
     },
     content = function(file){
         pdf(file)
@@ -620,27 +627,27 @@ output$sc_preprocessing_down <- downloadHandler(
 
     align_out <- tryCatch(runAlign(ref, fasta, updateProgress = updateProgress,
                           log_file = input$processing_log_name),
-                               error=function(cond) {
-                                           message(paste("No good alignments were found."))
-                                           # Choose a return value in case of error
-                                           return(NA)
-     })
-
+	                        error=function(cond) {
+	                                    message(paste("No good alignments were found."))
+	                                    # Choose a return value in case of error
+	                                    return(NA)
+	                                })
+   
     if (!is.list(align_out)) {
-           showNotification("No good alignments were found.",
-                      type="error", duration=4)
-     }  
-    if(is.list(align_out)) {
-     sm_raw_data$gch <- align_out$gch
-     sm_raw_data$hcg <- align_out$hcg
-     sm_raw_data$log_vector  <- align_out$logs
+            showNotification("No good alignments were found.",
+                       type="error", duration=4)
+		}  
+	  if(is.list(align_out)) {
+    sm_raw_data$gch <- align_out$gch
+    sm_raw_data$hcg <- align_out$hcg
+    sm_raw_data$log_vector  <- align_out$logs
 	  }
-   read_name <- tools::file_path_sans_ext(input$fasta_file$name)
-   ref_name <- tools::file_path_sans_ext(input$ref_file$name)
-   outname$usename <- paste0(read_name, "_", ref_name)
-  }
+		read_name <- tools::file_path_sans_ext(input$fasta_file$name)
+		ref_name <- tools::file_path_sans_ext(input$ref_file$name)
+		outname$usename <- paste0(read_name, "_", ref_name)
+	}
 
- })
+  })
 
 	observe({
 	    if (is.null(sm_raw_data$hcg)){
@@ -675,7 +682,23 @@ output$sm_preprocessing_down <- downloadHandler(
     temp <- readRDS(file = input$sm_rds_file$datapath)
     temp_gch <- temp$gch
     temp_hcg <- temp$hcg
-		outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
+
+    gch_missing <- rowMeans(temp_gch!=".") * 100
+    hcg_missing <- rowMeans(temp_hcg!=".") * 100
+
+    useRows <- which(gch_missing >= input$sm_filter & hcg_missing >= input$sm_filter)
+    
+    if (length(useRows) == 0) {
+        showNotification("No molecules meet the nonmissing criteria! Drawing default plot", 
+                                        type="message", duration=4)
+       useRows <- seq(1,nrow(temp_gch))                                 
+    }
+    temp_gch <- temp_gch[useRows,]
+    temp_hcg <- temp_hcg[useRows,]
+
+    outname_rds$usename <- tools::file_path_sans_ext(input$sm_rds_file$name)
+
+
     if (all(rownames(temp_hcg) == temp_hcg[,1])) temp_hcg <- temp_hcg[,-1]
     if (all(rownames(temp_gch) == temp_gch[,1])) temp_gch <- temp_gch[,-1]
 		
@@ -812,16 +835,18 @@ output$sm_preprocessing_down <- downloadHandler(
       session$clientData$output_sm_seqPlot_width
     })
 
-		
 
   output$sm_plot_down <- downloadHandler(
     filename = function(){
       if (input$sm_filetype == "PNG") return(paste0("methylscaper_",outname_rds$usename,".png"))
       if (input$sm_filetype == "PDF") return(paste0("methylscaper_",outname_rds$usename,".pdf"))
+			if (input$sm_filetype == "SVG") return(paste0("methylscaper_",outname_rds$usename,".svg"))
+			if (input$sm_filetype == "SVGZ") return(paste0("methylscaper_",outname_rds$usename,".svgz"))
     },
     content = function(file){
-      if (input$sm_filetype == "PNG") png(file)
-      if (input$sm_filetype == "PDF") pdf(file)
+    if (input$sm_filetype == "PNG") png(file, height=input$sm_height, width=input$sm_width, units = "in", res=input$sm_res)
+    if (input$sm_filetype == "PDF") cairo_pdf(file, height=input$sm_height, width=input$sm_width)
+    if (input$sm_filetype %in% c("SVG", "SVGZ")) svglite(file, height=input$sm_height, width=input$sm_width)
 
       drawPlot(sm_orderObject, sm_coordinatesObject, 
                   drawLines = FALSE, plotFast = FALSE)
@@ -881,9 +906,10 @@ output$sm_preprocessing_down <- downloadHandler(
 
   output$sm_proportion_hist_download <- downloadHandler(
     filename = function(){
-       if (input$sm_proportion_choice == "Accessibility Methylation") {
-               whichMeth <- "acc"
-       } else {whichMeth <- "met"}
+			if (input$sm_proportion_choice == "Accessibility Methylation") {
+				whichMeth <- "acc"
+			} else {whichMeth <- "met"}
+			
        return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
@@ -895,9 +921,9 @@ output$sm_preprocessing_down <- downloadHandler(
   )
   output$sm_proportion_data_download <- downloadHandler(
     filename = function(){
-      if (input$sm_proportion_choice == "Accessibility Methylation") {
-              whichMeth <- "acc"
-      } else {whichMeth <- "met"}
+			if (input$sm_proportion_choice == "Accessibility Methylation") {
+				whichMeth <- "acc"
+			} else {whichMeth <- "met"}
       return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".csv"))
     },
     content = function(file){
