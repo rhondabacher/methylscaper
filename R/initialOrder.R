@@ -165,30 +165,30 @@ recode <- function(input_GCH, input_HCG)
     input_HCG[input_HCG==99] <- 0
 
 
-    # Recode the plot edges as white always:
-   bp <- length(input_HCG[1,])
-
-   least_missing <- which.min(apply(input_HCG, 1, function(x) sum(x==0)))
-   firstHCG <- max(1,which(input_HCG[least_missing,] %in% c(1,4))[1] - 1)
-   lastHCG <- min(bp,rev(which(input_HCG[least_missing,] %in% c(1,4)))[1] + 1)
-
-   input_HCG <- apply(input_HCG, 1, function(x) {
-     x[seq(1,firstHCG)] <- 0
-     x[seq(lastHCG, bp)] <- 0
-   return(x)
-   })
-   input_HCG <- t(input_HCG)
-
-
-   firstGCH <- max(1,which(input_GCH[least_missing,] %in% c(-1,-4))[1] - 1)
-   lastGCH <- min(bp,rev(which(input_GCH[least_missing,] %in% c(-1,-4)))[1] + 1)
-
-   input_GCH <- apply(input_GCH, 1, function(x) {
-     x[seq(1,firstGCH)] <- 0
-     x[seq(lastGCH, bp)] <- 0
-     return(x)
-   })
-   input_GCH <- t(input_GCH)
+   #  # Recode the plot edges as white always:
+   # bp <- length(input_HCG[1,])
+   #
+   # least_missing <- which.min(apply(input_HCG, 1, function(x) sum(x==0)))
+   # firstHCG <- max(1,which(input_HCG[least_missing,] %in% c(1,4))[1] - 1)
+   # lastHCG <- min(bp,rev(which(input_HCG[least_missing,] %in% c(1,4)))[1] + 1)
+   #
+   # input_HCG <- apply(input_HCG, 1, function(x) {
+   #   x[seq(1,firstHCG)] <- 0
+   #   x[seq(lastHCG, bp)] <- 0
+   # return(x)
+   # })
+   # input_HCG <- t(input_HCG)
+   #
+   #
+   # firstGCH <- max(1,which(input_GCH[least_missing,] %in% c(-1,-4))[1] - 1)
+   # lastGCH <- min(bp,rev(which(input_GCH[least_missing,] %in% c(-1,-4)))[1] + 1)
+   #
+   # input_GCH <- apply(input_GCH, 1, function(x) {
+   #   x[seq(1,firstGCH)] <- 0
+   #   x[seq(lastGCH, bp)] <- 0
+   #   return(x)
+   # })
+   # input_GCH <- t(input_GCH)
 
        
     return(list(input_GCH = data.matrix(input_GCH), input_HCG = data.matrix(input_HCG)))
