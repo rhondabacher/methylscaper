@@ -33,7 +33,7 @@
 #'  
 #' data(singlecell_subset)
 #' prepsc.out <- prepSC(singlecell_subset, 
-#'                  startPos = 105636488, endPos = 105636993)
+#'                  startPos = 8966841, endPos = 8967541)
 
 prepSC <- function(dataIn, startPos=NULL, endPos=NULL,
                     updateProgress = NULL)
