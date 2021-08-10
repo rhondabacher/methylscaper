@@ -34,8 +34,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                     tags$br(),
                     tags$br(),
                     fluidRow(
-                        tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
-                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                        tags$p("For additional information or to view Frequently Asked Questions, see the ", 
+												tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                vignette.")),
         
                         tags$p("Questions can also be submitted on our GitHub page:", 
                         tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
@@ -56,8 +57,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$p("With Brushing set to Weighting, drag the mouse/cursor to select basepairs (columns) 
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the cells (rows) to refine the ordering."),
-                         tags$p("Detailed descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
-                         vignette: ", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")))
+                         tags$p("Detailed descriptions of the various options for seriation, weighting, and refinement are in the ", 
+												 tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                         vignette.")))
                      ),
                      fluidRow(sidebarLayout(
                                 sidebarPanel(
@@ -91,7 +93,10 @@ ui <- navbarPage("methylscaper",id="big_tab",
 																	  useShinyjs(),
                                     plotOutput(outputId = "sc_seqPlot",brush = "sc_plot_brush",  width = "100%")),
                                 column(width = 2, align='left',
-                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PDF", "PNG")),
+                                    selectInput("sc_plot_filetype", label = "Choose file type for saving heatmap", choices = c("PDF","PNG", "SVG", "SVGZ")),
+                                    numericInput("sc_height", label = "Height (inches):", value=7),
+                                    numericInput("sc_width", label = "Width (inches):", value=7),
+                                    numericInput("sc_res", label = "Resolution for PNG (ppi):", value=300),
                                     shinyjs::disabled(downloadButton("sc_plot_down", label = "Download Heatmap")),
                                     shinyjs::disabled(downloadButton("sc_log_down", label = "Download Ordering Log")))
                                     )
@@ -113,15 +118,15 @@ ui <- navbarPage("methylscaper",id="big_tab",
 		 													column(2, numericInput("sc_window_choice", label = "Window size:", 
 		 													                                  value=20))),
 		 						     fluidRow(																								
-		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                     splitLayout(cellWidths = c("33%"),
 		                         plotOutput(outputId = "sc_proportion_color_histogram"),
 		                         plotOutput(outputId = "sc_percent_C"),
 		 												plotOutput(outputId = "sc_avg_c")),
-		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                     splitLayout(cellWidths = c("33%"),
 		                       shinyjs::disabled(downloadButton("sc_proportion_hist_download", label = "Download Histogram")),
 		                       shinyjs::disabled(downloadButton("sc_percentC_plot_download", label = "Download Plot")),
 		 											shinyjs::disabled(downloadButton("sc_avg_c_plot_download", label = "Download Plot"))),
-		                     splitLayout(cellWidths = c("33%", "33%", "33%"),
+		                     splitLayout(cellWidths = c("33%"),
 		                       shinyjs::disabled(downloadButton("sc_proportion_data_download", label = "Download Proportion Data")),
 		                       shinyjs::disabled(downloadButton("sc_percentC_data_download", label = "Download Percentage Data")),
 		 											shinyjs::disabled(downloadButton("sc_avg_c_data_download", label = "Download Averaged Percent Data"))))
@@ -157,8 +162,9 @@ ui <- navbarPage("methylscaper",id="big_tab",
             tags$br(),
             tags$br(),
             fluidRow(
-                tags$p("For additional information or to view Frequently Asked Questions, the linked methylscaper 
-                vignette is:", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")),
+                tags$p("For additional information or to view Frequently Asked Questions, see the ", 
+								tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper 
+                vignette.")),
                 
                 tags$p("Questions can also be submitted on our GitHub page:", 
                 tags$a(href="https://github.com/rhondabacher/methylscaper/issues", "Report issue/bug")))
@@ -172,8 +178,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          on which to weight the ordering algorithm. Once the weighting is set, change Brushing to 
                          refinement and highlight the molecules (rows) to refine the ordering."),
                          tags$p("Detailed
-                         descriptions of the various options for seriation, weighting, and refinement are in the methylscaper 
-                         vignette: ", tags$a(href="http://www.methylscaper.com/content/vignette.pdf", "PDF")))
+                         descriptions of the various options for seriation, weighting, 
+												 and refinement are in the ", tags$a(href="http://bioconductor.org/packages/devel/bioc/vignettes/methylscaper/inst/doc/methylScaper.html", "methylscaper vignette.")))
                      ),
                      fluidRow(sidebarLayout(
                        sidebarPanel(
@@ -181,6 +187,8 @@ ui <- navbarPage("methylscaper",id="big_tab",
                          tags$br(),
                          tags$br(),
                          fileInput("sm_rds_file", label = "RDS File Input", accept= c(".rds", ".RDS")),
+                         numericInput("sm_filter", label = "Filter reads - keep reads 
+                                     with % non-missing at least:", value=0, min=0, max=100),
                          selectInput("sm_ser_method", label = "Seriation Method:",
                                      choices = c("PCA", "ARSA")),
                          selectInput("sm_refine_method", label = "Refinement Method:",
@@ -197,7 +205,10 @@ ui <- navbarPage("methylscaper",id="big_tab",
                                          plotOutput(outputId = "sm_seqPlot",
                                                     brush = "sm_plot_brush",  width = "100%")),
                                   column(width = 2, align='left',
-                                         selectInput("sm_filetype", label = "File type", choices = c("PDF", "PNG")),
+                                         selectInput("sm_filetype", label = "File type", choices = c("PDF","PNG", "SVG", "SVGZ")),
+                                         numericInput("sm_height", label = "Height (inches):", value=7),
+                                         numericInput("sm_width", label = "Width (inches):", value=7),
+                                         numericInput("sm_res", label = "Resolution for PNG (ppi):", value=300),
                                          shinyjs::disabled(downloadButton("sm_plot_down", label = "Download Heatmap")),
                                          shinyjs::disabled(downloadButton("sm_log_down", label = "Download Ordering Log")))
                          )
@@ -219,15 +230,15 @@ ui <- navbarPage("methylscaper",id="big_tab",
 													column(2, numericInput("sm_window_choice", label = "Window size:", 
 													                                  value=20))),
 						     fluidRow(																								
-                    splitLayout(cellWidths = c("33%", "33%", "33%"),
+                    splitLayout(cellWidths = c("33%"),
                         plotOutput(outputId = "sm_proportion_color_histogram"),
                         plotOutput(outputId = "sm_percent_C"),
 												plotOutput(outputId = "sm_avg_c")),
-                    splitLayout(cellWidths = c("33%", "33%", "33%"),
+                    splitLayout(cellWidths = c("33%"),
                       shinyjs::disabled(downloadButton("sm_proportion_hist_download", label = "Download Histogram")),
                       shinyjs::disabled(downloadButton("sm_percentC_plot_download", label = "Download Plot")),
 											shinyjs::disabled(downloadButton("sm_avg_c_plot_download", label = "Download Plot"))),
-                    splitLayout(cellWidths = c("33%", "33%", "33%"),
+                    splitLayout(cellWidths = c("33%"),
                       shinyjs::disabled(downloadButton("sm_proportion_data_download", label = "Download Proportion Data")),
                       shinyjs::disabled(downloadButton("sm_percentC_data_download", label = "Download Percentage Data")),
 											shinyjs::disabled(downloadButton("sm_avg_c_data_download", label = "Download Averaged Percent Data"))))

@@ -9,7 +9,7 @@
 #' @importFrom seqinr read.fasta
 #' @importFrom shinyjs toggleElement showElement
 #' @importFrom shinyFiles shinyDirChoose shinyDirButton getVolumes
-#' @importFrom grDevices dev.off pdf png
+#' @importFrom grDevices dev.off pdf png cairo_pdf
 #' @importFrom utils write.csv capture.output data
 #' @importFrom data.table fread
 #' @import seriation

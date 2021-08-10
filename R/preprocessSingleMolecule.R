@@ -175,7 +175,7 @@ alignSequences <- function(fasta, ref_string, log_vector,
    getOrientation <- lapply(good_alignment_idxs, function(i){
      mismt = mismatchTable(useseqs[[i]])
      mismt = c(mismt$PatternSubstring, mismt$SubjectSubstring)
-     mismm_nt <- names(sort(table(mismt), decreasing = T)[1:2])
+     mismm_nt <- names(sort(table(mismt), decreasing = TRUE)[c(1,2)])
      return(mismm_nt)
    })
    getOrientation <- table(unlist(getOrientation))
