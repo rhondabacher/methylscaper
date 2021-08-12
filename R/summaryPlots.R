@@ -55,6 +55,9 @@ methyl_percent_sites <- function(orderObject, makePlot = TRUE, ...){
 #' @param type Indicates which data set to compute proportions for.
 #'      This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
 #'      'gch' or 'yellow' for accessibility. 
+#' @param over Indicates whether to calculate the proportion of methylated bases or sites.
+#'      The bases option will calculate all of the 'inferred' methylation between sites,
+#'      whereas the site option will only calculate at the HCG or GCH sites.
 #' @param makePlot Indicates whether to plot a histogram of the proportions 
 #'  across all cells/molcules.
 #' @param ... Additional parameters used by the \code{hist} function.
@@ -71,19 +74,28 @@ methyl_percent_sites <- function(orderObject, makePlot = TRUE, ...){
 #' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' methyl_proportion(orderObj, makePlot = TRUE)
 
-methyl_proportion <- function(orderObject, type = "yellow", 
+methyl_proportion <- function(orderObject, type = "yellow", over = "bases",
                                 makePlot=TRUE, ...){
   type <- tolower(type)
   if (type=="gch") type <- "yellow"
   if (type=="accessibility methylation") type <- "yellow"
   if (type=="acc") type <- "yellow"
   color_indicator <- ifelse(type=="yellow", -1, 1)
-  Proportion <- apply(orderObject$toClust, 1, function(x){
-      sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)
-  })
+  if (over == "bases") {
+      Proportion <- apply(orderObject$toClust, 1, function(x){
+          sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)
+      })
+  } else if (over == "sites") {
+      sites = which(apply(abs(toPlot_fix_og), 2, function(x) any(x %in% c(4, 1)*color_indicator)))
+       Proportion <- apply(orderObject$toClust, 1, function(x){
+         sum(x[sites] == color_indicator * 4) / (length(sites))
+       })
+  } else {stop("Invalid Specification. Must choose either 'bases' or 'sites'.")}
+  
   if (makePlot) {
+    breaks = pmin(15, length(unique(Proportion)))
     opar <- par(lwd=4)
-    H = hist(Proportion, plot=FALSE, breaks = 15)
+    H = hist(Proportion, plot=FALSE, breaks = breaks)
     plot(H, xlim=c(0,1), border=ifelse(type == "yellow", "gold2", "brown1"),
         col="gray75", cex.lab=1.3,
         lwd=2,...)
