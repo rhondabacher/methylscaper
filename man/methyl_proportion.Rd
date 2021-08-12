@@ -4,7 +4,13 @@
 \alias{methyl_proportion}
 \title{Calculate the proportion of methylated bases for each cell/molecule}
 \usage{
-methyl_proportion(orderObject, type = "yellow", makePlot = TRUE, ...)
+methyl_proportion(
+  orderObject,
+  type = "yellow",
+  over = "bases",
+  makePlot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}}
@@ -12,6 +18,10 @@ methyl_proportion(orderObject, type = "yellow", makePlot = TRUE, ...)
 \item{type}{Indicates which data set to compute proportions for.
 This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
 'gch' or 'yellow' for accessibility.}
+
+\item{over}{Indicates whether to calculate the proportion of methylated bases or sites.
+The bases option will calculate all of the 'inferred' methylation between sites,
+whereas the site option will only calculate at the HCG or GCH sites.}
 
 \item{makePlot}{Indicates whether to plot a histogram of the proportions 
 across all cells/molcules.}

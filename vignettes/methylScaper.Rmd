@@ -126,6 +126,7 @@ singlecell_subset <- subsetSC(gse_subset_path, chromosome=19, startPos = 8937041
 To fully demonstrate the example using the three cells subset, we skip some explanations of the functions and show the resulting plot. For this particular region only one of the three cells has coverage and thus only one row is shown in the plot (if a cell has no data in the entire region then it is not shown in the plot rather than being plot as missing data). All functions are further explained in detail in the following sections.
 
 ```{r, eval=TRUE, fig.width=7, fig.height=3}
+data(singlecell_subset)
 data("mouse_bm")
 gene.select <- subset(mouse_bm, mgi_symbol == "Eef1g")
 
