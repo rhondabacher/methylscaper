@@ -173,8 +173,8 @@ recode <- function(input_GCH, input_HCG)
      lastHCG <- min(bp, rev(sites)[1]+1)
 
      input_HCG <- apply(input_HCG, 1, function(x) {
-       x[seq(1,firstHCG)] <- 0
-       x[seq(lastHCG, bp)] <- 0
+       if (firstHCG > 1) {x[seq(1,firstHCG)] <- 0}
+       if (lastHCG < bp) {x[seq(lastHCG, bp)] <- 0}
      return(x)
      })
      input_HCG <- t(input_HCG)
@@ -184,8 +184,8 @@ recode <- function(input_GCH, input_HCG)
      lastGCH <- min(bp, rev(sites)[1]+1)
 
      input_GCH <- apply(input_GCH, 1, function(x) {
-       x[seq(1,firstGCH)] <- 0
-       x[seq(lastGCH, bp)] <- 0
+       if (firstHCG > 1) x[seq(1,firstGCH)] <- 0
+       if (lastHCG < bp) x[seq(lastGCH, bp)] <- 0
        return(x)
      })
      input_GCH <- t(input_GCH)
