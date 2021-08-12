@@ -66,10 +66,6 @@ plotSequence <- function(orderObject, plotFast=TRUE,
                     nrow=nrow(input_HCG), ncol=blankWidth)
     toPlot_fix_og <- cbind(input_HCG_fix, blankCOLS, input_GCH_fix)
 
-    sites = which(apply(abs(toPlot_fix_og), 2, function(x) any(x %in% c(4, 1))))
-    sites[sites < (ncol(toPlot_fix_og)/2)] <- sites[sites < (ncol(toPlot_fix_og)/2)] - 1
-    sites_scale <- sites / ncol(toPlot_fix_og) # relative to the 'plot'
-
     toPlot_fix <- toPlot_fix_og[rev(order1),]
 
     if (nrow(toClust) == 1) {
