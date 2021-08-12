@@ -86,7 +86,7 @@ methyl_proportion <- function(orderObject, type = "yellow", over = "bases",
           sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)
       })
   } else if (over == "sites") {
-      sites = which(apply(abs(orderObject$toClust), 2, function(x) any(x %in% c(4, 1)*color_indicator)))
+       sites = which(apply(orderObject$toClust, 2, function(x) any(x %in% (c(4, 1)*color_indicator))))
        Proportion <- apply(orderObject$toClust, 1, function(x){
          sum(x[sites] == color_indicator * 4) / (length(sites))
        })
