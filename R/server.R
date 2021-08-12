@@ -475,34 +475,53 @@ output$sc_preprocessing_down <- downloadHandler(
 	      shinyjs::enable("sc_plot_down")
 			  shinyjs::enable("sc_log_down")}
 	  })
-		
-  output$sc_proportion_color_histogram <- renderPlot({
-    obj <- sc_orderObject
-    if (sum(obj$toClust) == 0) {}
-    else {par(mar=c(5,4,2,2))
-			methyl_proportion(obj, makePlot = TRUE,   
-            type = input$sc_proportion_choice, main="", xlab="Proportion methylation within cells")
-					}
-  })
+		 
+    
+    output$sc_proportion_color_histogram <- renderPlot({
+      obj <- sc_orderObject
+      if (sum(obj$toClust) == 0) {}
+      else {par(mar=c(5,4,2,2))
+  			methyl_proportion(obj, makePlot = TRUE, 
+                  type = input$sc_proportion_choice, 
+                  over = input$sc_over_choice, main="",xlab="Proportion methylation within cells")
+  							}
+    })
 
-  output$sc_proportion_hist_download <- downloadHandler(
-    filename = function(){
-			return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".pdf"))
-	  },
-    content = function(file){
-                  pdf(file)
-                  methyl_proportion(sc_orderObject, makePlot = TRUE,
-                                   type = input$sc_proportion_choice, main="Methylated Bases Per Cell")
-      dev.off()
-    }
-  )
+    output$sc_proportion_hist_download <- downloadHandler(
+      filename = function(){
+  			if (input$sc_proportion_choice == "Accessibility methylation") {
+  				whichMeth <- "acc"
+  			} else {whichMeth <- "met"}
+  			if (input$sc_over_choice == "All bases") {
+  				whichP <- "bases"
+  			} else {whichP <- "sites"}
+  			return(paste0("prop_cell_methylated_",  whichMeth, "_", whichP, "_", outname_rds$usename, ".pdf"))
+  	  },
+      content = function(file){
+                    pdf(file)
+                    methyl_proportion(sc_orderObject, makePlot = TRUE,
+                      type = input$sc_proportion_choice, 
+                      over = input$sc_over_choice, main="Methylation Per Cell")
+        dev.off()
+      }
+    )
+  
+
+
   output$sc_proportion_data_download <- downloadHandler(
     filename = function(){
-        return(paste0("prop_cell_methylated_", tolower(input$sc_proportion_choice), "_", outname_rds$usename, ".csv"))
+			if (input$sc_proportion_choice == "Accessibility methylation") {
+				whichMeth <- "acc"
+			} else {whichMeth <- "met"}
+			if (input$sc_over_choice == "All bases") {
+				whichP <- "bases"
+			} else {whichP <- "sites"}
+        return(paste0("prop_cell_methylated_", whichMeth, "_", whichP, "_", outname_rds$usename, ".csv"))
     },
     content = function(file){
         dat <-  methyl_proportion(sc_orderObject, makePlot = FALSE,
-                               type = input$sc_proportion_choice, main="")
+                                  type = input$sc_proportion_choice, 
+                                  over = input$sc_over_choice, main="Methylation Per Cell")
       write.csv(dat, file = file)
     }
   )
@@ -900,35 +919,43 @@ output$sm_preprocessing_down <- downloadHandler(
     if (sum(obj$toClust) == 0) {}
     else {par(mar=c(5,4,2,2))
 			methyl_proportion(obj, makePlot = TRUE, 
-                type = input$sm_proportion_choice, main="",xlab="Proportion methylation within molecules")
+                type = input$sm_proportion_choice, 
+                over = input$sm_over_choice, main="",xlab="Proportion methylation within molecules")
 							}
   })
 
   output$sm_proportion_hist_download <- downloadHandler(
     filename = function(){
-			if (input$sm_proportion_choice == "Accessibility Methylation") {
+			if (input$sm_proportion_choice == "Accessibility methylation") {
 				whichMeth <- "acc"
 			} else {whichMeth <- "met"}
-			
-       return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".pdf"))
+			if (input$sm_over_choice == "All bases") {
+				whichP <- "bases"
+			} else {whichP <- "sites"}
+       return(paste0("prop_molecule_methylated_", whichMeth, "_", whichP, "_", outname_rds$usename, ".pdf"))
     },
     content = function(file){
        pdf(file)
        methyl_proportion(sm_orderObject, makePlot = TRUE,
-                       type = input$sm_proportion_choice, main="Methylated Bases Per Molecule")
+                       type = input$sm_proportion_choice, 
+                       over = input$sm_over_choice, main="Methylation Per Molecule")
       dev.off()
     }
   )
   output$sm_proportion_data_download <- downloadHandler(
     filename = function(){
-			if (input$sm_proportion_choice == "Accessibility Methylation") {
+			if (input$sm_proportion_choice == "Accessibility methylation") {
 				whichMeth <- "acc"
 			} else {whichMeth <- "met"}
-      return(paste0("prop_molecule_methylated_", whichMeth, "_", outname_rds$usename, ".csv"))
+			if (input$sm_over_choice == "All bases") {
+				whichP <- "bases"
+			} else {whichP <- "sites"}
+      return(paste0("prop_molecule_methylated_", whichMeth, "_", whichP, "_", outname_rds$usename, ".csv"))
     },
     content = function(file){
       dat <-  methyl_proportion(sm_orderObject, makePlot = FALSE,
-                               type = input$sm_proportion_choice, main="Methylated Basepairs Per Molecule")
+                               type = input$sm_proportion_choice, 
+                               over = input$sm_over_choice, main="Methylation Per Molecule")
       write.csv(dat, file = file)
     }
   )
