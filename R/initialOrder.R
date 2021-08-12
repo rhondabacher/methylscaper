@@ -169,7 +169,7 @@ recode <- function(input_GCH, input_HCG)
      bp <- length(input_HCG[1,])
 
      sites = which(apply(input_HCG, 2, function(x) any(x %in% c(4, 1))))
-     firstHCG <- sites
+     firstHCG <- sites[1]
      lastHCG <- rev(sites)[1]
 
      input_HCG <- apply(input_HCG, 1, function(x) {
@@ -180,7 +180,7 @@ recode <- function(input_GCH, input_HCG)
      input_HCG <- t(input_HCG)
 
      sites = which(apply(input_GCH, 2, function(x) any(x %in% c(-4, -1))))
-     firstGCH <- sites
+     firstGCH <- sites[1]
      lastGCH <- rev(sites)[1]
 
      input_GCH <- apply(input_GCH, 1, function(x) {
