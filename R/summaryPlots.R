@@ -81,6 +81,10 @@ methyl_proportion <- function(orderObject, type = "yellow", over = "bases",
   if (type=="accessibility methylation") type <- "yellow"
   if (type=="acc") type <- "yellow"
   color_indicator <- ifelse(type=="yellow", -1, 1)
+  
+  over <- tolower(over)
+  if (over=="all bases") over <- "bases"
+  if (over=="sites only") over <- "sites"
   if (over == "bases") {
       Proportion <- apply(orderObject$toClust, 1, function(x){
           sum(x == color_indicator * 3 | x == color_indicator * 4) / (length(x) / 2)

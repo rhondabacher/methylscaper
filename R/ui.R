@@ -113,8 +113,10 @@ ui <- navbarPage("methylscaper",id="big_tab",
 											 is similar to the one in the middle but is easier to interpret when the region is large."
 		                    )
 		                 )),
-		                  fluidRow(column(10, radioButtons("sc_proportion_choice", label = "Proportion of:", 
-		                                  choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation")),
+		                  fluidRow(column(2, radioButtons("sc_proportion_choice", label = "Proportion of:", 
+		                                  choices = c("Accessibility methylation", "Endogenous methylation"), selected = "Accessibility methylation")),
+                              column(8, radioButtons("sc_over_choice", label = "Methylation across:", 
+                                                                              choices = c("All bases", "Sites only"), selected = "All bases")),    
 		 													column(2, numericInput("sc_window_choice", label = "Window size:", 
 		 													                                  value=20))),
 		 						     fluidRow(																								
@@ -225,8 +227,10 @@ ui <- navbarPage("methylscaper",id="big_tab",
 											 is similar to the one in the middle but is easier to interpret when the region is large."
                    )
                   )),
-                 fluidRow(column(10, radioButtons("sm_proportion_choice", label = "Proportion of:", 
-                                 choices = c("Accessibility Methylation", "Endogenous Methylation"), selected = "Accessibility Methylation")),
+                 fluidRow(column(2, radioButtons("sm_proportion_choice", label = "Proportion of:", 
+                                 choices = c("Accessibility methylation", "Endogenous methylation"), selected = "Accessibility methylation")),
+                          column(8, radioButtons("sm_over_choice", label = "Methylation across:", 
+                                                                  choices = c("All bases", "Sites only"), selected = "All bases")),       
 													column(2, numericInput("sm_window_choice", label = "Window size:", 
 													                                  value=20))),
 						     fluidRow(																								
