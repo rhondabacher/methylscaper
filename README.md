@@ -40,7 +40,7 @@ For any other installation issues/questions please leave a message on our [Githu
 
 # Manuscript
 
-A preprint of the methylscaper manuscript is now available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.11.13.382465v1).
+The methylscaper manuscript is now available at [Bioinformatics](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btab438/6298588). 
 
 # Running methylscaper
 

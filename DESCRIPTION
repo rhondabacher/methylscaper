@@ -9,7 +9,7 @@ Description: methylscaper is an R package for processing and visualizing data jo
   interactive seriation process of refinement and re-weighting that optimally 
   orders the cells or DNA molecules to discover methylation patterns and nucleosome 
   positioning.
-Version: 1.6.0
+Version: 1.6.1
 Authors@R: c(person("Bacher", "Rhonda", email = "rbacher@ufl.edu", role = c("aut", "cre")), person("Parker", "Knight", email = "pknight24@ufl.edu", role = c("aut")))
 Depends: R (>= 4.1.0)
 License: GPL-2
@@ -31,6 +31,7 @@ Imports:
   shinyFiles,
   data.table,
   SummarizedExperiment
+Suggests: BiocStyle
 RoxygenNote: 7.1.1
 Suggests: knitr, rmarkdown, devtools
 VignetteBuilder: knitr
