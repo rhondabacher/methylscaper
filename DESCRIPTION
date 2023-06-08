@@ -32,6 +32,7 @@ Imports:
   data.table,
   SummarizedExperiment 
 RoxygenNote: 7.2.3
+RoxygenNote: 7.1.1
 Suggests: BiocStyle, knitr, 
   rmarkdown, devtools
 VignetteBuilder: knitr
@@ -43,4 +44,3 @@ biocViews:
 	SingleCell,
 	NucleosomePositioning
 Maintainer: Rhonda Bacher <rbacher@ufl.edu>
-
