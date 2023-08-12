@@ -1,21 +1,18 @@
-citHeader("To cite methylscaper in publications use:")
-
-citEntry(entry = "Article",
-		title = "Methylscaper: an R/Shiny app for joint visualization of DNA methylation and nucleosome occupancy in single-molecule and single-cell data",
-		author = personList(as.person("Parker Knight"),
-			as.person("Marie-Pierre L Gauthier"),
-			as.person("Carolina E Pardo"),
-			as.person("Russell P Darst"),
-			as.person("Kevin Kapadia"),
-			as.person("Hadley Browder"),
-			as.person("Eliza Morton"),
-			as.person("Alberto Riva"),
-			as.person("Michael P Kladde"),
-			as.person("Rhonda Bacher")),
-  journal      = "Bioinformatics",
-  year         = "2021",
-  url          = "https://academic.oup.com/bioinformatics/article/37/24/4857/6298588",
-
-  textVersion  =
-  paste("Knight, Parker, et al. "Methylscaper: an R/Shiny app for joint visualization of DNA methylation and nucleosome occupancy in single-molecule and single-cell data." Bioinformatics 37.24 (2021): 4857-4859.")
-)
+citEntry(entry = "article",
+         title = "Methylscaper: an R/Shiny app for joint visualization of DNA methylation and nucleosome occupancy in single-molecule and single-cell data",
+         author = personList( as.person("Parker Knight"),
+                               as.person("Marie-Pierre L Gauthier"), 
+                               as.person("Carolina E Pardo"), 
+                               as.person("Russell P Darst"), 
+                               as.person("Kevin Kapadia"), 
+                               as.person("Hadley Browder"), 
+                               as.person("Eliza Morton"), 
+                               as.person("Alberto Riva"), 
+                               as.person("Michael P Kladde"), 
+                               as.person("Rhonda Bacher")),
+          journal = "Bioinformatics", 
+          year = 2021, 
+          url = "https://academic.oup.com/bioinformatics/article/37/24/4857/6298588", 
+          textVersion = paste("Knight, P, Gauthier MPL, Pardo CE, Darst RP, Kapadia K, Browder H, Morton, E, Riva A, Kladde MP, Bacher R", 
+                              "Methylscaper: an R/Shiny app for joint visualization of DNA methylation and nucleosome occupancy in single-molecule and single-cell data",
+                              "Bioinformatics 37.24 (2021): 4857-4859"))
