@@ -16,4 +16,3 @@ citEntry(entry = "article",
           textVersion = paste("Knight, P, Gauthier MPL, Pardo CE, Darst RP, Kapadia K, Browder H, Morton, E, Riva A, Kladde MP, Bacher R", 
                               "Methylscaper: an R/Shiny app for joint visualization of DNA methylation and nucleosome occupancy in single-molecule and single-cell data",
                               "Bioinformatics 37.24 (2021): 4857-4859"))
-)
