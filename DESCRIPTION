@@ -21,7 +21,6 @@ Imports:
   BiocParallel,
   seqinr,
   Biostrings,
-  pwalign,
   Rfast,
   grDevices, 
   graphics, 
