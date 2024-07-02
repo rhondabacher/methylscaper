@@ -91,7 +91,7 @@ plotSequence <- function(orderObject, plotFast=TRUE,
     axis(3, at = sites_scale, labels = rep("", length(sites_scale)),
         tick=TRUE, line = .5, col="white", cex=1, lwd=1,
         col.ticks = "black", tck = -.02)
-		title(Title, line=1.7)
+			title(Title, line=2, col.main="royalblue4")
 				
     # Where to put the axes:
     # convert these back to the site number so we can do refinement
@@ -99,8 +99,8 @@ plotSequence <- function(orderObject, plotFast=TRUE,
     plot2 <- round((ncol(input_HCG_fix)+blankWidth)/ncol(toPlot_fix), 2)
 
     # these shifts of 0.025 seem arbitrary but tend to center the title a bit better
-	  title("HCG", adj = plot1 / 2 - 0.025, line = 1.7) 
-	  title("GCH", adj = plot2 + 0.025 + (1 - plot2) / 2, line = 1.7)
+    title("HCG", adj = plot1 / 2 - 0.025, line = 1.2) 
+   	title("GCH", adj = plot2 + 0.025 + (1 - plot2) / 2, line = 1.2)
 
     toLabel <- rev(seq(1, length(order1), by=ceiling(length(order1)/8)))
     if (!(length(order1) %in% toLabel)) toLabel <- c(length(order1), toLabel)
