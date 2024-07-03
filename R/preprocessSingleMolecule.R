@@ -119,7 +119,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
 # this needs the log_vector, multicoreParam, and updateProgress
 # so that we can continue keeping track of these things
 alignSequences <- function(fasta, ref_string, log_vector, 
-                        multicoreParam = NULL, updateProgress = NULL)
+                        multicoreParam = NULL, updateProgress = NULL, score_cutoff=-Inf)
 {
     ## this creates the substitution matrix for use in alignment
     penalty_mat <- matrix(0,length(DNA_ALPHABET[seq(1,4)]),
@@ -147,8 +147,10 @@ alignSequences <- function(fasta, ref_string, log_vector,
     maxAligns <- vapply(seqalign_out, function (i) i$maxAlign, numeric(1))
 
 		
-    score_cutoff_idx <- which.max(diff(sort(scores))) + 1
-    score_cutoff <- sort(scores)[score_cutoff_idx]
+    if (is.null(score_cutoff)) {
+      score_cutoff_idx <- which.max(diff(sort(scores))) + 1
+      score_cutoff <- sort(scores)[score_cutoff_idx]
+    }
 		
     good_alignment_idxs <- which(scores > score_cutoff)
 
