@@ -14,6 +14,7 @@
 #' @param log_file (optional) String indicating where to save a log of the 
 #'      alignment process. If left NULL, no log is saved. We highly recommend
 #'      saving a log file.
+#' @param score_cutoff (optional) Used mostly for testing purposes.
 #' @return The output is a list containing the the matrices 'gch' and 'hcg.
 #'       Each is a dataframe with reads/cells on the rows and each column
 #'      is a base-pair. The matrix represents the methylation state for cell
@@ -38,7 +39,7 @@
 runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
                      multicoreParam = NULL, 
                      updateProgress = NULL, 
-                     log_file = NULL)
+                     log_file = NULL, score_cutoff=NULL)
 {
     fasta <- fasta[fasta_subset]
     ref_string <- DNAString(toupper(c2s(ref)))
@@ -49,7 +50,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
       updateProgress(message = "Aligning sequences", value = 0.1)
     }
     alignment_out <- alignSequences(fasta, ref_string, log_vector, 
-                                      multicoreParam, updateProgress)
+                                      multicoreParam, updateProgress, score_cutoff)
 
     alignedseq <- alignment_out$alignedseq
     log_vector <- alignment_out$log_vector
@@ -119,7 +120,7 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
 # this needs the log_vector, multicoreParam, and updateProgress
 # so that we can continue keeping track of these things
 alignSequences <- function(fasta, ref_string, log_vector, 
-                        multicoreParam = NULL, updateProgress = NULL, score_cutoff=-Inf)
+                        multicoreParam = NULL, updateProgress = NULL, score_cutoff)
 {
     ## this creates the substitution matrix for use in alignment
     penalty_mat <- matrix(0,length(DNA_ALPHABET[seq(1,4)]),
