@@ -31,9 +31,8 @@ Imports:
   shinyFiles,
   data.table,
   SummarizedExperiment
-Suggests: BiocStyle
+Suggests: BiocStyle, knitr, rmarkdown, devtools
 RoxygenNote: 7.1.1
-Suggests: knitr, rmarkdown, devtools
 VignetteBuilder: knitr
 biocViews: 
 	DNAMethylation,
