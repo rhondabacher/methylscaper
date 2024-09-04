@@ -171,23 +171,39 @@ recode <- function(input_GCH, input_HCG)
     firstHCG <- max(1,which(input_HCG[least_missing,] %in% c(1,4))[1] - 1)
     lastHCG <- min(bp,rev(which(input_HCG[least_missing,] %in% c(1,4)))[1] + 1)
     
-    input_HCG <- apply(input_HCG, 1, function(x) {
-      x[seq(1,firstHCG)] <- 0
-      x[seq(lastHCG, bp)] <- 0
-    return(x)
-    })
-    input_HCG <- t(input_HCG)
+    if (!is.na(firstHCG) & !is.na(lastHCG)) {
+      input_HCG <- apply(input_HCG, 1, function(x) {
+        x[seq(1,firstHCG)] <- 0
+        x[seq(lastHCG, bp)] <- 0
+      return(x)
+      })
+      input_HCG <- t(input_HCG)
+    } else {
+      input_HCG <- apply(input_HCG, 1, function(x) {
+        x[seq(1,bp)] <- 0
+        return(x)
+      })
+      input_HCG <- t(input_HCG)
+    }
     
     
     firstGCH <- max(1,which(input_GCH[least_missing,] %in% c(-1,-4))[1] - 1)
     lastGCH <- min(bp,rev(which(input_GCH[least_missing,] %in% c(-1,-4)))[1] + 1)
     
-    input_GCH <- apply(input_GCH, 1, function(x) {
-      x[seq(1,firstGCH)] <- 0
-      x[seq(lastGCH, bp)] <- 0
-      return(x)
-    })
-    input_GCH <- t(input_GCH)
+    if (!is.na(firstGCH) & !is.na(lastGCH)) {
+      input_GCH <- apply(input_GCH, 1, function(x) {
+        x[seq(1,firstGCH)] <- 0
+        x[seq(lastGCH, bp)] <- 0
+        return(x)
+      })
+      input_GCH <- t(input_GCH)
+    } else {
+      input_GCH <- apply(input_GCH, 1, function(x) {
+        x[seq(1,bp)] <- 0
+        return(x)
+      })
+      input_GCH <- t(input_GCH)
+    }
     
     return(list(input_GCH = data.matrix(input_GCH), input_HCG = data.matrix(input_HCG)))
 
