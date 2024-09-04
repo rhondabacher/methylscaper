@@ -186,7 +186,7 @@ recode <- function(input_GCH, input_HCG)
       input_HCG <- t(input_HCG)
     }
     
-    
+    least_missing <- which.min(apply(input_GCH, 1, function(x) sum(x==0)))
     firstGCH <- max(1,which(input_GCH[least_missing,] %in% c(-1,-4))[1] - 1)
     lastGCH <- min(bp,rev(which(input_GCH[least_missing,] %in% c(-1,-4)))[1] + 1)
     
