@@ -24,8 +24,8 @@
 #'              two GCH or HCG sites
 #'          1: base pairs between two methylated GCH or HCG sites
 #'          2: methylated GCH or HCG site
-#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement mismatchTable
-#' @importFrom Biostrings pairwiseAlignment score alignedPattern alignedSubject
+#' @importFrom Biostrings DNAString DNA_ALPHABET reverseComplement
+#' @importFrom pwalign pairwiseAlignment score alignedPattern alignedSubject mismatchTable
 #' @importFrom seqinr c2s s2c read.fasta
 #' @importFrom BiocParallel bplapply
 #' @export
