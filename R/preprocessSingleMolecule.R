@@ -62,12 +62,18 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1,length(fasta)),
     GCsites <- gregexpr("GC",c2s(ref_string),fixed=TRUE)[[1]] + 1
     CGsites <- gregexpr("CG",c2s(ref_string),fixed=TRUE)[[1]]
 
+    # Trick to get around sites not found:
+    if (any(GCsites < 0)) GCsites <- -1
+    if (any(CGsites < 0)) CGsites <- 1
+    
     cg_site_use <- s2c(paste(ref_string))[CGsites-1]
     gc_site_use <- s2c(paste(ref_string))[GCsites+1]
 
     log_vector <- c(log_vector, paste("Throwing out",
-        length(which(gc_site_use == "G")) + length(which(cg_site_use == "G")), "GCG sites"))
-
+                              length(which(gc_site_use == "G")) + length(which(cg_site_use == "G")), 
+                              "GCG sites"))
+    
+    
     CGsites <- CGsites[which(cg_site_use != "G")]
     GCsites <- GCsites[which(gc_site_use != "G")]
 
