@@ -100,13 +100,13 @@ saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
 For a reproducible example, we have provided three cells for download on [http://methylscaper.com/content/exampledata.html](http://methylscaper.com/content/exampledata.html), and below we run an example where we read the data directly from the URL's into R and use the subsetSC function. If you choose to download these files, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
 
 ```{r, eval=TRUE}
-gse_subset_path <- list(c(("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz"),
-          ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz"),
-          ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz")),
+gse_subset_path <- list(c(("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz"),
+          ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz"),
+          ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz")),
         
-          c(("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz"),
-            ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz"),
-            ("http://methylscaper.com/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz")),
+          c(("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz"),
+            ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz"),
+            ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz")),
           
           c(("GSM2936197_ESC_A08_CpG-met_processed"),
             ("GSM2936196_ESC_A07_CpG-met_processed"),
