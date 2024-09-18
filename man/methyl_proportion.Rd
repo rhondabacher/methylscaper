@@ -13,13 +13,13 @@ methyl_proportion(orderObject, type = "yellow", makePlot = TRUE, ...)
 This should be 'met' or 'hcg' or 'red' for endogenous methylation; 'acc' or
 'gch' or 'yellow' for accessibility.}
 
-\item{makePlot}{Indicates whether to plot a histogram of the proportions 
+\item{makePlot}{Indicates whether to plot a histogram of the proportions
 across all cells/molcules.}
 
 \item{...}{Additional parameters used by the \code{hist} function.}
 }
 \value{
-The proportion of methylated (endogenous (yellow) 
+The proportion of methylated (endogenous (yellow)
      or accessible) bases for each cell/molecule. Output is vector
      with length the numbner of cells/molecules and contains a proportion.
 }
@@ -27,7 +27,7 @@ The proportion of methylated (endogenous (yellow)
 Calculate the proportion of methylated bases for each cell/molecule
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example, Method = "PCA")

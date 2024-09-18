@@ -10,14 +10,15 @@ plotSequence(
   blankWidth = NULL,
   Title = "",
   drawLine = TRUE,
-  drawKey = TRUE
+  drawKey = TRUE,
+  shinySizer = 0
 )
 }
 \arguments{
-\item{orderObject}{An object of class \code{orderObject} that contains 
+\item{orderObject}{An object of class \code{orderObject} that contains
 the processed data and the ordering.}
 
-\item{plotFast}{Logical, setting to FALSE will generate a higher 
+\item{plotFast}{Logical, setting to FALSE will generate a higher
 quality plot. TRUE generates a lower resolution file, useful to improve
 speed while testing. For publication quality use plotFast=TRUE.}
 
@@ -26,32 +27,34 @@ the two plots}
 
 \item{Title}{The title of the plot.}
 
-\item{drawLine}{Logical, indicates whether to draw a line above 
+\item{drawLine}{Logical, indicates whether to draw a line above
 the CG/GC sites.}
 
 \item{drawKey}{Logical, indicates whether to draw a key representing
 a 147bp nucleosome at the bottom of the plot.}
+
+\item{shinySizer}{internal sizing parameter for plot layout in shiny app.}
 }
 \value{
-Output is two side-by-side heatmaps with the endogenous 
+Output is two side-by-side heatmaps with the endogenous
    methylation (HCG) on the left and the acciessibility methylation (GCH)
    on the right. The tick marks at the top indicate
    either HCG or GCH sites when drawLine=TRUE. If drawKey=TRUE then a black
    rectangle key is plot at the bottom of the heatmap that is 147 basepairs
-   long. In the HCG plot, red patches represent methylation between two 
+   long. In the HCG plot, red patches represent methylation between two
    sites; black patches represent unmethylated bases between two
    unmethylated sites; and gray patches are base pairs which have one
    methylated site and one unmethylated site flanking. In the HCG plot,
    yellow patches represent accessibility between two sites; black patches
    represent occupied bases  between two occupied sites; and gray patches
-   are base pairs which have one methylated site and one 
+   are base pairs which have one methylated site and one
    unmethylated site flanking.
 }
 \description{
 Generates an ordered sequence plot of methylation data.
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example, Method = "PCA")

@@ -2,11 +2,11 @@
 % Please edit documentation in R/ioHelpers.R
 \name{reformatSCE}
 \alias{reformatSCE}
-\title{This is an internal function for now and a place-holder 
+\title{This is an internal function for now and a place-holder
 in case SingleCellExperiment may be
-used in the future. We may need to update this later. Assumes 
+used in the future. We may need to update this later. Assumes
 rownames are formatted like chr_pos and there are two assays.
-The assay names are `methylation_met` for endogenous methylation 
+The assay names are `methylation_met` for endogenous methylation
 and `methylation_acc` for accessibility.}
 \usage{
 reformatSCE(dataIn)
@@ -18,10 +18,10 @@ reformatSCE(dataIn)
 List object containing the met and acc tables.
 }
 \description{
-This is an internal function for now and a place-holder 
+This is an internal function for now and a place-holder
 in case SingleCellExperiment may be
-used in the future. We may need to update this later. Assumes 
+used in the future. We may need to update this later. Assumes
 rownames are formatted like chr_pos and there are two assays.
-The assay names are `methylation_met` for endogenous methylation 
+The assay names are `methylation_met` for endogenous methylation
 and `methylation_acc` for accessibility.
 }
