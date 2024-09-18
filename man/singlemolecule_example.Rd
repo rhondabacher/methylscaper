@@ -12,7 +12,7 @@ data(singlemolecule_example)
 }
 \description{
 The RDS in ext data was made specifically with the command:
-singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm, 
+singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm,
 ref=ref_seq)
 saveRDS(singlemolecule_example, file="methylscaper/inst/ext/singlemolecule_example.rds", compress = 'xz')
 A version is also saved as RData used running examples in the man pages.

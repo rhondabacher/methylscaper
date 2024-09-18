@@ -9,17 +9,17 @@ methyl_average_status(orderObject, window_length = 20, makePlot = TRUE, ...)
 \arguments{
 \item{orderObject}{An object of class \code{orderObject}}
 
-\item{window_length}{Length of the window to be used to compute a 
+\item{window_length}{Length of the window to be used to compute a
 moving average. Default is 20.}
 
-\item{makePlot}{Logical, indicates whether to generate a line plot of 
+\item{makePlot}{Logical, indicates whether to generate a line plot of
 average status.}
 
 \item{...}{Addition parameters used by the \code{plot} function.}
 }
 \value{
-The proportion of methylated bases for each cell/molecule 
-     within a defined moving window. Output is a list with elements 
+The proportion of methylated bases for each cell/molecule
+     within a defined moving window. Output is a list with elements
      "meth_avg" and "acc_avg", indicating endogenous
      or accessible methylation respectively.
 }
@@ -27,7 +27,7 @@ The proportion of methylated bases for each cell/molecule
 Calculate the average methylation/accessibility status across all cells/molecules.
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example, Method = "PCA")

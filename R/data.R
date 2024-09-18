@@ -1,7 +1,7 @@
 #' Example preprocessed single-molecule experiment
 #'
 #' The RDS in ext data was made specifically with the command:
-#' singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm, 
+#' singlemolecule_example <- methylscaper::runAlign(fasta=reads_sm,
 #' ref=ref_seq)
 #' saveRDS(singlemolecule_example, file="methylscaper/inst/ext/singlemolecule_example.rds", compress = 'xz')
 #' A version is also saved as RData used running examples in the man pages.
@@ -11,15 +11,15 @@
 "singlemolecule_example"
 
 #' Example reads from single-molecule experiment
-#' 
+#'
 #' This dataset was loaded into R using seqinr::read.fasta
 #' @docType data
 #' @usage data(reads_sm)
 "reads_sm"
 
-#' Example reference sequence to align reads to from a 
+#' Example reference sequence to align reads to from a
 #' single-molecule experiment
-#' 
+#'
 #' This dataset was loaded into R using seqinr::read.fasta
 #' @docType data
 #' @usage data(ref_seq)
@@ -30,7 +30,7 @@
 #' This data is from GSE109262, and has been pre-processed by methylscaper
 #' It contains a small subset of chromosome 19 region from 8947041bp - 8987041bp.
 #' The RDS in ext data was made specifically with the two commands:
-#' singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19", 
+#' singlecell_subset <- subsetSC("~/Downloads/GSE109262_RAW/", chromosome="19",
 #'    startPos = 8967041-20000, endPos = 8967041+20000, updateProgress = NULL)
 #' saveRDS(singlecell_subset, file="methylscaper/inst/ext/singlecell_subset.rds", compress = 'xz')
 #' A version is also saved as RData used running examples in the man pages.
@@ -49,7 +49,7 @@
 #'             filters = 'chromosome_name',
 #'             values = my_chr,
 #'             mart=ensembl)
-#' 
+#'
 #' @docType data
 #' @usage data(human_bm)
 "human_bm"
@@ -64,8 +64,7 @@
 #'             filters = 'chromosome_name',
 #'             values = my_chr,
 #'             mart=ensembl)
-#' 
+#'
 #' @docType data
 #' @usage data(mouse_bm)
 "mouse_bm"
-

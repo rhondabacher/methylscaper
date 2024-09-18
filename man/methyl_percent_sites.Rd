@@ -14,19 +14,19 @@ methyl_percent_sites(orderObject, makePlot = TRUE, ...)
 \item{...}{Additional parameters used by the \code{plot} function.}
 }
 \value{
-The percent of molecules or cells methylated (endogenous (yellow) 
-     or accessible) at each site. Output is a list with names "red" 
-     and "yellow". Red represents the endogenous methylation and 
-     yellow represents the accessibility. Within each list object is a 
-     vector of the percent of cells/molecules methylated. The location 
-     of the site is also represent in the form CXX, where XX is the 
+The percent of molecules or cells methylated (endogenous (yellow)
+     or accessible) at each site. Output is a list with names "red"
+     and "yellow". Red represents the endogenous methylation and
+     yellow represents the accessibility. Within each list object is a
+     vector of the percent of cells/molecules methylated. The location
+     of the site is also represent in the form CXX, where XX is the
      position of the site within the defined region.
 }
 \description{
 Calculates the percentage of methylated cells/molecules per site
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example, Method = "PCA")

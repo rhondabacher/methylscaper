@@ -5,19 +5,19 @@
 #'
 #' @return This starts up the shiny app interface for methylscaper.
 #' @import shiny
+#' @import shinyFiles
 #' @import seriation
+#' @importFrom shinyjs disabled useShinyjs enable showElement toggleElement
 #' @importFrom seqinr read.fasta
-#' @importFrom shinyjs toggleElement showElement
-#' @importFrom shinyFiles shinyDirChoose shinyDirButton getVolumes
 #' @importFrom grDevices dev.off pdf png cairo_pdf
 #' @importFrom utils write.csv capture.output data
 #' @importFrom data.table fread
-#' @import seriation
 #' @export
-#' @examples 
-#' 
+#' @examples
+#'
 #' # methylscaper()
 methylscaper <- function() {
-    options(shiny.maxRequestSize = 10000*1024^5)
+    options(shiny.maxRequestSize = 10000 * 1024^5)
 
-    shinyApp(ui = ui, server = server)}
+    shinyApp(ui = ui, server = server)
+}
