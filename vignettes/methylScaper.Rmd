@@ -43,13 +43,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("methylscaper")
 ```
 
-`methylscaper` can also be installed via [GitHub](https://github.com/rhondabacher/methylscaper/). The R4.0 branch is current with the Bioconductor version and only requires R version >= 4.0.0 while 4.1 is still under development or for those who have not yet upgraded.
-```{r, message=FALSE, eval=F}
-if (!requireNamespace("devtools", quietly=TRUE))
-    install.packages("devtools")
-devtools::install_github("rhondabacher/methylscaper", ref="R4.0")
-```
-
 ## Load the package
 
 After successful installation, load the package into the working space.
@@ -64,7 +57,7 @@ methylscaper()
 
 # Visualizing single-cell data
 
-For visualizing single-cell data from methods such as scNMT-seq, methylscaper begins with pre-aligned data. For each cell, there should be two files, one for the GCH sites and another for the HCG sites. The minimal number of columns needed for methylscaper is three: chromosome, position, and methylation status. This type of file is generated via the "Bismark\_methylation\_extractor" script in the Bismark software tool. The extractor function outputs files in four or six column output files (see bedGraph option described here: http://felixkrueger.github.io/Bismark/Docs/). Methylscaper will accept these and convert to the three column format internally.
+For visualizing single-cell data from methods such as scNMT-seq, methylscaper begins with pre-aligned data. For each cell, there should be two files, one for the GCH sites and another for the HCG sites. The minimal number of columns needed for methylscaper is three: chromosome, position, and methylation status. This type of file is generated via the "Bismark\_methylation\_extractor" script in the Bismark software tool. The extractor function outputs files in four or six column output files (see bedGraph option described here: https://felixkrueger.github.io/Bismark/options/methylation_extraction/). Methylscaper will accept these and convert to the three column format internally.
 
 Due to the large file size, methylscaper further processes the data for the visualization analysis to the chromosome level. In the Shiny app, first select all files associated with the endogenous methylation and then select all files associated with accessibility. The files should be named in such a way that the file pairs can be inferred (e.g "Expr1_Sample1_met" pairs with "Expr1_Sample1_acc"). Finally, indicate the desired chromosome to filter to the chromosome level. 
 
@@ -97,24 +90,25 @@ singlecell_subset <- subsetSC(filepath, chromosome=19, startPos = 8937041, endPo
 saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
 ```
 
-For a reproducible example, we have provided three cells for download on [http://methylscaper.com/content/exampledata.html](http://methylscaper.com/content/exampledata.html), and below we run an example where we read the data directly from the URL's into R and use the subsetSC function. If you choose to download these files, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
+For a reproducible example, we have provided three cells for download on [https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html](https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html), and below we run an example where we read the data directly from the URL's into R and use the subsetSC function. If you choose to download these files, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
 
 ```{r, eval=TRUE}
-gse_subset_path <- list(c(("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz"),
-          ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz"),
-          ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz")),
+gse_subset_path <- list(
+          c("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz",
+            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz",
+            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz"),
         
-          c(("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz"),
-            ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz"),
-            ("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz")),
+          c("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz",
+            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz",
+            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz"),
           
-          c(("GSM2936197_ESC_A08_CpG-met_processed"),
-            ("GSM2936196_ESC_A07_CpG-met_processed"),
-            ("GSM2936192_ESC_A03_CpG-met_processed")),
+          c("GSM2936197_ESC_A08_CpG-met_processed",
+            "GSM2936196_ESC_A07_CpG-met_processed",
+            "GSM2936192_ESC_A03_CpG-met_processed"),
           
-          c(("GSM2936197_ESC_A08_GpC-acc_processed"),
-            ("GSM2936196_ESC_A07_GpC-acc_processed"),
-            ("GSM2936192_ESC_A03_GpC-acc_processed")))
+          c("GSM2936197_ESC_A08_GpC-acc_processed",
+            "GSM2936196_ESC_A07_GpC-acc_processed",
+            "GSM2936192_ESC_A03_GpC-acc_processed"))
 # This formatting is a list of 4 objects: the met file urls, the acc file urls, the met file names, and the acc file names.
 
 singlecell_subset <- subsetSC(gse_subset_path, chromosome=19, startPos = 8937041, endPos = 8997041)
@@ -126,7 +120,6 @@ singlecell_subset <- subsetSC(gse_subset_path, chromosome=19, startPos = 8937041
 To fully demonstrate the example using the three cells subset, we skip some explanations of the functions and show the resulting plot. For this particular region only one of the three cells has coverage and thus only one row is shown in the plot (if a cell has no data in the entire region then it is not shown in the plot rather than being plot as missing data). All functions are further explained in detail in the following sections.
 
 ```{r, eval=TRUE, fig.width=7, fig.height=3}
-data("singlecell_subset")
 data("mouse_bm")
 gene.select <- subset(mouse_bm, mgi_symbol == "Eef1g")
 
@@ -266,7 +259,7 @@ For single-molecule data from MAPit type experiments, methylscaper will first pr
 
 For the Shiny app, the input should be a list of reads in a fasta format and a fasta reference file. The reference sequence file should be input in the 5’ to 3’ orientation (Watson strand). We do not include GCG sites because their status is biologically ambiguous. Thus, we denote GC sites that are not followed by a G as GCH and CG sites that are not preceded by a G as HCG.
 
-The screenshot below shows this preprocessing step. We make use of data from our [manuscript](https://www.biorxiv.org/content/10.1101/2020.11.13.382465v1) and the raw data is provided in the methylscaper package. The files can also be downloaded directly from the methylscaper website: [Example Data](http://methylscaper.com/content/exampledata.html). After selecting 'Run', a progress bar will appear in the bottom right. Once completed, the data may be downloaded along with a log file indicating the number of molecules successfully processed.
+The screenshot below shows this preprocessing step. We make use of data from our [manuscript](https://academic.oup.com/bioinformatics/article/37/24/4857/6298588) and the raw data is provided in the methylscaper package. The files can also be downloaded directly from the methylscaper website: [Example Data](https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html). After selecting 'Run', a progress bar will appear in the bottom right. Once completed, the data may be downloaded along with a log file indicating the number of molecules successfully processed.
 
 After selecting 'Run', a progress bar will appear in the bottom right. Once completed, the data may be downloaded along with a log file indicating the number of molecules successfully processed.
  

@@ -25,6 +25,7 @@
 #' @importFrom seriation seriate get_order
 #' @importFrom stats as.dist dist
 #' @importFrom Rfast Dist
+#' @importFrom data.table data.table
 #' @export
 #' @examples 
 #'  
@@ -37,7 +38,7 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
                         weightEnd=NULL, weightFeature="red", 
                         updateProgress = NULL){
 
-    input_GCH <- dataIn$gch 
+    input_GCH <- dataIn$gch
     input_HCG <- dataIn$hcg
     
     ## File checks:
@@ -50,7 +51,10 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
     if (all(rownames(input_GCH) == input_GCH[,1])) input_GCH <- input_GCH[,-1]
     if (all(rownames(input_HCG) == input_HCG[,1])) input_HCG <- input_HCG[,-1]
-				
+		
+    input_GCH <- data.table::data.table(input_GCH)
+    input_HCG <- data.table::data.table(input_HCG)
+    
     if (is.function(updateProgress)) {
         updateProgress(message = "Recoding input data", value = 0.1)}
     
@@ -65,37 +69,36 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
       toClust <- t(as.matrix(c(input_GCH, input_HCG)))
       order1 <- 1
       orderObject <- list(toClust = toClust, order1 = order1)
-    } 
-    else {
+    } else {
       toClust <- cbind(input_GCH, input_HCG)
       weighted = FALSE
 
     # (Optional) Weighting: Adds a variable indicating the number 
     # of red or yellow patches at specific DNA location
     if (!is.null(weightStart) & !is.null(weightEnd)) {
-        if (is.function(updateProgress)) {
+      if (is.function(updateProgress)) {
             updateProgress(message = "Weighting selected columns", value = 0.2)
-        }
-        weighted = TRUE
+      }
+        
+      weighted = TRUE
 
-		if (weightStart < 1) weightStart <- 1
-	    if (weightEnd > ncol(input_HCG)) {
-			print("Setting weightEnd to maximum columns")
-			weightEnd <- ncol(input_HCG)
-		}
-        if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
-            FEATURE = 3
-            weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
-                                    1, function(x) sum(x==FEATURE))
-
-        } else if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
-           FEATURE = -3
-            weightVector <- apply(input_GCH[,seq(weightStart,weightEnd)], 
-                                    1, function(x) sum(x==FEATURE))
-        } else {
-        	print("weightFeature value is not valid, see ?weightFeature for valid values")
-        }
-        weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
+  		if (weightStart < 1) weightStart <- 1
+  	  if (weightEnd > ncol(input_HCG)) {
+  		    print("Setting weightEnd to maximum columns")
+          weightEnd <- ncol(input_HCG)
+      }
+      if (weightFeature == "red" | weightFeature == 'hcg' | weightFeature == 'met') {
+              FEATURE = 3
+              weightVector <- apply(input_HCG[,seq(weightStart,weightEnd)], 
+                                      1, function(x) sum(x==FEATURE))
+      } else if (weightFeature == "yellow" | weightFeature == 'gch' | weightFeature == 'acc') {
+             FEATURE = -3
+              weightVector <- apply(input_GCH[,seq(weightStart,weightEnd)], 
+                                      1, function(x) sum(x==FEATURE))
+      } else {
+          	print("weightFeature value is not valid, see ?weightFeature for valid values")
+      }
+      weightVector[weightVector == 0] <- 1 # we dont want to have 0 weights
     }
 
     if (is.function(updateProgress)) {
@@ -132,9 +135,9 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 
         }
     }
-      orderObject <- list(toClust = toClust, order1 = order1)
-      if (weighted) orderObject$weights <- weightVector
-      if (Method != "PCA") orderObject$distMat <- distMat
+    orderObject <- list(toClust = toClust, order1 = order1)
+    if (weighted) orderObject$weights <- weightVector
+    if (Method != "PCA") orderObject$distMat <- distMat
     }
     
     if (is.function(updateProgress)) {
@@ -146,7 +149,7 @@ initialOrder <- function(dataIn, Method="PCA", weightStart=NULL,
 recode <- function(input_GCH, input_HCG)
 {
     input_GCH[input_GCH=="."] <- 99
-    input_GCH <- apply(input_GCH, 2, as.numeric)
+    input_GCH <- do.call(cbind, lapply(input_GCH, as.numeric))
     input_GCH[input_GCH==2] <- -4
     input_GCH[input_GCH==1] <- -3
     input_GCH[input_GCH==0] <- -2.5
@@ -156,7 +159,7 @@ recode <- function(input_GCH, input_HCG)
     input_GCH[input_GCH==99] <- 0
 
     input_HCG[input_HCG=="."] <- 99
-    input_HCG <- apply(input_HCG, 2, as.numeric)
+    input_HCG <- do.call(cbind, lapply(input_HCG, as.numeric))
     input_HCG[input_HCG==2] <- 4
     input_HCG[input_HCG==1] <- 3
     input_HCG[input_HCG==0] <- 2.5

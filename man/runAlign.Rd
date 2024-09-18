@@ -10,7 +10,8 @@ runAlign(
   fasta_subset = seq(1, length(fasta)),
   multicoreParam = NULL,
   updateProgress = NULL,
-  log_file = NULL
+  log_file = NULL,
+  score_cutoff = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ Should not be used otherwise.}
 \item{log_file}{(optional) String indicating where to save a log of the 
 alignment process. If left NULL, no log is saved. We highly recommend
 saving a log file.}
+
+\item{score_cutoff}{(optional) Used mostly for testing purposes.}
 }
 \value{
 The output is a list containing the the matrices 'gch' and 'hcg.
