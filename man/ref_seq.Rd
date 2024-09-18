@@ -3,7 +3,7 @@
 \docType{data}
 \name{ref_seq}
 \alias{ref_seq}
-\title{Example reference sequence to align reads to from a 
+\title{Example reference sequence to align reads to from a
 single-molecule experiment}
 \format{
 An object of class \code{list} of length 1.

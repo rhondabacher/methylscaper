@@ -1,32 +1,35 @@
 buildOrderObjectShiny <- function(dataIn, method,
-                        coordinatesObject, updateProgress)
-{
+    coordinatesObject, updateProgress) {
     if (coordinatesObject$weight_start == 0 | coordinatesObject$weight_stop == 0) {
         orderObject <- initialOrder(dataIn, Method = method)
-    } else orderObject <- initialOrder(dataIn, Method = method,
-                    weightStart = coordinatesObject$weight_start,
-                    weightEnd = coordinatesObject$weight_stop,
-                    weightFeature = coordinatesObject$weight_color,
-                    updateProgress = updateProgress)
-return(orderObject)
+    } else {
+        orderObject <- initialOrder(dataIn,
+            Method = method,
+            weightStart = coordinatesObject$weight_start,
+            weightEnd = coordinatesObject$weight_stop,
+            weightFeature = coordinatesObject$weight_color,
+            updateProgress = updateProgress
+        )
+    }
+    return(orderObject)
 }
 
-refineOrderShiny <- function(orderObject, refine_method, coordinatesObject)
-{
-    refineFunction(orderObject, coordinatesObject$refine_start, 
-                    coordinatesObject$refine_stop, Method=refine_method)
+refineOrderShiny <- function(orderObject, refine_method, coordinatesObject) {
+    refineFunction(orderObject, coordinatesObject$refine_start,
+        coordinatesObject$refine_stop,
+        Method = refine_method
+    )
 }
 
-drawPlot <- function(orderObject, coordinatesObject, blankWidth = NULL, drawLines = TRUE, ...)
-{
+drawPlot <- function(orderObject, coordinatesObject, blankWidth = NULL, drawLines = TRUE, ...) {
     plotSequence(orderObject, ...)
-		
-		if (is.null(blankWidth)) blankWidth <- ceiling(.12 * ncol(orderObject$toClust) / 2) 
-			
+
+    if (is.null(blankWidth)) blankWidth <- ceiling(.12 * ncol(orderObject$toClust) / 2)
+
     # draw the horizontal lines
     if (coordinatesObject$refine_start != 0 & coordinatesObject$refine_stop != 0) {
-        n <- nrow(orderObject$toClust)# convert back to raw coordinates
-        ymin <- (((n:1)[coordinatesObject$refine_start] / n * (n - 12)) + 12) / n 
+        n <- nrow(orderObject$toClust) # convert back to raw coordinates
+        ymin <- (((n:1)[coordinatesObject$refine_start] / n * (n - 12)) + 12) / n
         ymax <- (((n:1)[coordinatesObject$refine_stop] / n * (n - 12)) + 12) / n
         if (drawLines) {
             abline(b = 0, a = ymax, col = "blue", lwd = 2.5)
@@ -35,11 +38,11 @@ drawPlot <- function(orderObject, coordinatesObject, blankWidth = NULL, drawLine
     }
     # draw the vertical lines
     if (coordinatesObject$weight_start != 0 & coordinatesObject$weight_stop != 0) {
-		firstm <- (ncol(orderObject$toClust) + blankWidth)
+        firstm <- (ncol(orderObject$toClust) + blankWidth)
         xmin <- coordinatesObject$weight_start / firstm
         xmax <- coordinatesObject$weight_stop / firstm
         if (coordinatesObject$weight_color == "yellow") {
-			secondm <- (blankWidth+ncol(orderObject$toClust)/2) / firstm
+            secondm <- (blankWidth + ncol(orderObject$toClust) / 2) / firstm
             xmin <- xmin + secondm
             xmax <- xmax + secondm
         }
@@ -50,10 +53,9 @@ drawPlot <- function(orderObject, coordinatesObject, blankWidth = NULL, drawLine
     }
 }
 
-handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=NULL){
-	
-	  if (is.null(blankWidth)) blankWidth <- ceiling(.12 * m) 
-		
+handleBrushCoordinates <- function(plot_brush, n, m, blankWidth = NULL) {
+    if (is.null(blankWidth)) blankWidth <- ceiling(.12 * m)
+
     weight_color <- "red"
     first_row_raw <- round(plot_brush$ymin * n) - 12
     last_row_raw <- round(plot_brush$ymax * n) - 12
@@ -70,9 +72,9 @@ handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=NULL){
 
     first_col <- round(plot_brush$xmin, 4)
     last_col <- round(plot_brush$xmax, 4)
-	firstm <- (m) / (m*2 + blankWidth)
-	secondm <- (blankWidth+m) / (m*2 + blankWidth)
-    if (first_col <= firstm) { # red weighting 
+    firstm <- (m) / (m * 2 + blankWidth)
+    secondm <- (blankWidth + m) / (m * 2 + blankWidth)
+    if (first_col <= firstm) { # red weighting
         if (last_col >= firstm) last_col <- firstm # force the last column to be in red
         first_col <- first_col / firstm
         first_col <- round(first_col * m)
@@ -95,9 +97,10 @@ handleBrushCoordinates <- function(plot_brush, n, m, blankWidth=NULL){
     if (first_col <= 2) first_col <- 1
     if (last_col >= (m - 2)) last_col <- m
 
-    return(list(first_row = ifelse(first_row == 0, 0, seq(n,1)[first_row]),
-            last_row = ifelse(last_row == 0, 0, seq(n,1)[last_row]),
-            first_col = first_col, last_col = last_col,
-            weight_color = weight_color))
+    return(list(
+        first_row = ifelse(first_row == 0, 0, seq(n, 1)[first_row]),
+        last_row = ifelse(last_row == 0, 0, seq(n, 1)[last_row]),
+        first_col = first_col, last_col = last_col,
+        weight_color = weight_color
+    ))
 }
-

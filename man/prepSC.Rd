@@ -9,39 +9,40 @@ prepSC(dataIn, startPos = NULL, endPos = NULL, updateProgress = NULL)
 \arguments{
 \item{dataIn}{A list object containing two elements labelled gch and hcg (already pre-processed.)}
 
-\item{startPos}{The index of the first position to include 
-in the visualization. If using this within the R console it is 
+\item{startPos}{The index of the first position to include
+in the visualization. If using this within the R console it is
 recomended to specify the start and end directly.
 In the Shiny app, a slider will let the user refine these positions.}
 
 \item{endPos}{The index of the final position to include in the visualization.}
 
-\item{updateProgress}{A function for generating progress bars in the Shiny app. 
+\item{updateProgress}{A function for generating progress bars in the Shiny app.
 Should be left NULL otherwise.}
 }
 \value{
-The output is a list containing the elements 'gch' and 'hcg. 
-     Each is a dataframe with reads/cells on the rows and each column 
+The output is a list containing the elements 'gch' and 'hcg.
+     Each is a dataframe with reads/cells on the rows and each column
      is a base-pair. The matrix is coded as follows:
          -2: unmethylated GCH or HCG site
          -1: base pairs between two unmethylated GCH or HCG sites
-         0: base pairs between mismatching methylation states of 
+         0: base pairs between mismatching methylation states of
              two GCH or HCG sites
          1: base pairs between two methylated GCH or HCG sites
          2: methylated GCH or HCG site
 }
 \description{
-This function subsets the data and prepares it for visualizing by 
-generating representation methylation-state matrices from 
-single-cell methylation data (for example, sc-MNT data). 
+This function subsets the data and prepares it for visualizing by
+generating representation methylation-state matrices from
+single-cell methylation data (for example, sc-MNT data).
 We assume the data has already been preprocess using the subsetSC
-function in methylscaper. See the vignette for a more thorough 
-explanation of each parameter. The output should be passed directly to the 
+function in methylscaper. See the vignette for a more thorough
+explanation of each parameter. The output should be passed directly to the
 plotting function.
 }
 \examples{
- 
+
 data(singlecell_subset)
-prepsc.out <- prepSC(singlecell_subset, 
-                 startPos = 105636488, endPos = 105636993)
+prepsc.out <- prepSC(singlecell_subset,
+    startPos = 105636488, endPos = 105636993
+)
 }

@@ -7,10 +7,10 @@
 refineFunction(orderObject, refineStart, refineEnd, Method = "PCA")
 }
 \arguments{
-\item{orderObject}{An object of class \code{orderObject}, generated 
+\item{orderObject}{An object of class \code{orderObject}, generated
 with the \code{initialOrder} function.}
 
-\item{refineStart}{The index of the first sample (row) used 
+\item{refineStart}{The index of the first sample (row) used
 in the refinement.}
 
 \item{refineEnd}{The index of the last sample (row) used in the refinement.}
@@ -19,17 +19,17 @@ in the refinement.}
 }
 \value{
 The refinement reorders the cells/molecules (rows) between the indicated
-start and end positions. The function returns the new complete ordering 
+start and end positions. The function returns the new complete ordering
 with the refinement applied.
 }
 \description{
 Reorders a subset of the methylation data.
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 # reordering the first 50 cells/molecules (rows)
-orderObj$order1 <- refineFunction(orderObj, 1, 50) 
+orderObj$order1 <- refineFunction(orderObj, 1, 50)
 }

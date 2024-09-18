@@ -19,17 +19,17 @@ runAlign(
 
 \item{fasta}{A list of reads/sequences from a single-molecule experiment (e.g. MAPit)}
 
-\item{fasta_subset}{(optional) A vector of indices indicating which 
+\item{fasta_subset}{(optional) A vector of indices indicating which
 sequences to process if a subset should be used. Leave this blank if
 all sequences should be processed.}
 
-\item{multicoreParam}{(optional) A MulticoreParam object, used to align 
+\item{multicoreParam}{(optional) A MulticoreParam object, used to align
 sequences in parallel.}
 
-\item{updateProgress}{(optional) Used to add a progress bar to the Shiny app. 
+\item{updateProgress}{(optional) Used to add a progress bar to the Shiny app.
 Should not be used otherwise.}
 
-\item{log_file}{(optional) String indicating where to save a log of the 
+\item{log_file}{(optional) String indicating where to save a log of the
 alignment process. If left NULL, no log is saved. We highly recommend
 saving a log file.}
 
@@ -42,7 +42,7 @@ The output is a list containing the the matrices 'gch' and 'hcg.
      across all base pairs. The coding is as follows:
          -2: unmethylated GCH or HCG site
          -1: base pairs between two unmethylated GCH or HCG sites
-         0: base pairs between mismatching methylation states of 
+         0: base pairs between mismatching methylation states of
              two GCH or HCG sites
          1: base pairs between two methylated GCH or HCG sites
          2: methylated GCH or HCG site
@@ -51,8 +51,8 @@ The output is a list containing the the matrices 'gch' and 'hcg.
 Runs the preprocessing methods for single-molecule data.
 }
 \examples{
- 
+
 data(reads_sm)
 data(ref_seq)
-example_alignedseq <- runAlign(fasta=reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
+example_alignedseq <- runAlign(fasta = reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
 }

@@ -17,7 +17,7 @@ initialOrder(
 \item{dataIn}{A list object containing two elements labelled gch and hcg (already pre-processed.)}
 
 \item{Method}{Indicates the seriation method to use. The default option
-is "PCA", which orders the data using a weighted first principal component approach. Any 
+is "PCA", which orders the data using a weighted first principal component approach. Any
 seriation method provided in the \code{seriation} package is also valid input.}
 
 \item{weightStart}{Index of the first column used in the weighted seriation.}
@@ -25,15 +25,15 @@ seriation method provided in the \code{seriation} package is also valid input.}
 \item{weightEnd}{Index of the last column used in the weighted seriation.}
 
 \item{weightFeature}{Indicates whether to weight the GCH or HCG data.
-Valid input to weight the GCH is 'gch', 'acc', or 'yellow'. To weight the HCG, 
+Valid input to weight the GCH is 'gch', 'acc', or 'yellow'. To weight the HCG,
 valid input for this option is 'hcg', 'met', or 'red'.}
 
-\item{updateProgress}{A function to handle the progress bar for the 
+\item{updateProgress}{A function to handle the progress bar for the
 Shiny app. Should not be used when using the function independently.}
 }
 \value{
 An object of class \code{orderObject}, which contains the generated
- ordering ($order1) and a clean data matrix ($toClust) 
+ ordering ($order1) and a clean data matrix ($toClust)
  to be passed into the plotting function plotSequence().
 }
 \description{
@@ -41,11 +41,11 @@ This function performs the weighted seriation procedure
 described in the methylscaper manuscript if the method is set to "PCA".
 The data may also be ordered using a given seriation method from the
 seriation R package. The weighting is done between a designated start and end
-base pair chosen by the user, and the weight can be done on the 
+base pair chosen by the user, and the weight can be done on the
 endogenous methylation or the accessibility.
 }
 \examples{
- 
+
 data(singlemolecule_example)
 
 orderObj <- initialOrder(singlemolecule_example)

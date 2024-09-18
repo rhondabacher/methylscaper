@@ -26,7 +26,7 @@ vignette: >
 
 `methylscaper` is an R package for visualizing data that jointly profile endogenous methylation and chromatin accessibility (MAPit, NOMe-seq, scNMT-seq, nanoNOMe, etc.). The package offers pre-processing for single-molecule data and accepts input from Bismark (or similar alignment programs) for single-cell data. A common interface for visualizing both data types is done by generating ordered representational methylation-state matrices. The package provides a Shiny app to allow for interactive and optimal ordering of the individual DNA molecules to discover methylation patterns and nucleosome positioning.
 
-**Note:** If you use methylscaper in your research, please cite [our manuscript on bioRxiv.](https://www.biorxiv.org/content/10.1101/2020.11.13.382465v1)
+**Note:** If you use methylscaper in your research, please cite [our manuscript.](https://pubmed.ncbi.nlm.nih.gov/34125875/)
 
 If, after reading this vignette you have questions, please submit your question on GitHub: [Question or Report Issue](https://github.com/rhondabacher/methylscaper/issues). This will notify the package maintainers and benefit other users.
 
@@ -35,10 +35,11 @@ If, after reading this vignette you have questions, please submit your question 
 
 ## Installation
 
-For local use of `methylscaper`, it can be installed into R from Bioconductor (using R version >= 4.1.0): 
+For local use of `methylscaper`, it can be installed into R from Bioconductor (using R version >= 4.4.0): 
 ```{r, eval=F}
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
+}
 
 BiocManager::install("methylscaper")
 ```
@@ -46,7 +47,7 @@ BiocManager::install("methylscaper")
 ## Load the package
 
 After successful installation, load the package into the working space.
-```{r, message = FALSE}
+```{r, message = FALSE, warning=FALSE}
 library(methylscaper)
 ```
 
@@ -66,14 +67,14 @@ Due to the large file size, methylscaper further processes the data for the visu
 Below we walk through an example using data from Clark et al., 2018, obtained from
 [GSE109262](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE109262). For
 the sake of this example, we assume that the `GSE109262_RAW.tar`
-directory is downloaded to `~/Downloads/`.
+directory is downloaded locally to `~/Downloads/`.
 
 ### Preprocessing in the Shiny app
 
 
 In the screenshot below, the data from GSE10926 data on chromosome 19 is ready for processing. When selecting "Browse...", be sure to  select **all** relevant files for each methylation type.
 
-![Preprocessing tab for single-cell data](process_sc.png){#id .class width=100% height=100%}
+![Screenshot: Preprocessing tab for single-cell data](process_sc.png){#id .class width=100% height=100%}
 
 ## Preprocessing using methylscaper functions
 
@@ -85,33 +86,31 @@ When using methylscaper within R, rather than specifying all the files individua
 
 ```{r, eval=FALSE}
 filepath <- "~/Downloads/GSE109262_RAW/"
-singlecell_subset <- subsetSC(filepath, chromosome=19, startPos = 8937041, endPos = 8997041)
+singlecell_subset <- subsetSC(filepath, chromosome = 19, startPos = 8937041, endPos = 8997041)
 # To save for later, save as an rds file and change the folder location as desired:
 saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
 ```
 
-For a reproducible example, we have provided three cells for download on [https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html](https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html), and below we run an example where we read the data directly from the URL's into R and use the subsetSC function. If you choose to download these files, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
+For a reproducible example, we have provided three cells for [download](https://rbacher.rc.ufl.edu/methylscaper/content/exampledata.html), and below we run an example where we read the data directly from the URLs into R and use the subsetSC function. If you choose to download these files, then the directions above should be followed by moving the files into subfolders named "acc" and "met".
 
 ```{r, eval=TRUE}
 gse_subset_path <- list(
-          c("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz",
-            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz",
-            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz"),
-        
-          c("https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz",
-            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz",
-            "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz"),
-          
-          c("GSM2936197_ESC_A08_CpG-met_processed",
-            "GSM2936196_ESC_A07_CpG-met_processed",
-            "GSM2936192_ESC_A03_CpG-met_processed"),
-          
-          c("GSM2936197_ESC_A08_GpC-acc_processed",
-            "GSM2936196_ESC_A07_GpC-acc_processed",
-            "GSM2936192_ESC_A03_GpC-acc_processed"))
+    c(
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_CpG-met_processed.tsv.gz",
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_CpG-met_processed.tsv.gz",
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_CpG-met_processed.tsv.gz"
+    ),
+    c(
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936197_ESC_A08_GpC-acc_processed.tsv.gz",
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936196_ESC_A07_GpC-acc_processed.tsv.gz",
+        "https://rbacher.rc.ufl.edu/methylscaper/data/GSE109262_SUBSET/GSM2936192_ESC_A03_GpC-acc_processed.tsv.gz"
+    ),
+    c("GSM2936197_ESC_A08_CpG-met_processed", "GSM2936196_ESC_A07_CpG-met_processed", "GSM2936192_ESC_A03_CpG-met_processed"),
+    c("GSM2936197_ESC_A08_GpC-acc_processed", "GSM2936196_ESC_A07_GpC-acc_processed", "GSM2936192_ESC_A03_GpC-acc_processed")
+)
 # This formatting is a list of 4 objects: the met file urls, the acc file urls, the met file names, and the acc file names.
 
-singlecell_subset <- subsetSC(gse_subset_path, chromosome=19, startPos = 8937041, endPos = 8997041)
+singlecell_subset <- subsetSC(gse_subset_path, chromosome = 19, startPos = 8937041, endPos = 8997041)
 
 # To save for later, save as an rds file and change the folder location as desired:
 # saveRDS(singlecell_subset, "~/Downloads/singlecell_subset.rds")
@@ -123,12 +122,12 @@ To fully demonstrate the example using the three cells subset, we skip some expl
 data("mouse_bm")
 gene.select <- subset(mouse_bm, mgi_symbol == "Eef1g")
 
-startPos <- 8966841 
+startPos <- 8966841
 endPos <- 8967541
-prepSC.out <- prepSC(singlecell_subset, startPos=startPos, endPos=endPos)
+prepSC.out <- prepSC(singlecell_subset, startPos = startPos, endPos = endPos)
 
 orderObj <- initialOrder(prepSC.out)
-plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE, drawKey = FALSE)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast = TRUE, drawKey = FALSE)
 ```
 
 ## Visualization in the Shiny app {#vizinApp}
@@ -139,7 +138,7 @@ The screenshot below is of the Visualization tab in the methylscaper Shiny app. 
 In the visualization, two plots will appear. They both represent the same genomic region, but they are colored based on either HCGH or GCH sites. The x-axis represents the genomic location, and the y-axis is each individual cell. The left plot contains the genomic region mapped to HCG sites (sites are indicated by tick marks at the top), and the right plot contains the genomic region mapped to GCH sites. For HCG (i.e. endogenous methylation), methylscaper colors patches in between each HCG site as follows: If two consecutive HCG sites are methylated, a red patch is present. If two consecutive HCG sites are unmethylated, a black patch is present. If two consecutive HCG sites are inconsistently methylated, a gray border or patch appears. For GCH (i.e. accessibility), methylscaper colors patches as follows: yellow patches occur between two methylated sites (an accessible region), black patches occur between two unmethylated sites (inaccessible region), and gray patches occur between inconsistent methylation of consecutive sites. Any missing data (e.g. no reads covered that region for a particular cell) will show up as a white patch in either plot.
 
 
-![Visualization of the *Tut1* gene](sc.png){#id .class width=100% height=100%}
+![Screenshot: Visualization of the *Tut1* gene](sc.png){#id .class width=100% height=100%}
 
 Once a region is chosen, the default ordering by methylscaper is the unweighted PCA. The user is then able to dynamically weight and refine the plot via Shiny's brushing mechanics. The user can click and drag the mouse across the plot horizontally to choose which bases (i.e. columns) should be weighted in the global PCA ordering. The plot will update and two green lines will appear to indicate the weighting positions (note that these are not included once the plot is downloaded).
 
@@ -165,15 +164,15 @@ gene <- "Eef1g"
 data("mouse_bm") # for human use human_bm
 gene.select <- subset(mouse_bm, mgi_symbol == gene)
 # We will further subset the region to a narrow region of the gene: from 8966841bp to 8967541bp
-startPos <- 8966841 
+startPos <- 8966841
 endPos <- 8967541
 
 # This subsets the data to a specific region and prepares the data for visualization:
-prepSC.out <- prepSC(mydata, startPos=startPos, endPos=endPos)
+prepSC.out <- prepSC(mydata, startPos = startPos, endPos = endPos)
 
 # Next the cells are ordered using the PCA approach and plot
 orderObj <- initialOrder(prepSC.out)
-plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast = TRUE)
 # We plot the nucleosome size key by default, however this can be turned off via drawKey = FALSE:
 # plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE, drawKey = FALSE)
 ```
@@ -188,7 +187,8 @@ To perform the weighted ordering, either on the methylation or accessibility sta
 
 ```{r, eval=TRUE}
 orderObj <- initialOrder(prepSC.out,
-                         weightStart = 47, weightEnd = 358, weightFeature = "acc")
+    weightStart = 47, weightEnd = 358, weightFeature = "acc"
+)
 ```
 
 
@@ -196,7 +196,7 @@ The sequence plot is then generated with the `plotSequence` function. The option
 
 
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
-plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast = TRUE)
 ```
 
 We can also refine the ordering of the reads with `refineFunction`,
@@ -205,7 +205,7 @@ code below reorders the first 20 cells and generates a new sequence plot.
 
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
 orderObj$order1 <- refineFunction(orderObj, refineStart = 1, refineEnd = 20)
-plotSequence(orderObj, Title = "Eef1g gene", plotFast=TRUE)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast = TRUE)
 ```
 
 Within R, there is more control over the output resolution of the plot. For example, we can
@@ -214,8 +214,8 @@ takes some trial and error. You may need to increase the width/height for a give
 is automatically high resolution, though you will still want to adjust the width and height to your preference.
 
 ```{r, eval=FALSE}
-png("~/save_my_plot.png", width = 4, height = 6, units = 'in', res = 300)
-plotSequence(orderObj, Title = "Eef1g gene", plotFast=FASLE)
+png("~/save_my_plot.png", width = 4, height = 6, units = "in", res = 300)
+plotSequence(orderObj, Title = "Eef1g gene", plotFast = FASLE)
 dev.off()
 ```
 
@@ -225,29 +225,32 @@ dev.off()
 In the Shiny app, we have included pre-downloaded versions of the mouse (GRCm39) and human (GRCh38) gene locations for ease of use. If you wish to use another organism, we demonstrate below how to obtain these from biomaRt.
 
 ```{r, eval=FALSE}
-if (!requireNamespace("biomaRt", quietly=TRUE))
-    BiocManager::install("biomaRt")
+# if (!requireNamespace("biomaRt", quietly = TRUE)) {
+#     BiocManager::install("biomaRt")
+# }
 library(biomaRt)
 ensembl <- useMart("ensembl")
 # Demonstrating how to get the human annotations.
-ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
-my_chr <- c(1:22, 'M', 'X', 'Y') # You can choose to omit this or include additional chromosome
+ensembl <- useDataset("hsapiens_gene_ensembl", mart = ensembl)
+my_chr <- c(1:22, "M", "X", "Y") # You can choose to omit this or include additional chromosome
 # We only need the start, end, and symbol:
-human_bm <- getBM(attributes=c('chromosome_name', 'start_position', 'end_position', 'hgnc_symbol'),
-             filters = 'chromosome_name',
-             values = my_chr,
-             mart=ensembl)
+human_bm <- getBM(
+    attributes = c("chromosome_name", "start_position", "end_position", "hgnc_symbol"),
+    filters = "chromosome_name",
+    values = my_chr,
+    mart = ensembl
+)
 
 ## Now that we have the biomart object, we can extract start and ends for methylscaper:
 gene_select <- subset(human_bm, human_bm$hgnc_symbol == "GeneX")
 
 # These can then be passed into the prepSC function:
-prepSC.out <- prepSC(mydata, startPos=gene_select$startPos, endPos=gene_select$endPos)
+prepSC.out <- prepSC(mydata, startPos = gene_select$startPos, endPos = gene_select$endPos)
 
 # To continue the analysis:
 # Next the cells are ordered using the PCA approach and then plot:
 orderObj <- initialOrder(prepSC.out)
-plotSequence(orderObj, Title = "Gene X", plotFast=TRUE)
+plotSequence(orderObj, Title = "Gene X", plotFast = TRUE)
 ```
 
 
@@ -263,7 +266,7 @@ The screenshot below shows this preprocessing step. We make use of data from our
 
 After selecting 'Run', a progress bar will appear in the bottom right. Once completed, the data may be downloaded along with a log file indicating the number of molecules successfully processed.
  
-![Preprocessing tab for single-molecule data](process_sm.png){#id .class width=100% height=100%}
+![Screenshot: Preprocessing tab for single-molecule data](process_sm.png){#id .class width=100% height=100%}
 
 ### Preprocessing using methylscaper functions
 
@@ -275,8 +278,6 @@ seq_file <- system.file("extdata", "seq_file.fasta", package = "methylscaper")
 ref_file <- system.file("extdata", "reference.fa", package = "methylscaper")
 
 # Next we read the data into R using the read.fasta function from the seqinr package:
-if (!requireNamespace("seqinr", quietly=TRUE))
-    install.packages("seqinr")
 fasta <- seqinr::read.fasta(seq_file)
 ref <- seqinr::read.fasta(ref_file)[[1]]
 
@@ -290,7 +291,7 @@ singlemolecule_example <- runAlign(fasta = fasta, ref = ref, fasta_subset = 1:15
 
 ### Visualization in the Shiny app
 
-![Visualizing the single-molecule data](sm.png){#id .class width=100% height=100%}
+![Screenshot: Visualizing the single-molecule data](sm.png){#id .class width=100% height=100%}
 
 ### Visualization using the methylscaper functions
 
@@ -299,8 +300,10 @@ Analysis of the single-molecule data in the R console uses the same functions de
 ```{r, eval=TRUE, fig.width=7, fig.height=6}
 # If skipping the preprocessing steps above, use our pre-aligned data:
 # data(singlemolecule_example)
-orderObj <- initialOrder(singlemolecule_example, Method="PCA",
-                         weightStart = 308, weightEnd = 475, weightFeature = "red")
+orderObj <- initialOrder(singlemolecule_example,
+    Method = "PCA",
+    weightStart = 308, weightEnd = 475, weightFeature = "red"
+)
 plotSequence(orderObj, Title = "Ordered by PCA", plotFast = TRUE)
 ```
 
@@ -322,9 +325,9 @@ Both single-cell and single-molecule data can be additionally summarized using m
 * The methyl_average_status function is similar to methyl_percent_sites but calculates an average methylation status across all cells or molecules within a specified window.
 
 ```{r, eval=TRUE, fig.align='left', fig.height=8, fig.width=8}
-par(mfrow=c(2,2))
-props <- methyl_proportion(orderObj, type = "met", makePlot=TRUE, main="")
-props <- methyl_proportion(orderObj, type = "acc", makePlot=TRUE, main="")
+par(mfrow = c(2, 2))
+props <- methyl_proportion(orderObj, type = "met", makePlot = TRUE, main = "")
+props <- methyl_proportion(orderObj, type = "acc", makePlot = TRUE, main = "")
 
 pcnts <- methyl_percent_sites(orderObj, makePlot = TRUE)
 avgs <- methyl_average_status(orderObj, makePlot = TRUE, window_length = 25)

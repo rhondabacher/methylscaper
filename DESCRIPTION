@@ -11,7 +11,7 @@ Description: methylscaper is an R package for processing and visualizing data jo
   positioning.
 Version: 1.13.2
 Authors@R: c(person("Bacher", "Rhonda", email = "rbacher@ufl.edu", role = c("aut", "cre")), person("Parker", "Knight", role = c("aut")))
-Depends: R (>= 4.1.0)
+Depends: R (>= 4.4.0)
 License: GPL-2
 Encoding: UTF-8
 Imports:
