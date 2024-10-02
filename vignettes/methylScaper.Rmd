@@ -10,9 +10,11 @@ output:
     toc: true
 package: methylscaper
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Using methylscaper to visualize joint methylation and nucleosome occupancy data}
   %\usepackage[UTF-8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 <style>
@@ -110,6 +112,7 @@ gse_subset_path <- list(
 )
 # This formatting is a list of 4 objects: the met file urls, the acc file urls, the met file names, and the acc file names.
 
+options(timeout = 1000)
 singlecell_subset <- subsetSC(gse_subset_path, chromosome = 19, startPos = 8937041, endPos = 8997041)
 
 # To save for later, save as an rds file and change the folder location as desired:
