@@ -109,7 +109,7 @@ gse_subset_path <- list(
     c("GSM2936197_ESC_A08_GpC-acc_processed", "GSM2936196_ESC_A07_GpC-acc_processed", "GSM2936192_ESC_A03_GpC-acc_processed")
 )
 # This formatting is a list of 4 objects: the met file urls, the acc file urls, the met file names, and the acc file names.
-
+options(timeout = 1000)
 singlecell_subset <- subsetSC(gse_subset_path, chromosome = 19, startPos = 8937041, endPos = 8997041)
 
 # To save for later, save as an rds file and change the folder location as desired:
