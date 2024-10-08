@@ -45,7 +45,7 @@ Rscript -e '{
         styler::style_file(file, transformers = biocthis::bioc_style())
     })
 
-    BiocCheck()
+    BiocCheck(pkg_path, args="--no-check-bioc-help")
 
     # Check if package is valid using CRAN:
     check()
