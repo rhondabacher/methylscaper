@@ -20,8 +20,14 @@ jobs:
           r-version: release
           http-user-agent: release
           use-public-rspm: true
-      
-      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Cache R Packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/R
+          key: ${{ runner.os }}-R-${{ hashFiles('**/*.R') }}
+          restore-keys: |
+            ${{ runner.os }}-R-
 
       - name: Install R Packages
         run: |
@@ -30,7 +36,7 @@ jobs:
         shell: Rscript {0}
 
   bioc-check:
-    runs-on: ubuntu-latest  # Changed to ubuntu-latest
+    runs-on: ubuntu-latest
     needs: install
     name: BiocCheck
     steps:
@@ -50,7 +56,7 @@ jobs:
         shell: Rscript {0}
 
   style-check:
-    runs-on: ubuntu-latest  # Changed to ubuntu-latest
+    runs-on: ubuntu-latest
     needs: install
     name: Style Check
     steps:
@@ -78,7 +84,7 @@ jobs:
         shell: Rscript {0}
 
   package-check:
-    runs-on: ubuntu-latest  # Changed to ubuntu-latest
+    runs-on: ubuntu-latest
     needs: install
     name: Check Package Validity
     steps:
