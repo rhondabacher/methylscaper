@@ -30,24 +30,27 @@ jobs:
 
       - name: Install R Packages and Check Style
         run: |
-          install.packages("BiocManager")
+          install.packages(c("BiocManager", "roxygen2", "knitr"))
           BiocManager::install(c("biocthis", "styler"))
           
-          # Check R Files for Styler Compliance
           library(styler)
           files <- list.files(pattern = "\\.[Rr]$|\\.[Rr][Mm][Dd]$", recursive = TRUE)
-          issues <- unlist(lapply(files, function(file) {
-            styled <- tryCatch({
-              styler::style_file(file, transformers = biocthis::bioc_style(), dry_run = TRUE)
-              NULL
+          issues <- character(0)
+          
+          for (file in files) {
+            tryCatch({
+              result <- capture.output(style_file(file, dry = "on"))
+              if (any(grepl("⚠|ℹ|✖", result))) {
+                issues <- c(issues, paste0(file, ": ", paste(result[grepl("⚠|ℹ|✖", result)], collapse = "; ")))
+              }
             }, error = function(e) {
-              e$message
+              issues <<- c(issues, paste0(file, ": Error - ", e$message))
             })
-            return(styled)
-          }))
+          }
+          
           if (length(issues) > 0) {
             message("Styling issues found:")
-            message(issues)
+            message(paste(issues, collapse = "\n"))
             quit(status = 1)
           } else {
             message("All files comply with the style!")
