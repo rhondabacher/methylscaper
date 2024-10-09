@@ -23,16 +23,16 @@ jobs:
       - name: Cache R Packages
         uses: actions/cache@v3
         with:
-          path: ~/.cache/R
-          key: ${{ runner.os }}-R-${{ hashFiles('**/*.R') }}
-          restore-keys: |
-            ${{ runner.os }}-R-
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-${{ hashFiles('**/DESCRIPTION') }}
+          restore-keys: ${{ runner.os }}-r-
 
-      - name: Install R Packages and Run Check
+      - name: Install R Packages
         run: |
-          install.packages("BiocManager")
-          BiocManager::install(c("biocthis", "devtools"))
-          
-          # Run check()
-          Rscript -e 'devtools::check()'
+          install.packages(c("BiocManager", "devtools"), repos = "https://cloud.r-project.org")
+          BiocManager::install("biocthis")
+        shell: Rscript {0}
+
+      - name: Run R CMD check
+        run: devtools::check()
         shell: Rscript {0}
