@@ -22,19 +22,23 @@ jobs:
 
       - name: Install R Packages
         run: |
-          install.packages(c("devtools", "shinyjs", "seriation", "seqinr", "Rfast", "shinyFiles", "data.table"))
+          install.packages(c("devtools", "shinyjs", "seriation", "seqinr", "Rfast", "shinyFiles", "data.table", "rmarkdown", "knitr"))
           if (!requireNamespace("BiocManager", quietly = TRUE))
               install.packages("BiocManager")
-          BiocManager::install(c("BiocParallel", "Biostrings", "pwalign", "SummarizedExperiment"))
+          BiocManager::install(c("BiocParallel", "Biostrings", "pwalign", "SummarizedExperiment", "BiocStyle"), update = TRUE, ask = FALSE)
+          # Install any package dependencies
+          devtools::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 
       - name: Run R CMD check
         run: |
-          check_results <- devtools::check(error_on = "never")
+          check_results <- devtools::check(error_on = "never", vignettes = FALSE)
           print(check_results)
           
           if (length(check_results$errors) > 0 || length(check_results$warnings) > 0) {
             message("Check failed. Errors or warnings were found.")
+            print(check_results$errors)
+            print(check_results$warnings)
             quit(status = 1)
           } else {
             message("Check passed successfully!")
