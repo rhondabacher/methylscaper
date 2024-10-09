@@ -22,7 +22,10 @@ jobs:
 
       - name: Install R Packages
         run: |
-          install.packages("devtools")
+          install.packages(c("devtools", "shinyjs", "seriation", "seqinr", "Rfast", "shinyFiles", "data.table"))
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+              install.packages("BiocManager")
+          BiocManager::install(c("BiocParallel", "Biostrings", "pwalign", "SummarizedExperiment"))
         shell: Rscript {0}
 
       - name: Run R CMD check
