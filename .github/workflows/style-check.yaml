@@ -39,7 +39,7 @@ jobs:
           
           for (file in files) {
             tryCatch({
-              result <- capture.output(style_file(file, dry = "on"))
+              result <- capture.output(style_file(file, transformers = biocthis::bioc_style(), dry="on")
               if (any(grepl("⚠|ℹ|✖", result))) {
                 issues <- c(issues, paste0(file, ": ", paste(result[grepl("⚠|ℹ|✖", result)], collapse = "; ")))
               }
