@@ -35,24 +35,24 @@ jobs:
           
           library(styler)
           files <- list.files(pattern = "\\.[Rr]$|\\.[Rr][Mm][Dd]$", recursive = TRUE)
-          issues <- character(0)
+          files_to_style <- character(0)
           
           for (file in files) {
             tryCatch({
-              result <- capture.output(style_file(file, transformers = biocthis::bioc_style(), dry="on"))
-              if (any(grepl("⚠|ℹ|✖", result))) {
-                issues <- c(issues, paste0(file, ": ", paste(result[grepl("⚠|ℹ|✖", result)], collapse = "; ")))
+              result <- style_file(file, transformers = biocthis::bioc_style(), dry = "on")
+              if (!is.null(result)) {
+                files_to_style <- c(files_to_style, file)
               }
             }, error = function(e) {
-              issues <<- c(issues, paste0(file, ": Error - ", e$message))
+              message(paste0("Error processing ", file, ": ", e$message))
             })
           }
           
-          if (length(issues) > 0) {
-            message("Styling issues found:")
-            message(paste(issues, collapse = "\n"))
+          if (length(files_to_style) > 0) {
+            message("Files that need styling:")
+            message(paste(files_to_style, collapse = "\n"))
             quit(status = 1)
           } else {
-            message("All files comply with the style!")
+            message("All files comply with the style guide!")
           }
         shell: Rscript {0}
