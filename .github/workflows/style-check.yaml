@@ -39,9 +39,13 @@ jobs:
           
           for (file in files) {
             tryCatch({
-              result <- style_file(file, transformers = biocthis::bioc_style(), dry = "on")
-              if (!is.null(result)) {
-                files_to_style <- c(files_to_style, file)
+              output <- capture.output(style_file(file, transformers = biocthis::bioc_style(), dry = "on"))
+              status_line <- output[grep("^ℹ.*File changed", output)]
+              if (length(status_line) > 0) {
+                count <- as.integer(strsplit(status_line, "\t")[[1]][2])
+                if (count > 0) {
+                  files_to_style <- c(files_to_style, file)
+                }
               }
             }, error = function(e) {
               message(paste0("Error processing ", file, ": ", e$message))
