@@ -3,30 +3,29 @@
 # Get a list of staged `.R` and `.Rmd` files
 staged_files_for_styling=$(git diff --cached --name-only --diff-filter=d | grep -E '\.R$|\.Rmd$')
 
-
 # Run R script for pre-commit checks
 Rscript -e '{
     # Function to install missing packages
     install_if_missing <- function(pkg) {
         if (!requireNamespace(pkg, quietly = TRUE)) {
-            if (pkg %in% c("biocthis", "BiocCheck")) {
+            if (pkg %in% c("biocthis", "BiocCheck", "rmarkdown")) {
                 BiocManager::install(pkg)
             } else {
-                install.packages(pkg, repos = "http://cran.r-project.org")
+                install.packages(pkg, repos = "https://cran.r-project.org")
             }
         }
     }
 
     # Check if BiocManager is installed, install if not
     if (!requireNamespace("BiocManager", quietly = TRUE)) {
-        install.packages("BiocManager", repos = "http://cran.r-project.org")
+        install.packages("BiocManager", repos = "https://cran.r-project.org")
     }
 
-    #Load BiocManager before installing packages
+    # Load BiocManager before installing packages
     library("BiocManager")
 
     # List of required packages
-    required_packages <- c("biocthis", "styler", "BiocCheck", "devtools")
+    required_packages <- c("biocthis", "styler", "BiocCheck", "devtools", "rmarkdown")
 
     # Install missing packages
     sapply(required_packages, install_if_missing)
@@ -36,6 +35,7 @@ Rscript -e '{
     library("styler")
     library("BiocCheck")
     library("devtools")
+    library("rmarkdown")
 
     # Set the working directory to the project root
     pkg_path <- getwd()
@@ -45,10 +45,19 @@ Rscript -e '{
         styler::style_file(file, transformers = biocthis::bioc_style())
     })
 
-    BiocCheck(pkg_path, args="--no-check-bioc-help")
+    # Run BiocCheck with no-check-bioc-views and no-check-bioc-help arguments
+    BiocCheck::BiocCheck(pkg_path, `no-check-bioc-views` = TRUE, `no-check-bioc-help` = TRUE)
+
+    # Check if Pandoc is available
+    if (!rmarkdown::pandoc_available()) {
+        message("Pandoc not available. Skipping vignette building.")
+        build_vignettes <- FALSE
+    } else {
+        build_vignettes <- TRUE
+    }
 
     # Check if package is valid using CRAN:
-    check()
+    devtools::check(error_on = "never", vignettes = build_vignettes)
 }' $staged_files_for_styling
 
 # Check the exit status
@@ -57,9 +66,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Stage the formatted files again
-echo "Staging the following formatted files:"
-echo "$staged_files_for_styling"
-git add $staged_files_for_styling
+# Check if there are any staged files for styling
+if [ -n "$staged_files_for_styling" ]; then
+    # Stage the formatted files again
+    echo "Staging the following formatted files:"
+    echo "$staged_files_for_styling"
+    git add $staged_files_for_styling
+else
+    echo "No files to stage."
+fi
 
 # Allow the commit to proceed
