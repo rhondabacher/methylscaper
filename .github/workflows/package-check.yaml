@@ -1,9 +1,9 @@
 name: Package Check
 
 on:
-  push:
+  pull_request:
     branches:
-      - github-pipelines
+      - devel
 
 jobs:
   package-check:
