@@ -1,0 +1,62 @@
+name: Style Check
+
+on:
+  pull_request:
+    branches:
+      - devel
+
+jobs:
+  style-check:
+    runs-on: macos-latest
+    name: Style Check
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: r-lib/actions/setup-pandoc@v2
+      
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          http-user-agent: release
+          use-public-rspm: true
+
+      - name: Cache R Packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/R
+          key: ${{ runner.os }}-R-${{ hashFiles('**/*.R') }}
+          restore-keys: |
+            ${{ runner.os }}-R-
+
+      - name: Install R Packages and Check Style
+        run: |
+          install.packages(c("BiocManager", "roxygen2", "knitr"))
+          BiocManager::install(c("biocthis", "styler"))
+          
+          library(styler)
+          files <- list.files(pattern = "\\.[Rr]$|\\.[Rr][Mm][Dd]$", recursive = TRUE)
+          files_to_style <- character(0)
+          
+          for (file in files) {
+            tryCatch({
+              output <- capture.output(style_file(file, transformers = biocthis::bioc_style(), dry = "on"))
+              status_line <- output[grep("^ℹ.*File changed", output)]
+              if (length(status_line) > 0) {
+                count <- as.integer(strsplit(status_line, "\t")[[1]][2])
+                if (count > 0) {
+                  files_to_style <- c(files_to_style, file)
+                }
+              }
+            }, error = function(e) {
+              message(paste0("Error processing ", file, ": ", e$message))
+            })
+          }
+          
+          if (length(files_to_style) > 0) {
+            message("Files that need styling:")
+            message(paste(files_to_style, collapse = "\n"))
+            quit(status = 1)
+          } else {
+            message("All files comply with the style guide!")
+          }
+        shell: Rscript {0}

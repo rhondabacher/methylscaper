@@ -1,0 +1,46 @@
+name: Package Check
+
+on:
+  pull_request:
+    branches:
+      - devel
+
+jobs:
+  package-check:
+    runs-on: macos-latest
+    name: Check Package Validity
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          http-user-agent: release
+          use-public-rspm: true
+
+      - name: Install R Packages
+        run: |
+          install.packages(c("devtools", "shinyjs", "seriation", "seqinr", "Rfast", "shinyFiles", "data.table", "rmarkdown", "knitr"))
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+              install.packages("BiocManager")
+          BiocManager::install(c("BiocParallel", "Biostrings", "pwalign", "SummarizedExperiment", "BiocStyle"), update = TRUE, ask = FALSE)
+          # Install any package dependencies
+          devtools::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - name: Run R CMD check
+        run: |
+          check_results <- devtools::check(error_on = "never", vignettes = FALSE)
+          print(check_results)
+          
+          if (length(check_results$errors) > 0 || length(check_results$warnings) > 0) {
+            message("Check failed. Errors or warnings were found.")
+            print(check_results$errors)
+            print(check_results$warnings)
+            quit(status = 1)
+          } else {
+            message("Check passed successfully!")
+          }
+        shell: Rscript {0}

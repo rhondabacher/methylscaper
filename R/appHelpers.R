@@ -1,5 +1,6 @@
-buildOrderObjectShiny <- function(dataIn, method,
-    coordinatesObject, updateProgress) {
+buildOrderObjectShiny <- function(
+        dataIn, method,
+        coordinatesObject, updateProgress) {
     if (coordinatesObject$weight_start == 0 | coordinatesObject$weight_stop == 0) {
         orderObject <- initialOrder(dataIn, Method = method)
     } else {

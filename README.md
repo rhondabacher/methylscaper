@@ -25,6 +25,21 @@ if (!requireNamespace("devtools", quietly=TRUE))
 devtools::install_github("rhondabacher/methylscaper", ref="R4.0")
 ```
 
+## Development Setup
+
+To contribute to this package, follow these steps after cloning the repository:
+
+Run this command in bash
+`git config core.hooksPath .hooks`
+
+Verify if the hooks are installed
+`ls -la .hooks`
+
+If you encounter any issues with the pre-commit hooks
+- Ensure you've run the `git config` command as described above.
+- Check that the .hooks/pre-commit file is executable. If not, run:
+`chmod +x .hooks/pre-commit`
+
 # Dependencies
 
 Note: on Ubuntu, users may need to install libgsl via:

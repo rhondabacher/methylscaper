@@ -22,8 +22,9 @@
 #' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' # reordering the first 50 cells/molecules (rows)
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50)
-refineFunction <- function(orderObject, refineStart, refineEnd,
-    Method = "PCA") {
+refineFunction <- function(
+        orderObject, refineStart, refineEnd,
+        Method = "PCA") {
     toClust <- orderObject$toClust
     order1 <- orderObject$order1
 
@@ -91,8 +92,9 @@ refineFunction <- function(orderObject, refineStart, refineEnd,
 #' # reorder first 50 cells/molecules (rows)
 #' orderObj$order1 <- refineFunction(orderObj, 1, 50)
 #' orderObj$order1 <- forceReverse(orderObj, 1, 50)
-forceReverse <- function(orderObject, reverseStart = 1,
-    reverseEnd = length(orderObject$order1)) {
+forceReverse <- function(
+        orderObject, reverseStart = 1,
+        reverseEnd = length(orderObject$order1)) {
     order1 <- orderObject$order1
     order1[reverseStart:reverseEnd] <- rev(order1[reverseStart:reverseEnd])
     return(order1)

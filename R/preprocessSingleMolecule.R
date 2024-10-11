@@ -35,10 +35,11 @@
 #' data(reads_sm)
 #' data(ref_seq)
 #' example_alignedseq <- runAlign(fasta = reads_sm, ref = ref_seq[[1]], fasta_subset = 1:150)
-runAlign <- function(ref, fasta, fasta_subset = seq(1, length(fasta)),
-    multicoreParam = NULL,
-    updateProgress = NULL,
-    log_file = NULL, score_cutoff = NULL) {
+runAlign <- function(
+        ref, fasta, fasta_subset = seq(1, length(fasta)),
+        multicoreParam = NULL,
+        updateProgress = NULL,
+        log_file = NULL, score_cutoff = NULL) {
     fasta <- fasta[fasta_subset]
     ref_string <- DNAString(toupper(c2s(ref)))
 
@@ -125,8 +126,9 @@ runAlign <- function(ref, fasta, fasta_subset = seq(1, length(fasta)),
 # alignedseq object used in the runAlign function
 # this needs the log_vector, multicoreParam, and updateProgress
 # so that we can continue keeping track of these things
-alignSequences <- function(fasta, ref_string, log_vector,
-    multicoreParam = NULL, updateProgress = NULL, score_cutoff) {
+alignSequences <- function(
+        fasta, ref_string, log_vector,
+        multicoreParam = NULL, updateProgress = NULL, score_cutoff) {
     ## this creates the substitution matrix for use in alignment
     penalty_mat <- matrix(
         0, length(DNA_ALPHABET[seq(1, 4)]),
