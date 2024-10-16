@@ -34,11 +34,12 @@ Imports:
   SummarizedExperiment
 RoxygenNote: 7.3.2
 Suggests: 
-  BiocStyle, 
-  knitr, 
-  rmarkdown, 
-  devtools,
-  R.utils
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    devtools,
+    R.utils,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 biocViews: 
 	DNAMethylation,
@@ -49,3 +50,4 @@ biocViews:
 	NucleosomePositioning
 URL: https://github.com/rhondabacher/methylscaper/
 BugReports: https://github.com/rhondabacher/methylscaper/issues
+Config/testthat/edition: 3
