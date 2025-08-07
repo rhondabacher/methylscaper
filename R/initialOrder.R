@@ -32,10 +32,9 @@
 #' data(singlemolecule_example)
 #'
 #' orderObj <- initialOrder(singlemolecule_example)
-initialOrder <- function(
-        dataIn, Method = "PCA", weightStart = NULL,
-        weightEnd = NULL, weightFeature = "red",
-        updateProgress = NULL) {
+initialOrder <- function(dataIn, Method = "PCA", weightStart = NULL,
+    weightEnd = NULL, weightFeature = "red",
+    updateProgress = NULL) {
     input_GCH <- dataIn$gch
     input_HCG <- dataIn$hcg
 

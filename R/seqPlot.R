@@ -38,10 +38,9 @@
 #'
 #' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' plotSequence(orderObj)
-plotSequence <- function(
-        orderObject, plotFast = TRUE,
-        blankWidth = NULL, Title = "",
-        drawLine = TRUE, drawKey = TRUE, shinySizer = 0) {
+plotSequence <- function(orderObject, plotFast = TRUE,
+    blankWidth = NULL, Title = "",
+    drawLine = TRUE, drawKey = TRUE, shinySizer = 0) {
     # Start with yellow at top as the default:
     toClust <- orderObject$toClust
     order1 <- orderObject$order1

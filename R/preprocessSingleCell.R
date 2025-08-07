@@ -35,9 +35,8 @@
 #' prepsc.out <- prepSC(singlecell_subset,
 #'     startPos = 105636488, endPos = 105636993
 #' )
-prepSC <- function(
-        dataIn, startPos = NULL, endPos = NULL,
-        updateProgress = NULL) {
+prepSC <- function(dataIn, startPos = NULL, endPos = NULL,
+    updateProgress = NULL) {
     if (is(dataIn, "SummarizedExperiment") | is(dataIn, "SingleCellExperiment")) {
         dataIn <- reformatSCE(dataIn)
     }
@@ -195,9 +194,8 @@ mapSC <- function(inSeq, startPos, endPos) {
 #' @examples
 #' # example not run since needs directory input from user
 #' # subsc.out <- subsetSC("filepath", chromosome=19)
-subsetSC <- function(
-        path, chromosome, startPos = NULL,
-        endPos = NULL, updateProgress = NULL) {
+subsetSC <- function(path, chromosome, startPos = NULL,
+    endPos = NULL, updateProgress = NULL) {
     if (!is.list(path)) {
         cgfiles <- paste0(path, "/", "met/", sort(grep("met", list.files(paste0(path, "/met")), value = TRUE)))
         gcfiles <- paste0(path, "/", "acc/", sort(grep("acc", list.files(paste0(path, "/acc")), value = TRUE)))
