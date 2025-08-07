@@ -274,10 +274,10 @@ ui <- navbarPage("methylscaper",
                             ),
                             column(
                                 width = 2, align = "left",
-                                selectInput("sm_filetype", label = "File type", choices = c("PDF", "PNG", "SVG", "SVGZ")),
+                                selectInput("sm_filetype", label = "File type", choices = c("PDF", "PNG", "SVG")),
                                 numericInput("sm_height", label = "Height (inches):", value = 7),
                                 numericInput("sm_width", label = "Width (inches):", value = 7),
-                                numericInput("sm_res", label = "Resolution for PNG (ppi):", value = 300),
+                                numericInput("sm_res", label = "Resolution for PNG(ppi) or SVG(dpi):", value = 600),
                                 shinyjs::disabled(downloadButton("sm_plot_down", label = "Download Heatmap")),
                                 shinyjs::disabled(downloadButton("sm_log_down", label = "Download Ordering Log"))
                             )

@@ -485,10 +485,14 @@ server <- function(input, output, session) {
             if (input$sc_plot_filetype == "PDF") {
                 return(paste0("methylscaper_", outname_rds$usename, ".pdf"))
             }
+            if (input$sc_plot_filetype == "SVG") {
+                return(paste0("methylscaper_", outname_rds$usename, ".svg"))
+            }
         },
         content = function(file) {
-            if (input$sc_plot_filetype == "PNG") png(file)
-            if (input$sc_plot_filetype == "PDF") pdf(file)
+            if (input$sc_plot_filetype == "PNG") png(file, res=input$sc_res, height=input$sc_height, width=input$sc_width)
+            if (input$sc_plot_filetype == "PDF") pdf(file, height=input$sc_height, width=input$sc_width)
+            if (input$sc_plot_filetype == "SVG") svglite(file, dpi=input$sc_res, height=input$sc_height, width=input$sc_width)
 
             drawPlot(sc_orderObject, sc_coordinatesObject,
                 drawLines = FALSE, plotFast = FALSE
@@ -922,8 +926,6 @@ server <- function(input, output, session) {
         }
     )
 
-
-
     output$sm_plot_down <- downloadHandler(
         filename = function() {
             if (input$sm_filetype == "PNG") {
@@ -932,10 +934,14 @@ server <- function(input, output, session) {
             if (input$sm_filetype == "PDF") {
                 return(paste0("methylscaper_", outname_rds$usename, ".pdf"))
             }
+            if (input$sm_plot_filetype == "SVG") {
+                return(paste0("methylscaper_", outname_rds$usename, ".svg"))
+            }
         },
         content = function(file) {
-            if (input$sm_filetype == "PNG") png(file)
-            if (input$sm_filetype == "PDF") pdf(file)
+            if (input$sm_filetype == "PNG") png(file, res=input$sm_res, height=input$sm_height, width=input$sm_width)
+            if (input$sm_filetype == "PDF") pdf(file, height=input$sm_height, width=input$sm_width)
+            if (input$sm_plot_filetype == "SVG") svglite(file, dpi=input$sm_res, height=input$sm_height, width=input$sm_width) 
 
             drawPlot(sm_orderObject, sm_coordinatesObject,
                 drawLines = FALSE, plotFast = FALSE
