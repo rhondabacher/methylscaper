@@ -75,8 +75,9 @@ methyl_percent_sites <- function(orderObject, makePlot = TRUE, ...) {
 #'
 #' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' methyl_proportion(orderObj, makePlot = TRUE)
-methyl_proportion <- function(orderObject, type = "yellow",
-    makePlot = TRUE, ...) {
+methyl_proportion <- function(
+        orderObject, type = "yellow",
+        makePlot = TRUE, ...) {
     type <- tolower(type)
     if (type == "gch") type <- "yellow"
     if (type == "accessibility methylation") type <- "yellow"
@@ -122,8 +123,9 @@ methyl_proportion <- function(orderObject, type = "yellow",
 #' orderObj <- initialOrder(singlemolecule_example, Method = "PCA")
 #' methyl_average_status(orderObj, makePlot = TRUE)
 #'
-methyl_average_status <- function(orderObject, window_length = 20,
-    makePlot = TRUE, ...) {
+methyl_average_status <- function(
+        orderObject, window_length = 20,
+        makePlot = TRUE, ...) {
     colLength <- ncol(orderObject$toClust)
     gch_num <- orderObject$toClust[, seq(1, (colLength / 2))]
     hcg_num <- orderObject$toClust[, seq((colLength / 2 + 1), colLength)]

@@ -12,6 +12,7 @@
 #' @importFrom grDevices dev.off pdf png cairo_pdf
 #' @importFrom utils write.csv capture.output data
 #' @importFrom data.table fread
+#' @importFrom svglite svglite
 #' @export
 #' @examples
 #'

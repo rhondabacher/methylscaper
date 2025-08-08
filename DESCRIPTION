@@ -31,7 +31,7 @@ Imports:
   methods,
   shinyFiles,
   data.table,
-  SummarizedExperiment
+  SummarizedExperiment,
   svglite
 RoxygenNote: 7.3.2
 Suggests: 
